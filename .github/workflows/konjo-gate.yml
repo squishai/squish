@@ -246,6 +246,7 @@ jobs:
           python3 .konjo/scripts/dry_check.py \
             --threshold 0.85 \
             --min-lines 20 \
+            --warn-only \
             --report dry_report.json 2>&1
           COUNT=$(python3 -c "import json; d=json.load(open('dry_report.json')); print(d['count'])")
           python3 .konjo/scripts/ratchet_check.py \
