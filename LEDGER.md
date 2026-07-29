@@ -192,3 +192,24 @@ regression. The pre-commit run, with the properly-installed venv, is the authori
 measurement and is what every ratchet file and the CHANGELOG/LEDGER numbers above
 report. Recorded here rather than silently reported as if the degraded re-run's larger
 numbers were real.
+
+**A fifth kiban-side limitation, found re-verifying with a properly-installed venv
+(ruling out the environment-degradation explanation above): `repo:mypy` and
+`repo:vulture`'s net-new dispatch reports far more "net-new" findings against this
+PR's real 25-file diff (110 and 59) than any direct, single-pass measurement of HEAD
+ever found (215 total mypy errors repo-wide, 108 total vulture findings repo-wide —
+this diff touches 5 Python files, so 110/59 "new" findings on a docstring-and-two-
+one-liners diff cannot be real). The two-pass mechanism scans HEAD and a separate
+`git worktree` checkout of the base commit; the leading hypothesis (not fully root-
+caused — this is kiban's own internal worktree/import-resolution mechanics, out of
+scope for a "connect squish to kiban" sprint to debug) is that mypy resolves the
+editable-installed `squish` package from its real site-packages redirect rather than
+from the base worktree's own checkout, so files in the base pass get analyzed against
+the WRONG (HEAD's) module contents, manufacturing a large, spurious diff. Because
+`repo:mypy`/`repo:vulture`/`repo:ruff`/`repo:ruff-format` have no advisory/soft
+setting in `konjo-gates` (unlike `polarity`/`claude_contract`), this PR's own first
+`konjo-gates.yml` CI run will show these as real FAILs — disclosed here and in the PR
+description rather than hidden, worked around, or silently re-ordered to dodge them.
+This, the `repo:ruff` stdout-diffing issue, and the `one_way_door` regex false
+positive are three upstream `konjoai/kiban` findings this connection sprint surfaced,
+all real, none squish-side defects.
