@@ -123,12 +123,26 @@ re-verified against the real tree rather than left as a placeholder.
 
 **`threat_model` exercised for real, not stubbed.** This sprint's own diff touches
 `squish/catalog.py` and `squish/server.py`, both correctly in `security_globs`
-(`network_ingress` boundary). Ran `konjo-threat classify` then `record` for real
-(not simulated): mitigation states the diff is a docstring clarification plus a
-`usedforsecurity=False` annotation on two non-authentication hashes, zero behavior
-change to the request-handling path; `hmac.compare_digest` (the real API-key check)
-is untouched. Trailer: `Konjo-Threat-Model: f666caf4bcbd` (carried on this sprint's
-commit).
+(`network_ingress` boundary); the full 25-file changed-file set also matched
+`authn_authz` on a diff-content scan (the word "auth"/"api" appears in a nearby
+docstring, not in any changed authentication logic). Ran `konjo-threat classify` then
+`record` for real (not simulated) against the full, real changed-file set — not the
+partial 5-file set an earlier mid-sprint check used before every file was staged,
+which produced a different (now-superseded) fingerprint. Mitigation for both
+boundaries states the diff is a docstring clarification plus a `usedforsecurity=False`
+annotation on two non-authentication hashes, zero behavior change to the request-
+handling or auth-check path; `hmac.compare_digest` (the real API-key check) is
+untouched. Trailer: `Konjo-Threat-Model: b94be0e76761`.
+
+**`one_way_door` also fired for real on the full changed-file set, on a fourth kiban
+false-positive class**: `_DIFF_RULES`'s `destructive-shell` pattern matches any diff
+line containing `rm -rf` with no scope awareness of "inside a `mktemp -d` test-fixture
+cleanup trap" vs. an actual destructive repo action — the same `rm -rf "$TMP"` idiom
+lopi's own `.konjo/scripts/test_coverage_floor_killtest.sh` already uses, here in this
+sprint's new `.konjo/scripts/test_ratchet_killtest.sh`. Rather than rewrite a safe,
+standard test-cleanup idiom to dodge a detector, ran `konjo-oneway confirm` for real
+(not simulated) and recorded the acknowledgement: `Konjo-Acknowledged-Oneway:
+b94be0e76761` (same fingerprint — both trailers key on the identical sorted file set).
 
 **`claude_contract` applied for real** (`docs/pilots/squish-claude-md.proposed.md`,
 copied from kiban read-only, applied here): squish's `CLAUDE.md` had 4 of 6 required
@@ -164,3 +178,17 @@ Homebrew formula, or PyPI packaging mechanics (build-system, publish workflow,
 classifiers) — the one `pyproject.toml` edit beyond the version bump and the
 per-file-ignore addition is the `description` string, which step 7 of this sprint's own
 brief explicitly named as one of three places to check for performance claims.
+
+**Honest caveat on this session's own final re-verification, not glossed over.** This
+sandboxed environment's root filesystem ran critically low on disk mid-sprint (a
+pre-existing condition, not caused by this sprint's own file additions, which total a
+few hundred KB) forcing deletion of the isolated venv this sprint used for its clean,
+authoritative measurements (the 215-error mypy baseline, the 0-violation ruff baseline,
+all ratchet seeds). The final post-commit `konjo-gates` re-run used bare system Python
+without squish's own runtime dependencies installed, which inflated `repo:mypy`'s
+apparent finding count with spurious "not defined"/"attr-defined" noise from
+unresolved imports (numpy, mlx, fastapi) — an environment artifact, not a real
+regression. The pre-commit run, with the properly-installed venv, is the authoritative
+measurement and is what every ratchet file and the CHANGELOG/LEDGER numbers above
+report. Recorded here rather than silently reported as if the degraded re-run's larger
+numbers were real.
