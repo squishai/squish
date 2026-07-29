@@ -488,7 +488,9 @@ class DaemonServer:
 def _model_key(model_dir: str) -> str:
     """Stable short key for a model directory (basename + hash prefix)."""
     name = Path(model_dir).name
-    h    = hashlib.sha1(model_dir.encode()).hexdigest()[:8]
+    # Non-cryptographic use (a short display/dedup key, not a security token) —
+    # usedforsecurity=False documents that intent and clears bandit's B324.
+    h    = hashlib.sha1(model_dir.encode(), usedforsecurity=False).hexdigest()[:8]
     return f"{name}:{h}"
 
 

@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "squish-ai"
-version = "9.34.14"
-description = "Local LLM inference server for Apple Silicon. Block-level paged KV cache for long-context workloads. 5.4× faster end-to-end on 4K-token prompts vs Ollama, less RAM, INT3 support for Qwen3. OpenAI-compatible API."
+version = "9.34.15"
+description = "Local LLM inference server for Apple Silicon. Block-level paged KV cache for long-context workloads. 1.15-14.7x faster than Ollama depending on prompt repetition, less RAM, INT3 support for Qwen3. OpenAI-compatible API."
 readme = "README.md"
 requires-python = ">=3.11,<3.15"
 license = {text = "BUSL-1.1"}
@@ -150,6 +150,18 @@ ignore = [
 # Tests legitimately use broad `except Exception` for failure-path assertions and
 # best-effort probes; BLE001 is enforced only on the squish/ package.
 "tests/**" = ["BLE001"]
+# benchmarks/, demo/, and scripts/ are offline tooling: best-effort probes (a
+# thermal/health-check wait loop, a demo server's top-level request handler, a
+# packaging script's HF-repo-creation step) that intentionally catch broadly and
+# print a clear message rather than crash the whole run over one bad probe. Same
+# reasoning as tests/** above, applied Track A2 (2026-07-29) when konjo-gate.yml's
+# G1 `ruff lint` step (previously `continue-on-error: true`, whole-repo `ruff check
+# .`) was promoted to real blocking status — these six real, pre-existing findings
+# needed a disposition, not a silent ratchet, since BLE001 in a best-effort tooling
+# script is squish's own established exception, not a defect.
+"benchmarks/**" = ["BLE001"]
+"demo/**" = ["BLE001"]
+"scripts/**" = ["BLE001"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

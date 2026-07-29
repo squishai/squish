@@ -1,0 +1,59 @@
+# .github/workflows/konjo-gates.yml
+# squish's first connection to kiban's own `konjo-gates` orchestrator (Track A2,
+# 2026-07-29). Follows kiban's templates/repo-ci.yml pattern (the same shape vectro's
+# real, genuinely-blocking konjo-gates.yml uses) rather than konjo-gate.yml's own
+# repo-native G1-G4 jobs, which stay repo-native by design — see LEDGER.md's
+# Squish-Gate-Triage-1. This is net-new: adds a job, deletes nothing that already
+# existed in squish's CI.
+#
+# CI never reads ~/.konjo; the gate logic and eval cassettes come from the installed,
+# version-pinned kiban package. Pin KIBAN_REF to a tag so a kiban change rolls out to
+# squish on a deliberate schedule, not the instant a new kiban tag ships — bump this
+# together with .konjo/kiban.ref, never one without the other (see CLAUDE.md's Pinning
+# section, mirroring lopi's convention).
+
+name: konjo-gates
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+env:
+  KIBAN_REF: "v1.9.0"   # matches .konjo/kiban.ref — bump both together.
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # konjo-gates diffs against the base ref
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # The repo:ruff / repo:ruff-format / repo:mypy / repo:vulture / repo:bandit gates
+      # shell out to these tools directly (confirmed: konjo_gates_py's _TOOL_SCOPE /
+      # _TOOL_BIN tables dispatch all five for real under SCOPE_PYTHON) — install them
+      # on PATH first, the same working pattern konjo-gate.yml's own G1 job already
+      # uses, so a PR touching squish/** or tests/** doesn't just error "tool not
+      # installed" on its first run.
+      - name: Install Python gate tools
+        run: pip install ruff mypy vulture bandit --quiet
+
+      # Install the whole kiban distribution at the pin. It ships the real engine (lib,
+      # evals) with the konjo-gates entry point and the eval cassettes, so the
+      # orchestrator imports one source of truth and the replay self-test needs no
+      # model.
+      - name: Install pinned kiban
+        run: pip install "kiban @ git+https://github.com/konjoai/kiban.git@${KIBAN_REF}"
+
+      # konjo-gates writes a per-gate progress heartbeat to stderr, so this step is
+      # never silent even while a slower gate (mutation, prove) runs. Add --verbose to
+      # also stream the exact scanner argv and each HEAD/base scan pass with its
+      # duration.
+      - name: Run gates against the repo profile
+        run: konjo-gates --profile .konjo/profile.yml --base "origin/${{ github.base_ref || 'main' }}"

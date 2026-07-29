@@ -1,0 +1,4 @@
+# Konjo ratchet ceiling — vulture dead-code findings (--min-confidence 80).
+# Never regress above this count; ratchet it down as dead code is removed.
+# Seeded 2026-07-29 (Track A2): measured via `vulture . --min-confidence 80 | wc -l`.
+108

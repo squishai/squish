@@ -1,0 +1,4 @@
+# Konjo ratchet ceiling — radon cyclomatic-complexity grade C+ function count.
+# Never regress above this count; ratchet it down as functions are simplified.
+# Seeded 2026-07-29 (Track A2): measured via `radon cc . -n C --json`.
+146

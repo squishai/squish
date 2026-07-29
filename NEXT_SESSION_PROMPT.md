@@ -1,61 +1,85 @@
-# Memory governor eviction sprint — complete (v9.34.9 - v9.34.12)
+# Konjo quality-gate onboarding (Track A2) — complete, follow-ups flagged
 
-All 5 phases from the original sprint brief are landed. `MemoryGovernor`
-now actually drives eviction, context sizing, and request shedding across
-all four pressure levels (NORMAL/WARNING/URGENT/CRITICAL), matching its own
-docstring intent instead of being read only by `/health`.
+squish's first connection to kiban's `konjo-gates` orchestrator landed this sprint. No
+feature work touched. See `LEDGER.md`'s "Track A2" entry for the full reasoning behind
+every decision below; this file is the actionable follow-up list, not a re-derivation.
 
 ## What's built and verified
-- **Phase 1** (v9.34.9): `BlockKVCache.set_hot_max_bytes(n)` /
-  `PromptKVStore.set_max_bytes(n)` — thread-safe, live-adjustable cache
-  budgets that evict immediately when shrunk.
-- **Phase 2** (v9.34.9-10): `squish/server.py::_on_memory_pressure_change`
-  — WARNING shrinks caches to 50%, URGENT to 20%, both always shrinking
-  from the same originally-captured baseline regardless of escalation
-  direction. NORMAL restores exactly. CRITICAL doesn't shrink caches
-  further (that's Phase 4's job).
-- **Phase 3** (v9.34.10): `squish/server.py::_effective_max_kv_size()` —
-  per-request `max_kv_size` ceiling, capped at `governor.budget_tokens()`
-  whenever pressure isn't NORMAL (including CRITICAL). Never raises the
-  configured ceiling.
-- **Phase 4** (v9.34.11): `squish/server.py::_MemoryPressureShedMiddleware`
-  — rejects new requests with HTTP 503 at CRITICAL (reject-only, no
-  queueing), exempting `/health`/`/v1/metrics`. In-flight requests are
-  never aborted.
-- **Phase 5** (v9.34.12): concurrency safety review found and fixed one
-  real (if not-yet-reachable) TOCTOU race in Phase 2's baseline-capture
-  logic (`_pressure_callback_lock`). Stress tests prove cache/budget
-  invariants and response integrity hold under concurrent pressure storms
-  racing concurrent request traffic.
+- `.konjo/kiban.ref` (`v1.9.0`) + `.konjo/profile.yml` — squish's first real profile,
+  re-verified field by field against this repo's actual tree, not copied blind from
+  kiban's starting point.
+- `.github/workflows/konjo-gates.yml` — new, real, blocking job. Confirmed live
+  (KT-A2.1): runs 18 gates, correctly PASSes clean code and FAILs a deliberately
+  planted violation (ruff/vulture/bandit all fired on a scratch file with a real
+  `except Exception:` + bare expression, then the scratch file was deleted).
+- `ci.yml`'s `lint-only` job's `--exit-zero`/`|| true` fixed — this was the actual
+  decorative-lint-job defect the sprint brief named. `ruff check` is real now (0
+  standing violations); `mypy` is ratcheted against its measured 215-error baseline.
+- `konjo-gate.yml`'s 10 `continue-on-error: true` steps: all triaged (promote / keep-
+  soft-with-owner-date / none deleted). 6 promoted to real ratcheted gates
+  (`.konjo/scripts/ratchet_check.py` + `.konjo/*-ceiling.txt`/`*-floor.txt`), 2 kept
+  soft with a named owner and 2026-09-30 revisit date, `ruff lint` fully promoted, file
+  size gate already correct.
+- `CLAUDE.md` converted to the six-section contract
+  (`docs/pilots/squish-claude-md.proposed.md`), re-verified clean against
+  `lib.claude_contract.check_contract` after editing.
+- `pyproject.toml`'s stale single-figure performance claim ("5.4× faster") corrected to
+  the honest measured range ("1.15-14.7x ... depending on prompt repetition").
+- Version bumped to `9.34.15` (`pyproject.toml` + `squish/__init__.py`, consistency
+  check passes).
 
-## Test coverage (all in `tests/serving/`)
-- `test_memory_governor_wiring.py` (17 cases) — WARNING/URGENT/NORMAL
-  cache-shrink and restore, real cache instances + mocked-call precision.
-- `test_effective_max_kv_size.py` (10 cases) — ceiling computation across
-  all pressure levels, never-raise guarantee, real-governor end-to-end case.
-- `test_critical_request_shedding.py` (13 cases) — shedding, exemptions,
-  CORS-header survival, in-flight-request survival (single transition).
-- `test_phase5_concurrency_stress.py` (2 cases) — the same invariants
-  under real concurrent load and rapid pressure storms.
+## Follow-ups flagged for a future sprint (named here, not silently dropped)
+- **G2 coverage job (`konjo-gate.yml`) is a broken duplicate of `ci.yml`'s real
+  macOS coverage job.** Owner: squish maintainers, revisit-by 2026-09-30. Either fix
+  its ignore-list + `--cov=squish` scoping + mlx install, or delete it outright in
+  favor of the real one. Not this sprint's call (non-goal: connect what exists, don't
+  rebuild CI).
+- **G3 mutation testing (`konjo-gate.yml`) stays soft.** Owner: squish maintainers,
+  revisit-by 2026-09-30. Needs a completed, non-timed-out mutation run to set a real
+  survival-rate threshold before it can safely go hard.
+- **`scripts/compress_and_upload.py`'s `_smoke_test`** returns `True` ("coherence
+  check passed") when `mlx_lm` isn't installed to actually run it — a real, if modest,
+  fail-open shape on a quant-adjacent upload gate. Flagged by this sprint's
+  `gate_polarity` full-tree scan, deliberately not fixed here (quantization-adjacent
+  behavior change needs its own review per CLAUDE.md's hard constraint, not a drive-by
+  fix in a CI-connection sprint).
+- **Two kiban-side (not squish-side) false positives found and reported, not worked
+  around by gaming squish's code**: (1) `repo:ruff`'s net-new dispatch diffs raw tool
+  stdout text rather than per-finding identity, so a config-driven cleanup (this
+  sprint's own `pyproject.toml` per-file-ignore addition) registers as a "net-new
+  finding" — reproducible, see LEDGER.md. (2) `gate_one_way_door`'s `_REMOVED_DEF`
+  regex flags any `-def`/`-class` diff line with no semantic understanding of a type-
+  annotation modernization vs. an actual removal — worked around in
+  `scripts/check_release_sync.py` (reverted to the original spelling with a whole-file
+  `# ruff: noqa` directive) rather than fabricating a one-way-door acknowledgement.
+  Both worth filing against `konjoai/kiban`.
+- **363 files need `ruff format`, 108 vulture findings, 67 bandit findings, 146
+  radon grade-C+ functions, 99 DRY violations, 31.4% docstring coverage** — all real,
+  all now ratcheted (can't regress), none fixed outright this sprint (non-goal:
+  no drive-by mass reformatting/refactoring in the same PR that connects the gates).
+  Whoever picks up the next quality sprint: work the ratchets down incrementally, one
+  category at a time, per the `konjo-retrofit` protocol.
+- **`konjo-prose`** (the org's em-dash/AI-tell-vocabulary lint) is not wired into any
+  squish CI job and was run this sprint only in `--warn` (non-blocking) mode against
+  this sprint's own new prose (`LEDGER.md`, the new `CHANGELOG.md` entry) — consistent
+  with how the tool's own module docstring describes its intended use ("docs run non-
+  blocking while article branches stay strict") and with the em-dash-heavy style
+  already present throughout squish's, lopi's, and kiban's own existing `CHANGELOG.md`/
+  `LEDGER.md` files. Not treated as a blocking requirement for internal engineering
+  logs; flagged here rather than silently ignored.
+- **`.claude/rules/python-conventions.md`** claims `mypy --strict` clean, zero vulture
+  findings, and zero radon grade-C+ functions — none of which hold today (215 mypy
+  errors under plain `--ignore-missing-imports`, let alone `--strict`; 108 vulture
+  findings; 146 grade-C+ functions). Found while cross-checking rule files for this
+  sprint's CLAUDE.md work; out of this sprint's explicit scope (only `CLAUDE.md` itself
+  was in scope for the section-contract conversion), flagged for whoever next touches
+  that rules file.
 
-## Explicitly out of scope for this sprint (flag for a future one if needed)
-- **Request queueing/backpressure at CRITICAL.** The sprint brief scoped
-  this out explicitly as "a separate, larger design question" — CRITICAL
-  currently only rejects, never queues.
-- **10 benchmark-matrix cells** (`r*_c16000`, `r*_c32000` in
-  `benchmarks/ollama_vs_squish/matrix`) measure stale behavior on
-  memory-constrained hosts now that live eviction exists — see CHANGELOG
-  9.34.9 for the full list. Not re-run per this sprint's explicit non-goal.
-- **`ruff format --check` pre-existing drift** on `squish/server.py`,
-  `squish/kv/block_kv_cache.py`, `squish/kv/prompt_kv_cache.py` — confirmed
-  via `git stash` to predate this sprint (local ruff 0.15.20 vs whatever
-  version last formatted the repo's hand-aligned dataclass style). Not this
-  sprint's regression.
-- **`/v1/models`, `/v1/tokenize`, and other cheap-but-unlisted endpoints**
-  are shed (503) at CRITICAL along with the generation routes, since
-  Phase 4 used a small observability allowlist (`/health`, `/v1/metrics`)
-  rather than a generation-route denylist. Intentional simplicity
-  tradeoff — revisit only if it proves operationally annoying.
-- **Fraction values (WARNING=50%, URGENT=20%) are starting points**, not
-  derived from fleet telemetry. Revisit with real production pressure data
-  if/when available.
+## Explicitly out of scope for this sprint (per the brief's own non-goals)
+- Feature work of any kind.
+- Quantization algorithm changes.
+- The Homebrew formula or PyPI packaging mechanics (build-system, publish workflow,
+  classifiers) — only the `description` string was touched, and only because it
+  contained a stated performance claim, which the brief explicitly named in scope.
+- Re-running benchmarks — the performance-claim fix is an audit of existing evidence
+  already in the repo, not new measurement.

@@ -1,0 +1,4 @@
+# Konjo ratchet floor — interrogate docstring-coverage percent.
+# Never regress below this value; ratchet it up as docstrings are added.
+# Seeded 2026-07-29 (Track A2): measured via `interrogate .` (target: 80%).
+31.4

@@ -260,12 +260,22 @@ class CatalogEntry:
 
     @property
     def has_prebuilt(self) -> bool:
-        """True when a pre-compressed Squish repo exists on HuggingFace."""
+        """True when a pre-compressed Squish repo exists on HuggingFace.
+
+        Display-only: the sole callers (cli.py's model-listing table) use this to
+        pick a "prebuilt"/"compress" label, not to gate a fetch or a load. When the
+        live HF lookup can't run (network unavailable, e.g. Zscaler), this returns
+        True on the strength of the catalog's own static `squish_repo` field rather
+        than the live index -- an intentional "trust the last-known catalog entry"
+        choice, not an unconfigured/failed-evaluation fallback (gate_polarity
+        surfaces this shape; see .konjo/profile.yml's polarity section and
+        LEDGER.md's Squish-Polarity-First-Scan-1 for the full reasoning).
+        """
         if not self.squish_repo:
             return False
         live = _fetch_squishai_model_ids()
         if not live:
-            # Network unavailable (Zscaler etc.) — fall back to hardcoded field.
+            # Network unavailable: trust the static catalog field (see docstring).
             return True
         return self.squish_repo in live
 

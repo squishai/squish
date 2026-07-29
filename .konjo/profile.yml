@@ -1,0 +1,228 @@
+# .konjo/profile.yml
+# squish's Konjo profile. The CI plane installs the pinned kiban distribution (see
+# .konjo/kiban.ref and .github/workflows/konjo-gates.yml) and runs `konjo-gates` against
+# this profile.
+#
+# This is squish's FIRST connection to kiban (Track A2). Started from kiban's own
+# profiles/squish.yml starting point (itself reconciled read-only against this repo in an
+# earlier kiban-side sprint), then re-verified field by field against squish's real tree
+# as it stands today: requirements.txt/pyproject.toml (mlx + mlx-lm, Apple-Silicon gated),
+# .konjo/hooks/pre-commit, .github/workflows/ci.yml and konjo-gate.yml (read in full,
+# every job and every step), and real local runs of ruff/ruff-format/mypy/vulture/bandit/
+# radon/interrogate/dry_check.py against this exact checkout (commit 4dd6f62 + this
+# sprint's own changes). squish is Python 3.11+/FastAPI/MLX -- no Rust, no TypeScript, no
+# Swift build surface in the profile sense (SquishBar is a separate Swift app, not part of
+# any Python-tooling gate).
+
+repo: squish
+
+# Confirmed: requirements.txt and pyproject.toml declare mlx/mlx-lm gated to
+# `sys_platform == 'darwin' and platform_machine == 'arm64'`; there is no Cargo.toml at
+# the top level driving these gates (squish_quant_rs is a separate Rust extension, built
+# by ci.yml's own test-rust job, not part of the Python quality-gate surface below).
+stack:
+  - python
+  - mlx
+
+# lang/python: ruff/ruff-format/mypy/vulture/bandit/radon/interrogate/mutmut, the exact
+# tool set already wired in konjo-gate.yml G1/G3/G4 and ci.yml's lint jobs.
+# lang/mlx: numerics + memory-bandwidth specialist lanes for the MLX inference core.
+packs:
+  - lang/python
+  - lang/mlx
+
+# Confirmed from .konjo/hooks/pre-commit (ruff lint + ruff format + mypy) and
+# .github/workflows/konjo-gate.yml G1 (ruff, ruff-format, vulture, bandit) plus
+# ci.yml's lint-only job (ruff, mypy). mypy is real -- it runs in ci.yml, just not in
+# konjo-gate.yml's own G1 (which installs it but never calls it, a small dead-install
+# left as-is; not this sprint's to fix).
+format_lint:
+  - ruff
+  - ruff-format
+  - mypy
+  - vulture
+  - bandit
+
+# Confirmed from konjo-gate.yml G2 and G4, this sprint's own measurement (2026-07-29):
+#   coverage-80          -- G2 pytest coverage gate, currently soft (see LEDGER.md,
+#                            Squish-Lint-Job-Fix-1 / Squish-Gate-Triage-1)
+#   complexity-radon      -- G4 radon gate; 146 grade-C+ functions measured standing,
+#                            ratcheted (kept repo-native, see below)
+#   file-size-500         -- G4 + pre-commit; the one hard-blocking check in G1-G4 today
+#   dry                   -- G4 dry_check.py; 99 violations measured standing, ratcheted
+#   docs-interrogate-80   -- G4 interrogate; 31.4% measured standing, floor-ratcheted
+#   ruff-format-ratchet   -- NEW this sprint: 363 files measured standing, whole-
+#                            repo scope matching G1's real command (kept
+#                            repo-native, .konjo/scripts/ratchet_check.py)
+#   vulture-ratchet       -- NEW this sprint: 108 findings measured standing (repo-native)
+#   bandit-ratchet        -- NEW this sprint: 69 medium/high findings measured standing
+#                            (2 real High findings fixed this sprint -- see CHANGELOG;
+#                            repo-native ratchet on the remainder)
+#   mypy-ratchet          -- NEW this sprint: 215 errors measured standing in ci.yml's
+#                            lint-only job, ratcheted so the job can genuinely fail on
+#                            regression instead of being structurally unable to fail
+contract_gates:
+  - coverage-80
+  - complexity-radon
+  - file-size-500
+  - dry
+  - docs-interrogate-80
+  - ruff-format-ratchet
+  - vulture-ratchet
+  - bandit-ratchet
+  - mypy-ratchet
+
+# NOT a bare "mutmut" -- caught live by this sprint's own KT-A2.1 kill-test run: a bare
+# tool name here (`mutation.get("mutation")` in konjo_gates_py's cli.py) adds "mutmut"
+# to the generic net-new-diff tool dispatch table, which shells out to plain `mutmut
+# run` with NO timeout wrapper at all (unlike the cargo-mutants path, which gets
+# --jobs/--timeout flags). That hung this sprint's own local konjo-gates run
+# indefinitely (killed after several minutes, still climbing in RSS) -- confirmed the
+# exact trap lopi's own profiles/lopi.yml comment already documents avoiding for
+# cargo-mutants, now confirmed live for squish's mutmut too. Real mutation testing for
+# squish lives in konjo-gate.yml G3 (`mutmut run`, capped at an internal 420s with a
+# partial-results tail specifically to dodge the GitHub Actions 8-minute step SIGKILL,
+# see Squish-Gate-Triage-1 in LEDGER.md) -- konjo-gates' own generic dispatch would
+# just re-run the same tool uncapped and unbounded, redundant AND dangerous. The
+# "none"-prefix here is what konjo_gates_py's dispatcher checks for to skip adding the
+# tool to repo_tools at all (`mutation.startswith("none")`).
+mutation: "none-with-reason: real mutation testing runs in konjo-gate.yml G3 (7-minute internal cap); konjo-gates' generic mutmut dispatch has no timeout and hung this sprint's own kill-test run"
+
+# kiban-native review lanes. numerics and memory-bandwidth are the lang/mlx lanes (the
+# inference core: quant/, kv/, context/, serving/ hot paths); concurrency and api-surface
+# are the shared _base lanes -- concurrency because squishd/serving run a request
+# scheduler, api-surface because squish/api + squish/server.py are the public HTTP
+# surface. squish's own repo-native review is the single 10-question adversarial critic
+# (.konjo/scripts/konjo_review.py, Wall 3, disabled in CI) -- these specialists are the
+# kiban-side lanes, not a replacement for it.
+specialists:
+  - numerics
+  - memory-bandwidth
+  - concurrency
+  - api-surface
+
+# Confirmed from BENCHMARKS.md and benchmarks/ollama_vs_squish/: bench_v5_1.py /
+# bench_thermal_h2h.py are the maintained head-to-head harnesses; results/ carries dated
+# JSON artifacts. min_effect_pct is left unset (PENDING) rather than guessed -- the same
+# discipline vectro's and lopi's profiles use: a real noise-floor measurement on the bench
+# hardware (Apple Silicon) is required before this gate can pass a real verdict, and this
+# session has no such hardware. Until activated, konjo-prove refuses a verdict (exit 3,
+# NOT ACTIVATED) rather than silently passing a perf change.
+#
+# perf_globs corrected this sprint from a bare "squish/**" (kiban's own starting-point
+# profile) to the genuine hot-path directories: KT-A2.1's own kill-test run caught this
+# live -- "squish/**" matches literally every file in the package (cli.py's UX code,
+# daemon/ lifecycle management, api/'s thin FastAPI adapters, integrations/'s HF
+# metadata calls), so a docstring-only edit or a bandit-hygiene one-liner in catalog.py
+# was tripping gate_prove and demanding a bench-hardware MERGE verdict for a change with
+# no measurable perf effect. Narrowed to the directories BENCHMARKS.md's own numbers
+# actually exercise: the quant/serving/kv/context/loaders/io/speculative/hardware
+# inference core plus the backend dispatcher, not the whole package.
+prove:
+  enabled: true
+  baseline: "benchmarks_v5_1_1"
+  metric: "e2e_200tok_s"
+  unit: "s"
+  lower_is_better: true
+  run_floor: 30
+  perf_globs:
+    - "benchmarks/**"
+    - "squish/quant/**"
+    - "squish/serving/**"
+    - "squish/kv/**"
+    - "squish/context/**"
+    - "squish/loaders/**"
+    - "squish/io/**"
+    - "squish/speculative/**"
+    - "squish/hardware/**"
+    - "squish/backend.py"
+  bench_cmd: "python benchmarks/ollama_vs_squish/bench_thermal_h2h.py"
+  bench_adapter: "konjo-prove adapt (lib/bench_squish.py)"
+  min_effect_pct: null   # PENDING: measure run-to-run jitter on real Apple Silicon first
+  activation_checklist:
+    - "On M-series bench hardware, run bench_cmd repeatedly under thermal control so >= 30 paired runs accumulate."
+    - "Use the bench's own DRIFT CHECK (ollama first vs last) to confirm thermal fairness."
+    - "Adapt the runs: konjo-prove adapt --bench thermal/*.json --config <squish_config_id> --phase p4000 --out baseline.json"
+    - "Measure run-to-run jitter (CoV or MAD as percent of median total_s)."
+    - "Set min_effect_pct above that noise floor, then confirm the number here."
+    - "Capture the golden: konjo-prove baseline capture --tag benchmarks_v5_1_1 --results baseline.json"
+
+killtest: true
+
+# Default set, declared explicitly rather than left implicit: squish's benchmark scripts
+# (benchmarks/**, matching **/bench_*.py) are the repo's only long-running, checkpoint-
+# worthy scripts. No scripts/train_*.py exists in this repo. None of squish's benchmark
+# scripts currently wire a resume contract (checked this sprint: no
+# --resume/--fresh/Checkpoint hits under benchmarks/ or scripts/) -- that is real,
+# pre-existing debt, not something this sprint introduces or silently papers over.
+longrun_globs:
+  - "benchmarks/**"
+  - "**/bench_*.py"
+
+# G-POLARITY (K1). Full-tree scan this sprint (2026-07-29, first connection -- see
+# LEDGER.md's Squish-Polarity-First-Scan-1) found 17 standing findings across the whole
+# tree: 2 real (one fixed this sprint -- catalog.py's has_prebuilt comment clarified, zero
+# behavior change since the property only feeds a CLI display label, not the server or
+# model-loading path; one deferred, scripts/compress_and_upload.py's smoke-test-not-
+# installed-returns-True, quant-adjacent so not changed without its own review), 10 false
+# positives in squish/ production code (numeric API defaults, idempotent completion
+# bookkeeping -- none on the daemon's network-listening or model-loading trust boundary),
+# and 5 in tests/**/benchmarks/** (test fixtures and a documented, logged thermal-sensor
+# fallback). advisory: true is the deliberate ramp default for a repo with standing
+# findings, same shape as gate_claude_contract's own ramp -- not silently inherited from
+# the code default, chosen here because 15 of 17 findings need a human read before this
+# can safely block.
+polarity:
+  enabled: true
+  advisory: true
+  exempt_globs:
+    - "tests/**"        # test fixtures intentionally simulate absence/fallback branches
+    - "benchmarks/**"    # offline perf-harness readiness polls and a documented,
+                         # explicitly-logged thermal-sensor-absent fallback (see above)
+
+# Phase 4/13-style ramp default, same shape as lopi's and vectro's own profiles. This
+# sprint applied docs/pilots/squish-claude-md.proposed.md to squish's real CLAUDE.md (see
+# CHANGELOG.md and LEDGER.md's Squish-Claude-Contract-1); re-measured after the apply:
+# every invariant bullet now names its enforcing gate or says ADVISORY, all six required
+# sections present. advisory stays true this sprint anyway -- one measurement of a
+# freshly-converted document is not the same bar as lopi's PR #184 (converted, then run
+# clean across real subsequent PRs before flipping to blocking); the next squish sprint
+# that finds it still clean can flip advisory: false with that evidence.
+claude_contract:
+  enabled: true
+  advisory: true
+
+# Phase 13, Phase 3 field. squish is a daemon with a network listener (server.py, api/**)
+# and a model-loading path (catalog.py, quant/**, loaders/**) -- the trust boundaries the
+# brief for this sprint explicitly called out. subprocess/exec risk lives in agent/**
+# (tool execution) and daemon/** (launchagent, squishd); network ingress in server.py and
+# api/**; path handling in io/** (split/loader paths); catalog.py resolves model URIs and
+# performs the network fetch/verify logic gate_polarity's own full-tree scan flagged.
+security_globs:
+  - "squish/server.py"
+  - "squish/api/**"
+  - "squish/serving/**"
+  - "squish/agent/**"
+  - "squish/daemon/**"
+  - "squish/integrations/**"
+  - "squish/catalog.py"
+  - "squish/io/**"
+
+# Confirmed: this sprint ran the exact command and confirmed it is squish's real,
+# canonical verify command (CLAUDE.md's own Commands section, tests/conftest.py's
+# CI-detection logic exercised for real this sprint -- see KT-A2.1 in LEDGER.md).
+verify_cmd: "python -m pytest tests/ -x"
+
+# Confirmed: ruff format is squish's real formatter (pyproject.toml's [tool.ruff],
+# .konjo/hooks/pre-commit).
+format_cmd: "ruff format squish/ tests/"
+
+# The eval corpus for this repo, matching the existing kiban-side reconciliation
+# (profiles/squish.yml): scopes the self-test to squish's own Python + MLX fixtures so the
+# meta-gate never reviews a Rust/TypeScript/Mojo fixture this repo has no cassette for.
+eval_corpus:
+  - squish
+  - _clean_control
+  - _clean_control_mlx
+
+overrides: {}

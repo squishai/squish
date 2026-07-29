@@ -7,6 +7,16 @@ Usage:
 
 Exits 0 if all checks pass, 1 if any fail.
 """
+# ruff: noqa: UP045
+# `run_checks`'s signature below is deliberately left on the legacy `Optional[str]`
+# spelling rather than modernized to `str | None`: touching that exact line trips
+# kiban's own one_way_door detector (`_REMOVED_DEF` matches any diff line starting
+# with `-def ...`, with no semantic understanding of "same function, modernized
+# annotation" vs "function actually removed") -- see LEDGER.md's
+# Squish-Gate-Triage-1/KT-A2.1 for the full finding, reported upstream rather than
+# worked around by faking a one-way-door acknowledgement for a change that isn't
+# genuinely one-way. A whole-file ignore comment (above, not attached to the def
+# line itself) keeps that line byte-for-byte unchanged from its committed form.
 from __future__ import annotations
 
 import argparse
@@ -112,9 +122,9 @@ def _check_bottle_sha(expected_version: str) -> str:
 def _run_check(
     label: str,
     fn,
-    expected: Optional[str],
+    expected: str | None,
     results: list[tuple[str, bool, str]],
-) -> Optional[str]:
+) -> str | None:
     try:
         value = fn()
         ok = expected is None or value == expected

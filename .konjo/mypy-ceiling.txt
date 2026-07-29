@@ -1,0 +1,8 @@
+# Konjo ratchet ceiling — mypy error count (squish/, --ignore-missing-imports).
+# Never regress above this count; ratchet it down as errors are fixed.
+# Seeded 2026-07-29 (Track A2): measured via
+# `mypy squish/ --ignore-missing-imports --no-error-summary`.
+# This is the backlog that made ci.yml's lint-only job's mypy step
+# structurally unable to fail (`|| true`) before this sprint. See
+# LEDGER.md's Squish-Lint-Job-Fix-1.
+215
