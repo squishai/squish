@@ -1,0 +1,9 @@
+# Konjo ratchet ceiling — files needing `ruff format` reformatting (whole-repo
+# scope, matching konjo-gate.yml G1's real `ruff format --check .` command).
+# Never regress above this count; ratchet it down as files get reformatted.
+# Seeded 2026-07-29 (Track A2, squish's first kiban connection): measured via
+# `ruff format --check . | grep -c '^Would reformat'`.
+# 363 files is real, pre-existing debt — a bulk reformat is its own sprint
+# (non-goal here: "Feature work of any kind" excludes a drive-by mass reformat
+# touching hundreds of files in the same PR that connects the quality gates).
+363

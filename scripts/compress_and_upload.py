@@ -285,7 +285,7 @@ def main() -> int:
         # ── Smoke test ────────────────────────────────────────────────────
         if not args.skip_smoke_test:
             if not args.quiet:
-                print(f"  Running coherence smoke test …")
+                print("  Running coherence smoke test …")
             passed = _smoke_test(output_dir, verbose=verbose)
             if not passed:
                 print(

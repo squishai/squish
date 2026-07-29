@@ -14,6 +14,28 @@ jobs:
 
   # ══════════════════════════════════════════════════════════════════════════
   # Gate 1 — Static Analysis
+  #
+  # Track A2 triage (2026-07-29, see LEDGER.md's Squish-Gate-Triage-1 for the full
+  # per-step disposition table): every step below used to carry
+  # `continue-on-error: true`, so this whole job always reported "success" to the
+  # final konjo-gate job regardless of findings.
+  #   - ruff lint:   PROMOTED to real blocking. 0 standing violations measured
+  #     2026-07-29 (10 pre-existing findings fixed/exempted this same sprint —
+  #     4 auto-fixed, 6 covered by a new per-file-ignore extending the existing
+  #     tests/**-BLE001 precedent to benchmarks/**, demo/**, scripts/**).
+  #   - ruff format, vulture, bandit: large pre-existing backlogs (332 files / 108
+  #     / 67 findings respectively — mass-reformatting or clearing all of them is
+  #     its own sprint, out of this one's non-goals). RATCHETED instead of left
+  #     soft: each now runs for real and fails only on regression above its
+  #     measured baseline (.konjo/*-ceiling.txt), via the same generic ratchet
+  #     gate lopi's coverage-floor gate pioneered
+  #     (.konjo/scripts/ratchet_check.py). A step that could never fail before now
+  #     genuinely can.
+  #   - bandit's --exclude also had a real, separate bug fixed here: `.venv,venv,
+  #     tests` (no leading `./`) never matched bandit's own `./`-prefixed walk
+  #     paths, so it was silently scanning tests/ too (134 findings, not the real
+  #     67 in squish/ + benchmarks/ + scripts/ + demo/). Fixed to `./.venv,
+  #     ./venv,./tests`, confirmed locally to actually exclude tests/ now.
   # ══════════════════════════════════════════════════════════════════════════
   static:
     name: "G1 · Static Analysis"
@@ -26,20 +48,57 @@ jobs:
       - name: Install tools
         run: pip install ruff mypy vulture bandit --quiet
       - name: ruff lint
-        continue-on-error: true
         run: ruff check .
-      - name: ruff format
-        continue-on-error: true
-        run: ruff format --check .
-      - name: vulture — dead code
-        continue-on-error: true
-        run: vulture . --min-confidence 80
-      - name: bandit — security
-        continue-on-error: true
-        run: bandit -r . -ll -q --exclude .venv,venv,tests
+      - name: ruff format (ratcheted against the measured baseline)
+        run: |
+          set +e
+          COUNT=$(ruff format --check . 2>&1 | grep -c "^Would reformat")
+          set -e
+          python3 .konjo/scripts/ratchet_check.py \
+            --mode ceiling --name ruff-format-files --measured "$COUNT" \
+            --file .konjo/ruff-format-ceiling.txt
+      - name: vulture — dead code (ratcheted against the measured baseline)
+        run: |
+          set +e
+          COUNT=$(vulture . --min-confidence 80 | wc -l)
+          set -e
+          python3 .konjo/scripts/ratchet_check.py \
+            --mode ceiling --name vulture-findings --measured "$COUNT" \
+            --file .konjo/vulture-ceiling.txt
+      - name: bandit — security (ratcheted against the measured baseline)
+        # --exclude paths must be `./`-prefixed to match bandit's own walk paths
+        # (see the job-level comment above — plain "tests" never matched).
+        run: |
+          set +e
+          COUNT=$(bandit -r . -ll -q --exclude ./.venv,./venv,./tests 2>&1 | grep -c "^>> Issue")
+          set -e
+          python3 .konjo/scripts/ratchet_check.py \
+            --mode ceiling --name bandit-findings --measured "$COUNT" \
+            --file .konjo/bandit-ceiling.txt
 
   # ══════════════════════════════════════════════════════════════════════════
   # Gate 2 — Tests + Coverage (≥ 80%)
+  #
+  # Track A2 triage (2026-07-29): KEPT SOFT, not promoted — owner: squish
+  # maintainers, revisit-by 2026-09-30. This job is a duplicate of ci.yml's real
+  # `coverage` job (macos-14, MLX-aware, publishes the badge) with two concrete
+  # bugs that would make promoting it today just red every PR on a false signal,
+  # not a real one:
+  #   1. It runs on ubuntu-latest with no mlx install and none of the
+  #      Metal-unguarded-import exclusions ci.yml's own `test`/`test-linux`/
+  #      `coverage` jobs carry (tests/test_sqint2_linear.py etc.) — confirmed by
+  #      reading tests/conftest.py's own Layer-2 comment: those files import
+  #      mlx.core at module level with no guard, which collection-errors the
+  #      instant GITHUB_ACTIONS is set and mlx isn't installed.
+  #   2. `--cov=.` measures the whole repo (benchmarks/, demo/, scripts/, tests/
+  #      themselves) instead of `--cov=squish` the way ci.yml's real coverage job
+  #      correctly scopes it, so even a clean run would report a materially
+  #      different, misleadingly low percentage against the same 80% bar.
+  # Fixing both is real, scoped work for a maintainer to decide deliberately
+  # (rewrite the ignore list, add an mlx install, rescope --cov) or to delete this
+  # duplicate outright in favor of ci.yml's real one — not a call this sprint
+  # makes unilaterally per its own non-goal ("connect what exists, don't rebuild
+  # CI"). Recorded here instead of silently left implying it blocks.
   # ══════════════════════════════════════════════════════════════════════════
   coverage:
     name: "G2 · Tests + Coverage"
@@ -56,6 +115,8 @@ jobs:
           pip install -e ".[test]" --quiet 2>/dev/null || \
           pip install -e . --quiet 2>/dev/null || true
       - name: Run tests with coverage
+        # KEEP SOFT — see the job-level comment above (owner: squish maintainers,
+        # revisit-by 2026-09-30). Known-broken as configured on ubuntu-latest.
         continue-on-error: true
         run: |
           python -m pytest tests/ \
@@ -65,6 +126,7 @@ jobs:
             -x -q
       - name: Coverage gate
         if: always()
+        # KEEP SOFT — tied 1:1 to "Run tests with coverage" above; same reason.
         continue-on-error: true
         run: |
           python3 -c "
@@ -84,6 +146,19 @@ jobs:
 
   # ══════════════════════════════════════════════════════════════════════════
   # Gate 3 — Mutation Testing (PRs only)
+  #
+  # Track A2 triage (2026-07-29): KEPT SOFT — owner: squish maintainers,
+  # revisit-by 2026-09-30. Unlike the other soft steps in this file, this one's
+  # `continue-on-error` was already load-bearing for a documented, sound reason
+  # (see the step's own comment below): a full mutmut run on this codebase's size
+  # routinely exceeds the GitHub Actions 8-minute step timeout, and a SIGKILL'd
+  # step fails the job even under continue-on-error, so the 420s internal cap +
+  # partial-results tail is the real mitigation — continue-on-error just covers
+  # the remaining risk of a genuine mutation survival past the cap. Promoting
+  # this to hard-blocking needs a real mutation-survival threshold measured on a
+  # completed run first, which this soft step's own timeout risk prevents
+  # getting today; that measurement is real, scoped follow-up work, not
+  # something to guess at here.
   # ══════════════════════════════════════════════════════════════════════════
   mutation:
     name: "G3 · Mutation Testing"
@@ -99,6 +174,7 @@ jobs:
           pip install mutmut pytest --quiet
           pip install -e . --quiet 2>/dev/null || true
       - name: Run mutation testing
+        # KEEP SOFT — see the job-level comment above.
         continue-on-error: true
         timeout-minutes: 8
         run: |
@@ -111,6 +187,12 @@ jobs:
 
   # ══════════════════════════════════════════════════════════════════════════
   # Gate 4 — Complexity + Size + DRY
+  #
+  # Track A2 triage (2026-07-29): Complexity gate, DRY check, and Documentation
+  # gate all RATCHETED against their measured baselines (146 / 99 / 31.4%
+  # respectively) instead of left soft — same reasoning and mechanism as G1
+  # above (.konjo/scripts/ratchet_check.py). File size gate was already the one
+  # step in this whole file with no continue-on-error and needed no change.
   # ══════════════════════════════════════════════════════════════════════════
   complexity:
     name: "G4 · Complexity + Size + DRY"
@@ -122,9 +204,9 @@ jobs:
           python-version: "3.11"
       - name: Install tools
         run: pip install radon interrogate --quiet
-      - name: Complexity gate
-        continue-on-error: true
+      - name: Complexity gate (ratcheted against the measured baseline)
         run: |
+          set +e
           COUNT=$(radon cc . -n C --json 2>/dev/null \
             | python3 -c "
           import json, sys
@@ -132,13 +214,11 @@ jobs:
           total = sum(len(v) for v in d.values())
           print(total)
           " 2>/dev/null || echo 0)
+          set -e
           echo "Functions with cyclomatic complexity > 10: $COUNT"
-          if [ "$COUNT" -gt 0 ]; then
-            radon cc . -n C -s
-            echo "::error::$COUNT function(s) above complexity grade C."
-            exit 1
-          fi
-          echo "Complexity: all functions grade C or better ✓"
+          python3 .konjo/scripts/ratchet_check.py \
+            --mode ceiling --name complexity-grade-c-plus --measured "$COUNT" \
+            --file .konjo/complexity-ceiling.txt
       - name: File size gate
         run: |
           # BLOCKING for new files; existing oversized files are grandfathered
@@ -161,22 +241,28 @@ jobs:
             exit 1
           fi
           echo "File sizes: all new files within 500-line limit ✓ (allowlisted legacy files exempt)"
-      - name: DRY check
-        continue-on-error: true
+      - name: DRY check (ratcheted against the measured baseline)
         run: |
           python3 .konjo/scripts/dry_check.py \
             --threshold 0.85 \
             --min-lines 20 \
             --report dry_report.json 2>&1
           COUNT=$(python3 -c "import json; d=json.load(open('dry_report.json')); print(d['count'])")
-          if [ "$COUNT" -gt 0 ]; then
-            echo "::error::$COUNT DRY violation(s). Abstract into shared functions."
-            exit 1
+          python3 .konjo/scripts/ratchet_check.py \
+            --mode ceiling --name dry-violations --measured "$COUNT" \
+            --file .konjo/dry-ceiling.txt
+      - name: Documentation gate (ratcheted against the measured baseline)
+        run: |
+          set +e
+          PCT=$(interrogate . 2>&1 | grep -oE "actual: [0-9.]+" | grep -oE "[0-9.]+")
+          set -e
+          if [ -z "$PCT" ]; then
+            echo "::error::Could not parse interrogate's actual coverage percent from its output."
+            exit 2
           fi
-          echo "DRY check: no violations ✓"
-      - name: Documentation gate
-        continue-on-error: true
-        run: interrogate . --fail-under 80 -q 2>/dev/null || true
+          python3 .konjo/scripts/ratchet_check.py \
+            --mode floor --name docstring-coverage --measured "$PCT" \
+            --file .konjo/docstring-floor.txt
 
   # Gate 5 — Adversarial Review — DISABLED in CI
   # Run locally: git diff HEAD~1 | python3 .konjo/scripts/konjo_review.py

@@ -48,8 +48,10 @@ jobs:
           pip install pytest-timeout
 
       - name: Lint (ruff)
+        # --exit-zero removed Track A2 (0 standing violations measured 2026-07-29,
+        # see LEDGER.md's Squish-Lint-Job-Fix-1) — this step now genuinely blocks.
         run: |
-          ruff check squish/ tests/ --output-format github --exit-zero
+          ruff check squish/ tests/ --output-format github
 
       - name: Verify version consistency
         run: |
@@ -138,6 +140,19 @@ jobs:
 
   lint-only:
     # Runs on Linux for fast feedback on PRs from forks (no Apple Silicon needed)
+    #
+    # Both steps below used to be structurally unable to fail: ruff check carried
+    # --exit-zero (forces exit 0 regardless of findings) and mypy check was wrapped in
+    # `|| true` (swallows its exit code). Neither shape contains the string
+    # "continue-on-error", so a naive audit of konjo-gate.yml alone missed both — this
+    # job was the repo's actual decorative lint gate. Fixed Track A2 (squish's first
+    # kiban connection): ruff check is real and blocking now (0 standing violations
+    # measured 2026-07-29, so flipping it costs nothing); mypy check is ratcheted
+    # against its measured 215-error baseline (.konjo/mypy-ceiling.txt) via the same
+    # generic ratchet gate lopi's coverage-floor gate pioneered
+    # (.konjo/scripts/ratchet_check.py) rather than flipped hard on day one, which
+    # would just red every PR against a 215-error backlog no single PR caused. See
+    # LEDGER.md's Squish-Lint-Job-Fix-1.
     name: Lint (ubuntu)
     runs-on: ubuntu-latest
     steps:
@@ -152,10 +167,17 @@ jobs:
         run: pip install ruff mypy
 
       - name: ruff check
-        run: ruff check squish/ tests/ --output-format github --exit-zero
+        run: ruff check squish/ tests/ --output-format github
 
-      - name: mypy check
-        run: mypy squish/ --ignore-missing-imports --no-error-summary || true
+      - name: mypy check (ratcheted against the measured baseline)
+        run: |
+          set +e
+          mypy squish/ --ignore-missing-imports --no-error-summary 2>&1 | tee mypy-out.log
+          COUNT=$(grep -c ": error:" mypy-out.log || true)
+          set -e
+          python3 .konjo/scripts/ratchet_check.py \
+            --mode ceiling --name mypy-errors --measured "$COUNT" \
+            --file .konjo/mypy-ceiling.txt
 
   test-linux:
     name: Test Linux (Python ${{ matrix.python-version }})
@@ -181,8 +203,10 @@ jobs:
           pip install pytest-timeout
 
       - name: Lint (ruff)
+        # --exit-zero removed Track A2 (0 standing violations measured 2026-07-29,
+        # see LEDGER.md's Squish-Lint-Job-Fix-1) — this step now genuinely blocks.
         run: |
-          ruff check squish/ tests/ --output-format github --exit-zero
+          ruff check squish/ tests/ --output-format github
 
       - name: Run tests (Linux — MLX tests auto-skipped)
         # MLX-dependent tests skip automatically on Linux via pytest.importorskip.

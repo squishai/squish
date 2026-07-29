@@ -1,0 +1,10 @@
+# Konjo ratchet ceiling — bandit medium+high findings (-ll, tests/ excluded).
+# Never regress above this count; ratchet it down as findings are resolved.
+# Seeded 2026-07-29 (Track A2): measured via
+# `bandit -r . -ll -q --exclude ./.venv,./venv,./tests`, AFTER fixing the 2
+# real High-severity findings this same sprint found (squishd.py _model_key's
+# SHA1 and server.py's _system_fingerprint MD5 — both non-cryptographic ID
+# hashes, both cleared with usedforsecurity=False, zero behavior change).
+# Pre-fix baseline was 69 (3 High before the tests-exclude bug was fixed in
+# this sprint's own measurement pass; 2 High in production code after).
+67

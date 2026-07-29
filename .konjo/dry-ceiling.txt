@@ -1,0 +1,5 @@
+# Konjo ratchet ceiling — dry_check.py duplicate-block violation count.
+# Never regress above this count; ratchet it down as duplication is removed.
+# Seeded 2026-07-29 (Track A2): measured via
+# `dry_check.py --threshold 0.85 --min-lines 20`.
+99

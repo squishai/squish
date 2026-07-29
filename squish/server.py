@@ -1145,9 +1145,12 @@ def _system_fingerprint(model_name: str | None, loaded_at: float) -> str:
 
     Cached with lru_cache so the MD5 is only computed once per unique
     (model_name, loaded_at) pair — not on every streamed token.
+
+    Non-cryptographic use (a display fingerprint, not a security token) —
+    usedforsecurity=False documents that intent and clears bandit's B324.
     """
     return "sq-" + hashlib.md5(
-        f"{model_name}{loaded_at}".encode()
+        f"{model_name}{loaded_at}".encode(), usedforsecurity=False
     ).hexdigest()[:8]
 
 

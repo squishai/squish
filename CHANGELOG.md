@@ -5,6 +5,83 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [9.34.15] — Konjo quality-gate onboarding (Track A2): first kiban connection, decorative-lint-job fix, honest performance range
+
+squish's first connection to the org's kiban quality-gate substrate. No feature work;
+this release is a CI/quality-gate and documentation retrofit, following the same
+protocol lopi's Sprint S13R and vectro's Track A1 used.
+
+### Added
+- `.konjo/kiban.ref` (pinned `v1.9.0`) and `.konjo/profile.yml` — squish's first
+  `konjo-gates` profile, re-verified field by field against the real repo (real module
+  paths, real test/lint commands, `lang/python` + `lang/mlx` packs, `verify_cmd`,
+  `format_cmd`, `longrun_globs`, `security_globs` declared explicitly, no placeholders).
+- `.github/workflows/konjo-gates.yml` — runs kiban's pinned `konjo-gates` orchestrator
+  against `.konjo/profile.yml` on every PR and push to main. Net-new addition; nothing
+  existing was removed.
+- `.konjo/scripts/ratchet_check.py` (+ `test_ratchet_killtest.sh`) — a generic
+  ceiling/floor ratchet gate, the same shape as lopi's `coverage_floor_check.py`
+  generalized to cover both directions a metric can be locked. Seeds ratchets for
+  ruff-format (363 files), vulture (108), bandit (67), radon complexity (146), DRY (99),
+  and mypy (215), each measured against this sprint's real tree.
+
+### Fixed
+- **`ci.yml`'s `lint-only` job was decorative through a mechanism a `continue-on-error`
+  audit alone would miss**: `ruff check ... --exit-zero` and
+  `mypy ... --no-error-summary || true` structurally cannot fail regardless of
+  findings. `--exit-zero` removed (0 standing violations); mypy ratcheted against its
+  measured 215-error baseline instead of flipped hard on day one. Same `--exit-zero`
+  fixed in `ci.yml`'s `test` and `test-linux` jobs' own `Lint (ruff)` steps.
+- `konjo-gate.yml`'s G1 `ruff lint` step promoted to real blocking (10 whole-repo
+  findings fixed: 4 auto-fixed, 6 covered by extending the existing tests/**-BLE001
+  per-file-ignore to benchmarks/**, demo/**, scripts/**). G1's `ruff format`, `vulture`,
+  `bandit` and G4's `Complexity gate`, `DRY check`, `Documentation gate` — all six
+  previously `continue-on-error: true` — now genuinely run and fail on regression above
+  (or, for docstrings, below) their measured baseline via `ratchet_check.py`, instead of
+  being structurally unable to fail.
+- `konjo-gate.yml` G1's `bandit --exclude` flag had a real, separate bug: `.venv,venv,
+  tests` (no leading `./`) never matched bandit's own `./`-prefixed walk paths, so it
+  was silently scanning `tests/` too (134 findings measured, not the real 67). Fixed to
+  `./.venv,./venv,./tests`.
+- Two real bandit **High**-severity findings fixed: `squish/daemon/squishd.py`'s
+  `_model_key` (SHA1) and `squish/server.py`'s `_system_fingerprint` (MD5) both use a
+  weak hash for a non-cryptographic display/dedup key, not a security token — both
+  cleared with `usedforsecurity=False` (zero behavior change, same hash output).
+- `pyproject.toml`'s PyPI `description` stated a single stale figure ("5.4× faster
+  end-to-end on 4K-token prompts vs Ollama") traced to a superseded v5.1.1-era
+  benchmark run. The current, thermally-controlled benchmark (`docs/paper.md`,
+  `BENCHMARKS.md`, the linked blog post) reports the honest range for the same
+  claim — up to 9.8× on exact prompt repetition, 1.15–1.32× on completely unique
+  prompts, up to 14.7× in the isolated prompt-reuse-percentage ablation — and
+  `BENCHMARKS.md` already states its own documentation rule ("quote the range, not a
+  single number"). Corrected to: "1.15-14.7x faster than Ollama depending on prompt
+  repetition." `README.md` already stated the honest range; no change needed there.
+- `squish/catalog.py`'s `has_prebuilt` docstring clarified (no behavior change): the
+  network-unavailable fallback returns `True` on the strength of the static catalog
+  field, an intentional "trust the last-known entry" choice for a display-only
+  property (its only callers are `cli.py`'s model-listing table), not an
+  unconfigured/failed-evaluation fallback on the daemon's network or model-loading
+  path — `gate_polarity`'s full-tree scan surfaced this shape; see LEDGER.md.
+- `CLAUDE.md` converted to the Phase 13 six-section contract
+  (`docs/pilots/squish-claude-md.proposed.md`, applied from kiban): every invariant
+  bullet now names its enforcing gate or says `ADVISORY`; added the missing `Org
+  rules`, `Invariants`, `Repo map`, `Repo-specific rules` sections and the org import
+  line. Also updated the stale `**v9.34.2**` header and the Konjo Quality Framework
+  section to describe the real, post-fix Wall 2 state (ratcheted gates, `konjo-gates`
+  as Wall 2b) instead of the pre-existing "blocks the merge" claim four of five
+  clauses didn't back.
+
+### Quality Gates Now Active
+- `ruff check` (whole repo and `squish/`+`tests/`): blocking, 0 standing violations.
+- `ruff format`, `vulture`, `bandit`, radon complexity, DRY, docstring coverage, mypy:
+  ratcheted — blocking on regression against a measured baseline, not the full backlog.
+- File size ≤ 500L: blocking for new files (unchanged, already correct).
+- Coverage, mutation testing: still soft, each with a named reason and owner (see
+  LEDGER.md's `Squish-Gate-Triage-1`).
+- `gate_polarity`, `gate_claude_contract`: advisory (first-connection ramp, matching
+  lopi's and vectro's own adoption path).
+- `konjo-gates` (`.github/workflows/konjo-gates.yml`): blocking, real.
+
 ## [9.34.14] — `squish quantize-remote`: quantize models bigger than local RAM/disk (Waves 139–147b)
 
 Wave 131 bounded peak disk during quantization to one raw shard in flight,
