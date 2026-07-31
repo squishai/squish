@@ -5,6 +5,29 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [9.34.15] — Kill two silent-fallback bugs behind a disk-space report (Wave 148)
+
+A user reported ending up with both the raw bf16 model and the compressed
+model on disk after `squish pull qwen3:8b`, then got a confusing "not found
+locally — pulling now" message after deleting the (correctly identified as
+redundant) raw folder. Tracing both symptoms turned up two independent,
+narrowly-scoped bugs.
+
+### Fixed
+- `squish pull` silently fell back to downloading the full raw model whenever
+  the prebuilt-weights check on HuggingFace failed for any reason (network,
+  auth, proxy) — indistinguishable from the repo genuinely having no prebuilt
+  weights, and unreported unless `--verbose`. Now raises a distinct
+  `_PrebuiltCheckError` and always prints which case occurred.
+- `squish run <model>` printed a false "not found locally — pulling now" for
+  any model whose raw bf16 directory wasn't present — which is the normal
+  state after a fast prebuilt pull, or after correctly deleting a redundant
+  raw folder post-compression. The existence check now reuses
+  `_resolve_presquished_dir` (already used correctly elsewhere in the same
+  file) instead of checking only the raw directory name.
+
+---
+
 ## [9.34.14] — `squish quantize-remote`: quantize models bigger than local RAM/disk (Waves 139–147b)
 
 Wave 131 bounded peak disk during quantization to one raw shard in flight,
