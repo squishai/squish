@@ -1543,6 +1543,34 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#93415-kill-two-silent-fallback-bugs-behind-a-disk-space-report-wave-148" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [9.34.15] — Kill two silent-fallback bugs behind a disk-space report (Wave 148)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[9.34.15] — Kill two silent-fallback bugs behind a disk-space report (Wave 148)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#93414-squish-quantize-remote-quantize-models-bigger-than-local-ramdisk-waves-139147b" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1566,7 +1594,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fixed" class="md-nav__link">
+  <a href="#fixed_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -1655,7 +1683,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#fixed_1" class="md-nav__link">
+  <a href="#fixed_2" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -1888,7 +1916,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#fixed_2" class="md-nav__link">
+  <a href="#fixed_3" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -1927,7 +1955,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fixed_3" class="md-nav__link">
+  <a href="#fixed_4" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -1977,7 +2005,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fixed_4" class="md-nav__link">
+  <a href="#fixed_5" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -2005,7 +2033,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#fixed_5" class="md-nav__link">
+  <a href="#fixed_6" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -2094,7 +2122,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fixed_6" class="md-nav__link">
+  <a href="#fixed_7" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -2161,7 +2189,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#fixed_7" class="md-nav__link">
+  <a href="#fixed_8" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -2211,7 +2239,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fixed_8" class="md-nav__link">
+  <a href="#fixed_9" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -2239,7 +2267,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#fixed_9" class="md-nav__link">
+  <a href="#fixed_10" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -2300,7 +2328,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fixed_10" class="md-nav__link">
+  <a href="#fixed_11" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -2395,7 +2423,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#fixed_11" class="md-nav__link">
+  <a href="#fixed_12" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -2479,7 +2507,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#fixed_12" class="md-nav__link">
+  <a href="#fixed_13" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -2540,7 +2568,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fixed_13" class="md-nav__link">
+  <a href="#fixed_14" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -2817,7 +2845,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fixed_14" class="md-nav__link">
+  <a href="#fixed_15" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -3150,6 +3178,27 @@
 <p>All notable changes to Squish are documented here.
 This project adheres to <a href="https://semver.org/">Semantic Versioning</a>.</p>
 <hr />
+<h2 id="93415-kill-two-silent-fallback-bugs-behind-a-disk-space-report-wave-148">[9.34.15] — Kill two silent-fallback bugs behind a disk-space report (Wave 148)<a class="headerlink" href="#93415-kill-two-silent-fallback-bugs-behind-a-disk-space-report-wave-148" title="Permanent link">&para;</a></h2>
+<p>A user reported ending up with both the raw bf16 model and the compressed
+model on disk after <code>squish pull qwen3:8b</code>, then got a confusing "not found
+locally — pulling now" message after deleting the (correctly identified as
+redundant) raw folder. Tracing both symptoms turned up two independent,
+narrowly-scoped bugs.</p>
+<h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>squish pull</code> silently fell back to downloading the full raw model whenever
+  the prebuilt-weights check on HuggingFace failed for any reason (network,
+  auth, proxy) — indistinguishable from the repo genuinely having no prebuilt
+  weights, and unreported unless <code>--verbose</code>. Now raises a distinct
+  <code>_PrebuiltCheckError</code> and always prints which case occurred.</li>
+<li><code>squish run &lt;model&gt;</code> printed a false "not found locally — pulling now" for
+  any model whose raw bf16 directory wasn't present — which is the normal
+  state after a fast prebuilt pull, or after correctly deleting a redundant
+  raw folder post-compression. The existence check now reuses
+  <code>_resolve_presquished_dir</code> (already used correctly elsewhere in the same
+  file) instead of checking only the raw directory name.</li>
+</ul>
+<hr />
 <h2 id="93414-squish-quantize-remote-quantize-models-bigger-than-local-ramdisk-waves-139147b">[9.34.14] — <code>squish quantize-remote</code>: quantize models bigger than local RAM/disk (Waves 139–147b)<a class="headerlink" href="#93414-squish-quantize-remote-quantize-models-bigger-than-local-ramdisk-waves-139147b" title="Permanent link">&para;</a></h2>
 <p>Wave 131 bounded peak disk during quantization to one raw shard in flight,
 but AWQ calibration still called <code>mlx_lm.load()</code> — loading the entire
@@ -3204,7 +3253,7 @@ regardless).</p>
   disk regardless of total model size. Runs the same pre/post-download
   security scans (Wave 100) as <code>squish pull</code>.</li>
 </ul>
-<h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_1">Fixed<a class="headerlink" href="#fixed_1" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Streaming AWQ calibration passed <code>mask=None</code> unconditionally to each
   reconstructed block — no causal masking, so every token could attend to
@@ -3284,7 +3333,7 @@ manually runs <code>squish rm</code>.</p>
 memory-governor eviction sprint (9.34.9-9.34.12): the module now actually
 drives eviction, context sizing, and request shedding across all four
 pressure levels, matching its own docstring intent.</p>
-<h3 id="fixed_1">Fixed<a class="headerlink" href="#fixed_1" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_2">Fixed<a class="headerlink" href="#fixed_2" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong><code>_on_memory_pressure_change</code> had a latent TOCTOU race</strong> on
   <code>_original_hot_max_bytes</code>/<code>_original_prompt_max_bytes</code>: two concurrent
@@ -3556,7 +3605,7 @@ shrink mid-run that didn't exist when those numbers were captured:
 Flagged for a future re-run sprint; not re-run here per this sprint's
 explicit non-goal.</p>
 <h2 id="9348-fix-squish-run-for-pre-squished-models-gemma34b-and-others">[9.34.8] — Fix <code>squish run</code> for pre-squished models (gemma3:4b and others)<a class="headerlink" href="#9348-fix-squish-run-for-pre-squished-models-gemma34b-and-others" title="Permanent link">&para;</a></h2>
-<h3 id="fixed_2">Fixed<a class="headerlink" href="#fixed_2" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_3">Fixed<a class="headerlink" href="#fixed_3" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong><code>squish run &lt;model&gt;</code> now finds pre-squished weights.</strong> Resolution looked for
   the raw <code>&lt;base&gt;-bf16</code> directory and aborted with "Model directory not found:
@@ -3579,7 +3628,7 @@ explicit non-goal.</p>
   knowledge question and produce leaked tool-call JSON, off-topic degeneration,
   and hard errors. Toggle agent mode from the UI when you actually want it.</li>
 </ul>
-<h3 id="fixed_3">Fixed<a class="headerlink" href="#fixed_3" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_4">Fixed<a class="headerlink" href="#fixed_4" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Tool arguments are coerced to their JSON-schema type.</strong> Small / quantized
   models routinely emit scalars as strings (<code>"timeout": "10"</code>) or
@@ -3616,7 +3665,7 @@ explicit non-goal.</p>
   <code>brew install</code> shipping a stale package version.</li>
 <li>Removed the "Built the Konjo way" marketing section from the README.</li>
 </ul>
-<h3 id="fixed_4">Fixed<a class="headerlink" href="#fixed_4" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_5">Fixed<a class="headerlink" href="#fixed_5" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>VSCode extension showed "offline" while a model was responding</strong> — including
   when the prompt was running in another client (the web UI). The status bar and
@@ -3626,7 +3675,7 @@ explicit non-goal.</p>
   not the PyPI package.)</li>
 </ul>
 <h2 id="9345-repetition-loop-guard-on-every-decode-path-ui-offlinesocket-fixes">[9.34.5] — Repetition-loop guard on every decode path + UI offline/socket fixes<a class="headerlink" href="#9345-repetition-loop-guard-on-every-decode-path-ui-offlinesocket-fixes" title="Permanent link">&para;</a></h2>
-<h3 id="fixed_5">Fixed<a class="headerlink" href="#fixed_5" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_6">Fixed<a class="headerlink" href="#fixed_6" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Runaway repetition on small models</strong> (<code>llama3.2:1b</code>, <code>qwen2.5:1.5b</code> looping a
   paragraph forever). Two gaps closed:</li>
@@ -3709,7 +3758,7 @@ explicit non-goal.</p>
 <li>CI: <code>e2e-apple-silicon</code> job (macos-14) running the battle-test on PRs with the
   0.5B model; <code>workflow_dispatch</code> <code>e2e_model</code> input swaps to 1.5B.</li>
 </ul>
-<h3 id="fixed_6">Fixed<a class="headerlink" href="#fixed_6" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_7">Fixed<a class="headerlink" href="#fixed_7" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>/v1/embeddings</code>: the <code>import mlx.core</code> / <code>import numpy</code> were <strong>unguarded</strong> —
   a CLAUDE.md violation. They are now gated behind a <code>platform.system()</code>
@@ -3757,7 +3806,7 @@ explicit non-goal.</p>
 </ul>
 <hr />
 <h2 id="9341-fix-squish-pull-crash-on-int4-compression-issue-37">[9.34.1] — Fix <code>squish pull</code> crash on INT4 compression (issue #37)<a class="headerlink" href="#9341-fix-squish-pull-crash-on-int4-compression-issue-37" title="Permanent link">&para;</a></h2>
-<h3 id="fixed_7">Fixed<a class="headerlink" href="#fixed_7" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_8">Fixed<a class="headerlink" href="#fixed_8" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong><code>squish pull</code> no longer crashes with <code>ModuleNotFoundError: squish.quant.super_weight_calibrator</code>.</strong>
   A prior "lean purge" deleted <code>squish/quant/super_weight_calibrator.py</code> but left
@@ -3806,7 +3855,7 @@ explicit non-goal.</p>
   refreshed with thermally-controlled Qwen2.5-7B numbers vs Ollama 0.18.2 and
   0.30.7; paper gains §4.4 (end-to-end serving benchmarks).</li>
 </ul>
-<h3 id="fixed_8">Fixed<a class="headerlink" href="#fixed_8" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_9">Fixed<a class="headerlink" href="#fixed_9" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Quantized-KV <code>--kv-cache-mode int8</code> compile crash.</strong> The numpy-quantized KV
   path tripped "[eval] … during compile" on first decode and fell back to a
@@ -3817,7 +3866,7 @@ explicit non-goal.</p>
 </ul>
 <hr />
 <h2 id="9339-restore-promptblock-kv-in-model-dtype-stop-fp16fp32-promotion-2x-decode">[9.33.9] — Restore prompt/block KV in model dtype (stop fp16→fp32 promotion, ~2x decode)<a class="headerlink" href="#9339-restore-promptblock-kv-in-model-dtype-stop-fp16fp32-promotion-2x-decode" title="Permanent link">&para;</a></h2>
-<h3 id="fixed_9">Fixed<a class="headerlink" href="#fixed_9" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_10">Fixed<a class="headerlink" href="#fixed_10" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>KV-cache restore decode regression.</strong> Every <code>--prompt-kv-cache</code> /
   <code>--block-kv-cache</code> config decoded at ~half the throughput of the plain
@@ -3886,7 +3935,7 @@ explicit non-goal.</p>
   wordmark + half-size mascot side-by-side, info panel + load status row
   inside the same border. Sparkles centred over the mascot.</li>
 </ul>
-<h3 id="fixed_10">Fixed<a class="headerlink" href="#fixed_10" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_11">Fixed<a class="headerlink" href="#fixed_11" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>load_from_npy_dir()</code>: partial/interrupted compressed dirs (manifest
   missing &gt;5% of expected weights) now raise a clear <code>FileNotFoundError</code>
@@ -3924,7 +3973,7 @@ explicit non-goal.</p>
 </ul>
 <hr />
 <h2 id="9333-ssl-fix">[9.33.3] — SSL fix<a class="headerlink" href="#9333-ssl-fix" title="Permanent link">&para;</a></h2>
-<h3 id="fixed_11">Fixed<a class="headerlink" href="#fixed_11" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_12">Fixed<a class="headerlink" href="#fixed_12" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Python 3.13 Authority Key Identifier enforcement and Zscaler
   compatibility: all three HuggingFace download paths now retry with
@@ -3948,7 +3997,7 @@ explicit non-goal.</p>
 </ul>
 <hr />
 <h2 id="9330-pull-resilience-partial-download-guard-ssl-fallback">[9.33.0] — Pull Resilience (partial-download guard + SSL fallback)<a class="headerlink" href="#9330-pull-resilience-partial-download-guard-ssl-fallback" title="Permanent link">&para;</a></h2>
-<h3 id="fixed_12">Fixed<a class="headerlink" href="#fixed_12" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_13">Fixed<a class="headerlink" href="#fixed_13" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>squish pull</code> now validates raw model directories before compression. If a prior
   download was interrupted/canceled, the partial directory is removed and the model
@@ -4012,7 +4061,7 @@ the v5.1.1 benchmark run (v5.1.1 section).</p>
   upgrading from a development install should switch to <code>pip install squish-ai</code>
   for releases.</li>
 </ul>
-<h3 id="fixed_13">Fixed<a class="headerlink" href="#fixed_13" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_14">Fixed<a class="headerlink" href="#fixed_14" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>mlx_lm</code> sklearn-stub import-side-effect (saves ~1.2 s cold-start;
   upstream PR filed).</li>
@@ -4378,7 +4427,7 @@ of <code>squish/</code>; the existing module-count gates in <code>tests/test_qua
 <li>Repr coverage: class name, dims, group_size, residual rank, sparse k (6 tests).</li>
 <li>Factory: returns correct type, accepts numpy/mx bias, no-bias default (4 tests).</li>
 </ul>
-<h3 id="fixed_14">Fixed<a class="headerlink" href="#fixed_14" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_15">Fixed<a class="headerlink" href="#fixed_15" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
 <p><strong><code>squish/cli.py</code> — <code>cmd_bench</code></strong>: INT4 bench no longer exits with code 1
@@ -4956,7 +5005,7 @@ sparse correction (for real transformer weight outliers) is W103.3 scope.</p>
   8 INT4 output structure checks, 2 INT8 output checks, 6 argument parsing roundtrip checks,
   invalid-format rejection.</li>
 </ul>
-<h3 id="fixed_15">Fixed<a class="headerlink" href="#fixed_15" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_16">Fixed<a class="headerlink" href="#fixed_16" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong><code>squish/cli.py</code> <code>build_parser()</code></strong> — <code>--version</code> argument previously called
   <code>importlib.metadata.version("squish")</code> at parse time without a try/except. Now wraps the
@@ -5305,7 +5354,7 @@ directly — require <code>pip install squish</code>; pass in Python 3.10 CI).</
   thread executor, returns <code>{ok, files_checked, summary, hits}</code>. Returns 400 on
   missing paths.</li>
 </ul>
-<h3 id="fixed_16">Fixed<a class="headerlink" href="#fixed_16" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_17">Fixed<a class="headerlink" href="#fixed_17" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong><code>squish/cli.py</code> — mixed_attn calibration</strong> — <code>args.outlier_threshold</code> now
   set to <code>100.0</code> in the <code>--format mixed_attn</code> block, ensuring the AWQ INT4
@@ -5921,7 +5970,7 @@ Set <code>SQUASH_OFFLINE=1</code> or pass <code>--offline</code> to activate.</p
 </ul>
 <hr />
 <h2 id="unreleased-wave-42-bias-formula-fix-int4-awq-lm_eval-validation-arc_easy-pass">[Unreleased] — Wave 42: bias formula fix + INT4 AWQ lm_eval validation (arc_easy PASS)<a class="headerlink" href="#unreleased-wave-42-bias-formula-fix-int4-awq-lm_eval-validation-arc_easy-pass" title="Permanent link">&para;</a></h2>
-<h3 id="fixed_17">Fixed<a class="headerlink" href="#fixed_17" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_18">Fixed<a class="headerlink" href="#fixed_18" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
 <p><strong><code>squish/cli.py</code></strong> — Default <code>int4_group_size</code> changed 16 → 32 in 3 locations. MLX
@@ -7050,7 +7099,7 @@ not by feature overlap with existing modules.</p>
 </ul>
 <hr />
 <h2 id="9150-int3-group_size-correctly-fixed-to-32-tier-23-model-compressions">[9.15.0] — INT3 group_size correctly fixed to 32; Tier 2/3 model compressions<a class="headerlink" href="#9150-int3-group_size-correctly-fixed-to-32-tier-23-model-compressions" title="Permanent link">&para;</a></h2>
-<h3 id="fixed_18">Fixed<a class="headerlink" href="#fixed_18" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_19">Fixed<a class="headerlink" href="#fixed_19" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>squish/cli.py</code>: <code>_INT3_GROUP_SIZE</code> corrected from 16 → 32.  <code>mlx.core.quantize()</code>
   only supports group sizes 32, 64, and 128; requesting 16 raised <code>ValueError</code>.
@@ -7644,7 +7693,7 @@ behind after <code>--agent-kv-sink</code> / <code>--agent-kv-window</code> were 
 <li><strong>Removed empty ghost directories</strong>: <code>core/</code>, <code>format/</code>, <code>install/</code>, <code>packaging/</code>
   (only <code>__pycache__</code> remained after Wave 116 deletions).</li>
 </ul>
-<h3 id="fixed_19">Fixed<a class="headerlink" href="#fixed_19" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_20">Fixed<a class="headerlink" href="#fixed_20" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong><code>astc_loader.py</code> bare import guarded</strong> — <code>from squish.compress.astc_encoder import</code>
   was a module-level bare import that raised <code>ModuleNotFoundError</code> on any direct
@@ -7701,7 +7750,7 @@ behind after <code>--agent-kv-sink</code> / <code>--agent-kv-window</code> were 
 </ul>
 <hr />
 <h2 id="920-wave-115-all-optimizations-flush-int3-load-path-dead-code">[9.2.0] — Wave 115 — All-Optimizations Flush + INT3 Load Path + Dead Code<a class="headerlink" href="#920-wave-115-all-optimizations-flush-int3-load-path-dead-code" title="Permanent link">&para;</a></h2>
-<h3 id="fixed_20">Fixed<a class="headerlink" href="#fixed_20" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_21">Fixed<a class="headerlink" href="#fixed_21" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
 <p><strong><code>--all-optimizations</code> TTFT spike eliminated</strong> — Wave modules (100+
@@ -10165,7 +10214,7 @@ continue passing; 188 new tests added (107 Wave 62a + 81 Wave 62b).</p>
 <li><code>squish/kernels/mojo/ouroboros_ngram_mojo.py</code> + <code>kernels/ouroboros_ngram.mojo</code></li>
 <li><code>squish/kernels/mojo/pyramid_kv_budget_mojo.py</code> + <code>kernels/pyramid_kv_budget.mojo</code></li>
 </ul>
-<h3 id="fixed_21">Fixed<a class="headerlink" href="#fixed_21" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_22">Fixed<a class="headerlink" href="#fixed_22" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>RustClusterKV.evict_mask</code> signature harmonised with <code>MojoClusterKV</code>:
   replaced positional <code>budget</code> (number of clusters to keep) with optional
@@ -10228,7 +10277,7 @@ All 11333 pre-Wave-61 tests continue passing; 140 new tests added
 <li><code>squish/kernels/mojo/jacobi_conv_mojo.py</code> + <code>kernels/jacobi_convergence.mojo</code></li>
 <li><code>squish/kernels/mojo/tree_verify_mojo.py</code> + <code>kernels/tree_verify.mojo</code></li>
 </ul>
-<h3 id="fixed_22">Fixed<a class="headerlink" href="#fixed_22" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_23">Fixed<a class="headerlink" href="#fixed_23" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Pre-existing <code>quarot_group_quant_f32</code> move-in-closure compile error in
   <code>squish_quant_rs/src/lib.rs</code>: introduced <code>let w_slice = &amp;w_flat[..]</code> before
@@ -13115,7 +13164,7 @@ TTFT, memory bandwidth, on-disk weight size, and per-token compute overheads.</p
 </ul>
 <hr />
 <h2 id="101-2026-03-04">[1.0.1] — 2026-03-04<a class="headerlink" href="#101-2026-03-04" title="Permanent link">&para;</a></h2>
-<h3 id="fixed_23">Fixed<a class="headerlink" href="#fixed_23" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_24">Fixed<a class="headerlink" href="#fixed_24" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong><code>eval_output/eval_report.md</code></strong> — Replaced physically impossible benchmark numbers
   (+14.1% ARC, +15.2% HellaSwag after lossy compression) with validated results from a
