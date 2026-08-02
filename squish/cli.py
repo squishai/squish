@@ -1735,14 +1735,16 @@ def cmd_run(args):  # pragma: no cover
                 else Path(args.model).expanduser()
             )
         if not _expected_dir.exists():
-            print(f"\n  Model '{args.model}' not found locally — pulling now…")
-            import argparse as _ap2
-            _pull_args = _ap2.Namespace(
-                model=args.model, int4=False, int8=False,
-                int3=False, int2=False, token=None,
-                models_dir=None, refresh_catalog=False, verbose=True,
-            )
-            cmd_pull(_pull_args)
+            _presquished = _resolve_presquished_dir(args.model, _expected_dir, "int4")
+            if _presquished is None:
+                print(f"\n  Model '{args.model}' not found locally — pulling now…")
+                import argparse as _ap2
+                _pull_args = _ap2.Namespace(
+                    model=args.model, int4=False, int8=False,
+                    int3=False, int2=False, token=None,
+                    models_dir=None, refresh_catalog=False, verbose=True,
+                )
+                cmd_pull(_pull_args)
 
     # ── RAM-aware quant auto-selection for >8B models ─────────────────────────
     # Only applies when no explicit quant flag was given by the user.
