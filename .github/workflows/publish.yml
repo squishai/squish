@@ -6,7 +6,7 @@ on:
       - "v*.*.*"
 
 permissions:
-  contents: write      # needed to create a GitHub Release and push formula update
+  contents: write      # needed to create a GitHub Release
   id-token: write      # needed for OIDC Trusted Publisher upload
 
 jobs:
@@ -51,52 +51,15 @@ jobs:
           generate_release_notes: true
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Update Homebrew formula URL and sha256
-        run: |
-          VERSION=${GITHUB_REF#refs/tags/v}
-          PYPI_URL="https://files.pythonhosted.org/packages/source/s/squish-ai/squish_ai-${VERSION}.tar.gz"
-
-          # Wait for PyPI CDN propagation (up to 60s)
-          for i in 1 2 3 4; do
-            sleep 15
-            HTTP=$(curl -sI "${PYPI_URL}" | head -1 | awk '{print $2}')
-            [ "${HTTP}" = "200" ] && break
-            echo "PyPI not yet propagated (attempt ${i}/4)..."
-          done
-
-          SHA256=$(curl -sL "${PYPI_URL}" | shasum -a 256 | awk '{print $1}')
-          if [ -z "${SHA256}" ]; then
-            echo "ERROR: Could not compute sha256 for ${PYPI_URL}" >&2
-            exit 1
-          fi
-
-          sed -i \
-            "s|url \"https://files.pythonhosted.org/packages/source/s/squish-ai/squish_ai-[0-9.]*\.tar\.gz\"|url \"${PYPI_URL}\"|" \
-            Formula/squish.rb
-          sed -i \
-            "/url.*squish_ai.*tar\.gz/{n;s|sha256 \"[a-f0-9]*\"|sha256 \"${SHA256}\"|}"\
-            Formula/squish.rb
-
-          # NOTE: Resource blocks for Python dependencies are NOT automatically
-          # updated here. If you bumped a dependency version (e.g. orjson), manually
-          # regenerate resource blocks before tagging:
-          #   pip install squish-ai homebrew-pypi-poet && poet squish-ai
-          # Then commit the updated Formula/squish.rb.
-
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add Formula/squish.rb
-          git commit -m "chore: bump formula to v${VERSION}" || echo "No formula changes to commit"
-
-          # release.yml's own update-formula job may push a formula commit to
-          # main around the same time (same trigger, same computed URL/sha256)
-          # — retry with a rebase instead of failing outright on a rejected
-          # push. If that commit already made the identical change, the
-          # rebase drops this one as empty and the push becomes a no-op.
-          for i in 1 2 3; do
-            git push && break
-            echo "Push rejected (attempt ${i}/3) — rebasing onto latest main..."
-            git fetch origin main
-            git rebase origin/main
-            sleep 3
-          done
+      # NOTE: The Homebrew formula is NOT updated here. release.yml's own
+      # update-formula job (triggered by the push to main that bumped
+      # pyproject.toml, which is what created this tag in the first place)
+      # already does that authoritatively — it reads the real CDN url/sha256
+      # from PyPI's JSON API and bumps the `squish_ai` wheel resource block
+      # that `brew` actually installs from, not just the headline sdist url.
+      # A second, cruder update from this tag-triggered job used to race it:
+      # this job checks out the tag (detached HEAD), so its formula commit
+      # had no branch to push to, and rebasing onto origin/main hit a real
+      # conflict — the two jobs compute textually different (if equivalent)
+      # PyPI urls for the same release, so the "identical change" no-op the
+      # rebase was relying on never happened. See #228.
