@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Learning with Squish — Playful Board Books for Curious Little Learners</title>
+<meta name="description" content="Learning with Squish is a board book series by Konjo Publishing for kids ages 1-4. Get free printable coloring pages of Squish and Lilyan." />
+
+<style>
+  /* ---------------------------------------------------------------
+     Design tokens — brand palette from the Learning with Squish
+     style guide. Adjust here to re-theme the whole page.
+     --------------------------------------------------------------- */
+  :root {
+    --squish-purple: #8B5FBF;
+    --squish-purple-light: #B590E0;
+    --cream: #F5EDE4;
+    --peach-start: #FBE8D3;
+    --peach-end: #F4C9A0;
+
+    --ink: #4A3B33;
+    --ink-soft: #7A6B61;
+    --white: #FFFFFF;
+    --accent-yellow: #F7B733;
+    --accent-yellow-dark: #E09A1A;
+    --success-green: #4C9A6A;
+    --error-red: #C0503A;
+
+    --radius-lg: 28px;
+    --radius-md: 18px;
+    --radius-sm: 12px;
+    --shadow-soft: 0 12px 30px rgba(139, 95, 191, 0.18);
+    --border-thick: 4px solid var(--squish-purple);
+
+    --font-display: "Baloo 2", "Fredoka", ui-rounded, "Segoe UI Rounded", "Nunito", sans-serif;
+    --font-body: "Nunito", ui-rounded, "Segoe UI Rounded", -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  /* Optional rounded display font — falls back gracefully to system
+     rounded fonts if the network request is blocked, so the page
+     still matches the brand's "rounded, bold" look offline. */
+  @import url("https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap");
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    font-family: var(--font-body);
+    color: var(--ink);
+    background: var(--cream);
+    line-height: 1.5;
+  }
+
+  img, svg { max-width: 100%; display: block; }
+
+  a { color: inherit; }
+
+  .container {
+    width: 100%;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    line-height: 1.15;
+    margin: 0 0 12px;
+  }
+
+  p { margin: 0 0 16px; }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* ---------------------------------------------------------------
+     Site header
+     --------------------------------------------------------------- */
+  .site-header {
+    text-align: center;
+    padding: 18px 20px 0;
+  }
+
+  .publisher-mark {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--squish-purple);
+    background: var(--white);
+    border: 2px solid var(--squish-purple-light);
+    border-radius: 999px;
+    padding: 6px 16px;
+  }
+
+  /* ---------------------------------------------------------------
+     Hero
+     --------------------------------------------------------------- */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(160deg, var(--peach-start) 0%, var(--peach-end) 100%);
+    padding: 32px 0 56px;
+  }
+
+  .hero .container {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 24px;
+  }
+
+  .hero-title {
+    font-size: clamp(2.2rem, 7vw, 3.6rem);
+    color: var(--squish-purple);
+    text-shadow: 2px 2px 0 var(--white);
+  }
+
+  .hero-tagline {
+    font-size: clamp(1.05rem, 3vw, 1.35rem);
+    color: var(--ink-soft);
+    max-width: 42ch;
+    font-weight: 600;
+  }
+
+  .hero-cta {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--white);
+    background: var(--squish-purple);
+    border: none;
+    border-radius: 999px;
+    padding: 14px 32px;
+    text-decoration: none;
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+
+  .hero-cta:hover,
+  .hero-cta:focus-visible {
+    background: var(--squish-purple-light);
+    transform: translateY(-2px);
+  }
+
+  /* Placeholder illustration box.
+     SWAP-HERO-IMAGE: replace this <div class="hero-illustration"> block
+     with a real <img src="..." alt="Squish and Lilyan reading a book
+     together"> of the hero illustration once artwork is ready. Keep the
+     aspect-ratio wrapper so layout doesn't jump. */
+  .hero-illustration {
+    width: 100%;
+    max-width: 480px;
+    aspect-ratio: 4 / 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: var(--white);
+    border: var(--border-thick);
+    border-radius: var(--radius-lg);
+    color: var(--squish-purple);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 24px;
+    box-shadow: var(--shadow-soft);
+  }
+
+  /* Soft decorative sparkles — inline SVG, no external image requests */
+  .sparkle {
+    position: absolute;
+    opacity: 0.55;
+    color: var(--squish-purple-light);
+    pointer-events: none;
+  }
+  .sparkle--1 { top: 8%;  left: 6%;  width: 34px; }
+  .sparkle--2 { top: 18%; right: 8%; width: 22px; }
+  .sparkle--3 { bottom: 10%; left: 14%; width: 18px; }
+  .sparkle--4 { bottom: 20%; right: 12%; width: 30px; }
+
+  /* ---------------------------------------------------------------
+     Book showcase
+     --------------------------------------------------------------- */
+  .book-showcase {
+    padding: 56px 0;
+  }
+
+  .section-title {
+    text-align: center;
+    font-size: clamp(1.6rem, 5vw, 2.2rem);
+    color: var(--squish-purple);
+  }
+
+  .section-subtitle {
+    text-align: center;
+    color: var(--ink-soft);
+    font-weight: 600;
+    max-width: 50ch;
+    margin: 0 auto 36px;
+  }
+
+  .book-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  @media (min-width: 720px) {
+    .book-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .book-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--white);
+    border: var(--border-thick);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    box-shadow: var(--shadow-soft);
+  }
+
+  /* Placeholder cover box.
+     SWAP-BOOK-COVER: replace this <div class="book-cover-placeholder">
+     with a real <img src="..." alt="[Book title] cover"> once cover art
+     is ready. Keep the aspect-ratio wrapper so cards stay aligned. */
+  .book-cover-placeholder {
+    aspect-ratio: 3 / 4;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: linear-gradient(160deg, var(--peach-start), var(--peach-end));
+    border: 2px dashed var(--squish-purple-light);
+    border-radius: var(--radius-md);
+    color: var(--squish-purple);
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .book-title {
+    font-size: 1.15rem;
+    color: var(--ink);
+  }
+
+  .book-description {
+    color: var(--ink-soft);
+    font-weight: 600;
+    flex-grow: 1;
+  }
+
+  .buy-button {
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--white);
+    background: var(--accent-yellow-dark);
+    border-radius: 999px;
+    padding: 12px 20px;
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+
+  .buy-button:hover,
+  .buy-button:focus-visible {
+    background: var(--accent-yellow);
+    transform: translateY(-2px);
+  }
+
+  /* ---------------------------------------------------------------
+     Email capture — the most visually prominent section on the page
+     --------------------------------------------------------------- */
+  .email-capture {
+    padding: 40px 16px 64px;
+  }
+
+  .email-capture-card {
+    position: relative;
+    overflow: hidden;
+    max-width: 640px;
+    margin: 0 auto;
+    text-align: center;
+    background: linear-gradient(160deg, var(--squish-purple) 0%, var(--squish-purple-light) 100%);
+    border-radius: var(--radius-lg);
+    padding: 44px 28px;
+    box-shadow: 0 20px 45px rgba(139, 95, 191, 0.35);
+    color: var(--white);
+  }
+
+  .email-capture-headline {
+    font-size: clamp(1.8rem, 6vw, 2.4rem);
+    color: var(--white);
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.12);
+  }
+
+  .email-capture-subhead {
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--white);
+    opacity: 0.95;
+    max-width: 46ch;
+    margin: 0 auto 28px;
+  }
+
+  .src-note {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 999px;
+    padding: 6px 16px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+
+  .email-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  @media (min-width: 520px) {
+    .email-form { flex-direction: row; }
+  }
+
+  .email-field-group {
+    flex-grow: 1;
+    text-align: left;
+  }
+
+  .email-form label {
+    display: block;
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+  }
+
+  .email-form input[type="email"] {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    border: none;
+    color: var(--ink);
+  }
+
+  .email-form input[type="email"]:focus-visible {
+    outline: 3px solid var(--accent-yellow);
+    outline-offset: 2px;
+  }
+
+  .submit-button {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--ink);
+    background: var(--accent-yellow);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 14px 22px;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .submit-button:hover,
+  .submit-button:focus-visible {
+    background: var(--accent-yellow-dark);
+    transform: translateY(-2px);
+  }
+
+  .submit-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .form-error {
+    color: #FFE3D9;
+    background: rgba(192, 80, 58, 0.35);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-align: left;
+    margin-top: 4px;
+  }
+
+  .form-success {
+    margin-top: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--success-green);
+    border-radius: var(--radius-md);
+    padding: 18px 20px;
+    font-weight: 800;
+    font-family: var(--font-display);
+  }
+
+  .privacy-note {
+    margin: 16px 0 0;
+    font-size: 0.8rem;
+    opacity: 0.85;
+  }
+
+  [hidden] { display: none !important; }
+
+  /* ---------------------------------------------------------------
+     Footer
+     --------------------------------------------------------------- */
+  .site-footer {
+    text-align: center;
+    padding: 24px 20px 40px;
+    color: var(--ink-soft);
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+</style>
+</head>
+<body>
+
+  <header class="site-header">
+    <span class="publisher-mark">Konjo Publishing</span>
+  </header>
+
+  <section class="hero">
+    <svg class="sparkle sparkle--1" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0l2.2 8.8L23 12l-8.8 2.2L12 23l-2.2-8.8L1 12l8.8-2.2z"/></svg>
+    <svg class="sparkle sparkle--2" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0l2.2 8.8L23 12l-8.8 2.2L12 23l-2.2-8.8L1 12l8.8-2.2z"/></svg>
+    <svg class="sparkle sparkle--3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0l2.2 8.8L23 12l-8.8 2.2L12 23l-2.2-8.8L1 12l8.8-2.2z"/></svg>
+    <svg class="sparkle sparkle--4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0l2.2 8.8L23 12l-8.8 2.2L12 23l-2.2-8.8L1 12l8.8-2.2z"/></svg>
+
+    <div class="container">
+      <h1 class="hero-title">Learning with Squish</h1>
+      <p class="hero-tagline">Playful board books for curious little learners, ages 1-4.</p>
+
+      <!-- SWAP-HERO-IMAGE: replace the placeholder box below with the
+           real hero illustration of Squish and Lilyan when it's ready. -->
+      <div class="hero-illustration">
+        [Squish + Lilyan hero illustration]
+      </div>
+
+      <a class="hero-cta" href="#books">See the Books</a>
+    </div>
+  </section>
+
+  <main>
+    <section class="book-showcase" id="books">
+      <div class="container">
+        <h2 class="section-title">The Book Series</h2>
+        <p class="section-subtitle">Three squishy-soft board books to grow with your toddler.</p>
+
+        <div class="book-grid">
+
+          <article class="book-card">
+            <!-- SWAP-BOOK-COVER: replace with the real cover image for
+                 "Learning Good Habits with Squish". -->
+            <div class="book-cover-placeholder">[Learning Good Habits with Squish — cover]</div>
+            <h3 class="book-title">Learning Good Habits with Squish</h3>
+            <p class="book-description">Squish and Lilyan make brushing teeth, sharing, and cleanup time fun for your little one.</p>
+            <a class="buy-button" data-amazon-key="habits" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+          </article>
+
+          <article class="book-card">
+            <!-- SWAP-BOOK-COVER: replace with the real cover image for
+                 "Learning to Count with Squish". -->
+            <div class="book-cover-placeholder">[Learning to Count with Squish — cover]</div>
+            <h3 class="book-title">Learning to Count with Squish</h3>
+            <p class="book-description">Count along with Squish from one to ten through silly, squishy adventures.</p>
+            <a class="buy-button" data-amazon-key="counting" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+          </article>
+
+          <article class="book-card">
+            <!-- SWAP-BOOK-COVER: replace with the real cover image for
+                 "Learning Colors with Squish". -->
+            <div class="book-cover-placeholder">[Learning Colors with Squish — cover]</div>
+            <h3 class="book-title">Learning Colors with Squish</h3>
+            <p class="book-description">Explore a rainbow of colors with Squish and Lilyan on every colorful page.</p>
+            <a class="buy-button" data-amazon-key="colors" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <section class="email-capture" id="printables" aria-labelledby="email-capture-headline">
+      <div class="email-capture-card">
+        <p class="src-note" id="src-note" hidden></p>
+
+        <h2 class="email-capture-headline" id="email-capture-headline">Get Free Printables!</h2>
+        <p class="email-capture-subhead">
+          Sign up and we'll send you free printable coloring pages of Squish and Lilyan —
+          perfect for a rainy afternoon.
+        </p>
+
+        <form class="email-form" id="subscribe-form" novalidate>
+          <div class="email-field-group">
+            <label for="email-input">Email address</label>
+            <input
+              type="email"
+              id="email-input"
+              name="email"
+              placeholder="you@example.com"
+              autocomplete="email"
+              required
+              aria-describedby="email-error"
+            />
+          </div>
+
+          <!-- Attribution field: populated from the ?src= query param by
+               the script below so each signup can be traced back to the
+               book / QR code that drove it. -->
+          <input type="hidden" id="src-input" name="src" value="" />
+
+          <button type="submit" class="submit-button" id="submit-button">Send Me the Printables!</button>
+        </form>
+
+        <p class="form-error" id="email-error" role="alert" hidden></p>
+        <p class="form-success" id="form-success" role="status" hidden></p>
+
+        <p class="privacy-note">No spam, ever. Unsubscribe anytime.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; <span id="footer-year"></span> Konjo Publishing. Learning with Squish.</p>
+  </footer>
+
+  <script>
+    (function () {
+      "use strict";
+
+      // ---------------------------------------------------------------
+      // AMAZON_LINKS — drop real Amazon product URLs in here once
+      // they're available. '#' is a placeholder that keeps the buttons
+      // inert (no navigation) until real links are set.
+      // ---------------------------------------------------------------
+      var AMAZON_LINKS = {
+        habits: "#",
+        counting: "#",
+        colors: "#"
+      };
+
+      // Friendly names shown in the contextual note near the email form
+      // when a recognized ?src= value is present, e.g.
+      // squish.run/books?src=colors-printables
+      var SRC_BOOK_NAMES = {
+        "habits-printables": "Learning Good Habits with Squish",
+        "counting-printables": "Learning to Count with Squish",
+        "colors-printables": "Learning Colors with Squish"
+      };
+
+      var EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      document.querySelectorAll("[data-amazon-key]").forEach(function (link) {
+        var key = link.getAttribute("data-amazon-key");
+        if (Object.prototype.hasOwnProperty.call(AMAZON_LINKS, key)) {
+          link.setAttribute("href", AMAZON_LINKS[key]);
+        }
+      });
+
+      document.getElementById("footer-year").textContent = new Date().getFullYear();
+
+      // ---------------------------------------------------------------
+      // Attribution tracking: read ?src= from the URL, stash it in the
+      // hidden form field, and (if recognized) show a small contextual
+      // note. Page works fine with no src param at all.
+      // ---------------------------------------------------------------
+      var srcParam = new URLSearchParams(window.location.search).get("src");
+      var srcInput = document.getElementById("src-input");
+      var srcNote = document.getElementById("src-note");
+
+      if (srcParam) {
+        srcInput.value = srcParam;
+
+        var friendlyName = SRC_BOOK_NAMES[srcParam];
+        if (friendlyName) {
+          srcNote.textContent = "Thanks for reading " + friendlyName + "! 🎨";
+          srcNote.hidden = false;
+        }
+
+        // TODO: replace this console.log with real analytics — e.g. a
+        // Plausible custom event, a GA4 event, or simply let the /api/subscribe
+        // handler forward `src` to the ESP as a tagged field on signup.
+        console.log("[squish.run/books] src param captured:", srcParam);
+      }
+
+      // ---------------------------------------------------------------
+      // Email capture form
+      // ---------------------------------------------------------------
+      var form = document.getElementById("subscribe-form");
+      var emailInput = document.getElementById("email-input");
+      var submitButton = document.getElementById("submit-button");
+      var errorEl = document.getElementById("email-error");
+      var successEl = document.getElementById("form-success");
+
+      function showError(message) {
+        errorEl.textContent = message;
+        errorEl.hidden = false;
+      }
+
+      function clearError() {
+        errorEl.textContent = "";
+        errorEl.hidden = true;
+      }
+
+      function showSuccess() {
+        form.hidden = true;
+        successEl.textContent = "You're all set! Check your inbox for your free Squish & Lilyan printables.";
+        successEl.hidden = false;
+      }
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        clearError();
+
+        var email = emailInput.value.trim();
+        if (!EMAIL_PATTERN.test(email)) {
+          showError("Please enter a valid email address.");
+          emailInput.focus();
+          return;
+        }
+
+        submitButton.disabled = true;
+        submitButton.textContent = "Sending...";
+
+        // -----------------------------------------------------------
+        // TODO(ESP integration): /api/subscribe is a stub — there is no
+        // backend behind it yet. Wire this up to a real email service
+        // (Mailchimp, ConvertKit, etc.) and make sure `src` is passed
+        // through as a tagged field so signups stay attributed to the
+        // book / QR code that drove them.
+        // -----------------------------------------------------------
+        fetch("/api/subscribe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: email, src: srcInput.value || null })
+        })
+          .then(function (response) {
+            if (!response.ok) {
+              throw new Error("Subscribe request failed with status " + response.status);
+            }
+            showSuccess();
+          })
+          .catch(function (err) {
+            // Local preview / no backend yet: /api/subscribe doesn't exist,
+            // so this always falls into the catch. We show the success
+            // state anyway so the flow can be demoed end-to-end. Once the
+            // real endpoint exists, remove this fallback and surface a
+            // genuine error message instead (see TODO above).
+            console.warn("[squish.run/books] /api/subscribe stub not implemented yet:", err);
+            showSuccess();
+          })
+          .finally(function () {
+            submitButton.disabled = false;
+            submitButton.textContent = "Send Me the Printables!";
+          });
+      });
+    })();
+  </script>
+
+</body>
+</html>
