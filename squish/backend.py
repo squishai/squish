@@ -110,11 +110,12 @@ class _AppleBackend:
 
         Dispatches on :func:`squish.runtime.arch_resolver.resolve_runtime`:
         mlx_lm-known architectures use the unchanged fast/default path;
-        everything else falls back to mlx_vlm (loaded text-only — Phase 1
-        does not wire image/audio input) when the ``multimodal`` extra is
-        installed. mlx_vlm's ``load()`` returns ``(model, processor)``; the
-        processor exposes a ``.tokenizer``-compatible surface and is a valid
-        drop-in for the ``tokenizer`` half of this method's contract.
+        everything else falls back to mlx_vlm when the ``multimodal`` extra
+        is installed. mlx_vlm's ``load()`` returns ``(model, processor)``;
+        the processor exposes a ``.tokenizer``-compatible surface and is a
+        valid drop-in for the ``tokenizer`` half of this method's contract.
+        Image/audio/video input (Wave 134) flows through :meth:`stream_generate`
+        and :meth:`build_multimodal_prompt`.
         """
         from squish.runtime.arch_resolver import resolve_runtime
 
@@ -146,6 +147,15 @@ class _AppleBackend:
         otherwise uses mlx_lm. Both return the same ``GenerationResult``-
         shaped objects (``.text``, ``.finish_reason``), only the temperature
         kwarg name differs (mlx_lm: ``temp``; mlx_vlm: ``temperature``).
+
+        ``image``/``audio``/``video`` kwargs (each a source string or list
+        of source strings — URL, ``data:`` URI, or local path) are forwarded
+        to mlx_vlm's own ``prepare_inputs``, which fetches/decodes them;
+        squish never touches the media bytes itself. Silently ignored on
+        the mlx_lm branch (a text-only model can't do anything with them —
+        callers are responsible for rejecting multimodal requests before
+        they reach a non-mlx_vlm model, matching the Wave 134 API-boundary
+        contract of returning a clear 400 rather than silently dropping media).
         """
         max_tokens = kwargs.get("max_tokens", 512)
         temp       = kwargs.get("temperature", 0.7)
@@ -158,6 +168,10 @@ class _AppleBackend:
             gen_kw: dict = dict(max_tokens=max_tokens, temperature=temp, top_p=top_p)
             if max_kv is not None:
                 gen_kw["max_kv_size"] = max_kv
+            for media_key in ("image", "audio", "video"):
+                media_val = kwargs.get(media_key)
+                if media_val:
+                    gen_kw[media_key] = media_val
             stream_fn = mlx_vlm.stream_generate
         else:
             import mlx_lm
@@ -172,6 +186,35 @@ class _AppleBackend:
                 yield result.text, getattr(result, "finish_reason", None)
             else:
                 yield str(result), None
+
+    def build_multimodal_prompt(
+        self,
+        model,
+        processor,
+        messages: list[dict],
+        num_images: int = 0,
+        num_audios: int = 0,
+    ) -> str:
+        """Render *messages* into a prompt string for an mlx_vlm model.
+
+        Unlike a plain-text chat template, mlx_vlm needs to know the image/
+        audio *count* to insert the right number of placeholder tokens
+        (e.g. ``<image>``) at the right positions — a bare
+        ``processor.apply_chat_template(messages)`` call (the text-only
+        path) does not do this and would desync the placeholder tokens from
+        the actual pixel/audio embeddings mlx_vlm injects at generation
+        time. Wraps ``mlx_vlm.apply_chat_template`` rather than
+        reimplementing its per-architecture placeholder logic.
+        """
+        import mlx_vlm
+
+        return mlx_vlm.apply_chat_template(
+            processor,
+            model.config,
+            messages,
+            num_images=num_images,
+            num_audios=num_audios,
+        )
 
     # ── Weight I/O ────────────────────────────────────────────────────────────
 
@@ -385,6 +428,13 @@ class _TorchBackend:
         except (ImportError, RuntimeError, AttributeError) as exc:
             _LOG.debug("CUDA memory-fraction configuration skipped: %s", exc)
 
+    def build_multimodal_prompt(self, model, processor, messages, num_images=0, num_audios=0):
+        """mlx_vlm is Apple-Silicon-only; there is no VLM runtime on this backend."""
+        raise RuntimeError(
+            "Multimodal (image/audio/video) input requires the mlx_vlm backend, "
+            "which is Apple-Silicon-only. Not available on the torch backend."
+        )
+
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # Stub backend — neither MLX nor torch installed (import-only / test env)
@@ -401,16 +451,17 @@ class _StubBackend:
             "On Linux install torch: pip install torch transformers."
         )
 
-    array            = _fail
-    eval             = lambda self, *a, **k: None  # noqa: E731
-    to_numpy         = _fail
-    forward          = _fail
-    forward_np       = _fail
-    load_model       = _fail
-    stream_generate  = _fail
-    save_tensors     = _fail
-    load_tensors     = _fail
-    configure_memory = lambda self, *a, **k: None  # noqa: E731
+    array                    = _fail
+    eval                     = lambda self, *a, **k: None  # noqa: E731
+    to_numpy                 = _fail
+    forward                  = _fail
+    forward_np               = _fail
+    load_model               = _fail
+    stream_generate          = _fail
+    save_tensors             = _fail
+    load_tensors             = _fail
+    configure_memory         = lambda self, *a, **k: None  # noqa: E731
+    build_multimodal_prompt  = _fail
 
 
 # ── Module-level singleton ────────────────────────────────────────────────────

@@ -1,0 +1,12 @@
+language:
+- en
+library_name: mlx
+tags:
+- squish
+- apple-silicon
+- quantized
+- int4
+- local-llm
+- mlx
+license: apache-2.0
+base_model: mlx-community/Qwen3-8B-bf16
