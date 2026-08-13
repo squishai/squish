@@ -14,9 +14,10 @@
   :root {
     --squish-purple: #8B5FBF;
     --squish-purple-light: #B590E0;
-    --cream: #F5EDE4;
-    --peach-start: #FBE8D3;
-    --peach-end: #F4C9A0;
+    --squish-purple-pale: #E6D9F5;
+    --cream: #F3EDFB;
+    --peach-start: #EFE2FA;
+    --peach-end: #D8B9EF;
 
     --ink: #4A3B33;
     --ink-soft: #7A6B61;
@@ -86,35 +87,13 @@
   }
 
   /* ---------------------------------------------------------------
-     Site header
-     --------------------------------------------------------------- */
-  .site-header {
-    text-align: center;
-    padding: 18px 20px 0;
-  }
-
-  .publisher-mark {
-    display: inline-block;
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 0.85rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--squish-purple);
-    background: var(--white);
-    border: 2px solid var(--squish-purple-light);
-    border-radius: 999px;
-    padding: 6px 16px;
-  }
-
-  /* ---------------------------------------------------------------
      Hero
      --------------------------------------------------------------- */
   .hero {
     position: relative;
     overflow: hidden;
     background: linear-gradient(160deg, var(--peach-start) 0%, var(--peach-end) 100%);
-    padding: 32px 0 56px;
+    padding: 56px 0 56px;
   }
 
   .hero .container {
@@ -161,28 +140,35 @@
     transform: translateY(-2px);
   }
 
-  /* Placeholder illustration box.
-     SWAP-HERO-IMAGE: replace this <div class="hero-illustration"> block
-     with a real <img src="..." alt="Squish and Lilyan reading a book
-     together"> of the hero illustration once artwork is ready. Keep the
-     aspect-ratio wrapper so layout doesn't jump. */
+  /* Hero illustration frame: the real "Learning with Squish Collection"
+     cover art (Squish + Lilyan holding hands under a rainbow). Square
+     crop straight from the official cover, so it stays true to the
+     published art with no distortion. */
   .hero-illustration {
     width: 100%;
     max-width: 480px;
-    aspect-ratio: 4 / 3;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+    aspect-ratio: 1 / 1;
     background: var(--white);
     border: var(--border-thick);
     border-radius: var(--radius-lg);
-    color: var(--squish-purple);
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 1.1rem;
-    padding: 24px;
     box-shadow: var(--shadow-soft);
+    padding: 8px;
+    overflow: hidden;
+  }
+
+  .hero-illustration img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: calc(var(--radius-lg) - 8px);
+  }
+
+  .series-link {
+    color: var(--squish-purple);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    font-size: 0.95rem;
   }
 
   /* Soft decorative sparkles — inline SVG, no external image requests */
@@ -224,9 +210,8 @@
     gap: 24px;
   }
 
-  @media (min-width: 720px) {
-    .book-grid { grid-template-columns: repeat(3, 1fr); }
-  }
+  /* book-grid column counts are set further down, near the real
+     cover-art rules (2-up at 620px, 4-up at 1000px, for four books). */
 
   .book-card {
     display: flex;
@@ -238,25 +223,35 @@
     box-shadow: var(--shadow-soft);
   }
 
-  /* Placeholder cover box.
-     SWAP-BOOK-COVER: replace this <div class="book-cover-placeholder">
-     with a real <img src="..." alt="[Book title] cover"> once cover art
-     is ready. Keep the aspect-ratio wrapper so cards stay aligned. */
+  /* Real published cover art. */
   .book-cover-placeholder {
-    aspect-ratio: 3 / 4;
+    aspect-ratio: 1 / 1;
     width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    background: linear-gradient(160deg, var(--peach-start), var(--peach-end));
-    border: 2px dashed var(--squish-purple-light);
     border-radius: var(--radius-md);
-    color: var(--squish-purple);
-    font-weight: 700;
-    font-size: 0.95rem;
-    padding: 16px;
+    overflow: hidden;
     margin-bottom: 16px;
+    box-shadow: inset 0 0 0 2px rgba(139, 95, 191, 0.25);
+  }
+
+  .book-cover-placeholder img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .book-card {
+    transition: transform 0.18s ease;
+  }
+  .book-card:hover {
+    transform: translateY(-4px);
+  }
+
+  @media (min-width: 620px) {
+    .book-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1000px) {
+    .book-grid { grid-template-columns: repeat(4, 1fr); }
   }
 
   .book-title {
@@ -277,7 +272,7 @@
     font-family: var(--font-display);
     font-weight: 700;
     color: var(--white);
-    background: var(--accent-yellow-dark);
+    background: var(--squish-purple);
     border-radius: 999px;
     padding: 12px 20px;
     transition: background 0.15s ease, transform 0.15s ease;
@@ -285,8 +280,30 @@
 
   .buy-button:hover,
   .buy-button:focus-visible {
-    background: var(--accent-yellow);
+    background: var(--squish-purple-light);
     transform: translateY(-2px);
+  }
+
+  /* Shown instead of an active buy link until a real Amazon URL is set
+     in AMAZON_LINKS (see script below) — honest "not live yet" state
+     rather than a dead '#' link. */
+  .buy-button--pending {
+    background: var(--ink-soft);
+    cursor: default;
+    pointer-events: none;
+    opacity: 0.75;
+  }
+
+  .printable-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    color: var(--squish-purple);
+    font-weight: 800;
+    font-size: 0.95rem;
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
 
   /* ---------------------------------------------------------------
@@ -370,7 +387,7 @@
   }
 
   .email-form input[type="email"]:focus-visible {
-    outline: 3px solid var(--accent-yellow);
+    outline: 3px solid var(--white);
     outline-offset: 2px;
   }
 
@@ -378,11 +395,11 @@
     font-family: var(--font-display);
     font-weight: 700;
     font-size: 1rem;
-    color: var(--ink);
-    background: var(--accent-yellow);
-    border: none;
+    color: var(--white);
+    background: var(--squish-purple);
+    border: 3px solid var(--white);
     border-radius: var(--radius-sm);
-    padding: 14px 22px;
+    padding: 12px 22px;
     cursor: pointer;
     transition: background 0.15s ease, transform 0.15s ease;
     white-space: nowrap;
@@ -390,7 +407,7 @@
 
   .submit-button:hover,
   .submit-button:focus-visible {
-    background: var(--accent-yellow-dark);
+    background: var(--squish-purple-light);
     transform: translateY(-2px);
   }
 
@@ -430,6 +447,78 @@
   [hidden] { display: none !important; }
 
   /* ---------------------------------------------------------------
+     About the Author
+     --------------------------------------------------------------- */
+  .about-author {
+    padding: 8px 16px 64px;
+  }
+
+  .author-card {
+    max-width: 780px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    text-align: center;
+    background: var(--white);
+    border: var(--border-thick);
+    border-radius: var(--radius-lg);
+    padding: 36px 28px;
+    box-shadow: var(--shadow-soft);
+  }
+
+  @media (min-width: 640px) {
+    .author-card {
+      flex-direction: row;
+      align-items: flex-start;
+      text-align: left;
+      padding: 40px;
+    }
+  }
+
+  .author-photo {
+    flex-shrink: 0;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid var(--squish-purple-light);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .author-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .author-name {
+    font-size: 1.3rem;
+    color: var(--squish-purple);
+    margin-bottom: 4px;
+  }
+
+  .author-role {
+    display: block;
+    font-weight: 700;
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 14px;
+  }
+
+  .author-bio p {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .author-bio p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* ---------------------------------------------------------------
      Footer
      --------------------------------------------------------------- */
   .site-footer {
@@ -443,10 +532,6 @@
 </head>
 <body>
 
-  <header class="site-header">
-    <span class="publisher-mark">Konjo Publishing</span>
-  </header>
-
   <section class="hero">
     <svg class="sparkle sparkle--1" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0l2.2 8.8L23 12l-8.8 2.2L12 23l-2.2-8.8L1 12l8.8-2.2z"/></svg>
     <svg class="sparkle sparkle--2" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0l2.2 8.8L23 12l-8.8 2.2L12 23l-2.2-8.8L1 12l8.8-2.2z"/></svg>
@@ -457,13 +542,12 @@
       <h1 class="hero-title">Learning with Squish</h1>
       <p class="hero-tagline">Playful board books for curious little learners, ages 1-4.</p>
 
-      <!-- SWAP-HERO-IMAGE: replace the placeholder box below with the
-           real hero illustration of Squish and Lilyan when it's ready. -->
       <div class="hero-illustration">
-        [Squish + Lilyan hero illustration]
+        <img src="assets/hero.jpg" alt="Squish and Lilyan holding hands under a rainbow, from The Learning with Squish Collection cover">
       </div>
 
       <a class="hero-cta" href="#books">See the Books</a>
+      <a class="series-link" href="https://www.amazon.com/dp/B0HCXGQ9VX" target="_blank" rel="noopener">Shop the full series on Amazon &rarr;</a>
     </div>
   </section>
 
@@ -471,35 +555,44 @@
     <section class="book-showcase" id="books">
       <div class="container">
         <h2 class="section-title">The Book Series</h2>
-        <p class="section-subtitle">Three squishy-soft board books to grow with your toddler.</p>
+        <p class="section-subtitle">Four squishy-soft board books to grow with your toddler.</p>
 
         <div class="book-grid">
 
           <article class="book-card">
-            <!-- SWAP-BOOK-COVER: replace with the real cover image for
-                 "Learning Good Habits with Squish". -->
-            <div class="book-cover-placeholder">[Learning Good Habits with Squish — cover]</div>
+            <div class="book-cover-placeholder">
+              <img src="assets/covers/habits.jpg" alt="Learning Good Habits with Squish cover">
+            </div>
             <h3 class="book-title">Learning Good Habits with Squish</h3>
             <p class="book-description">Squish and Lilyan make brushing teeth, sharing, and cleanup time fun for your little one.</p>
             <a class="buy-button" data-amazon-key="habits" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
           </article>
 
           <article class="book-card">
-            <!-- SWAP-BOOK-COVER: replace with the real cover image for
-                 "Learning to Count with Squish". -->
-            <div class="book-cover-placeholder">[Learning to Count with Squish — cover]</div>
+            <div class="book-cover-placeholder">
+              <img src="assets/covers/counting.jpg" alt="Learning to Count with Squish cover">
+            </div>
             <h3 class="book-title">Learning to Count with Squish</h3>
             <p class="book-description">Count along with Squish from one to ten through silly, squishy adventures.</p>
             <a class="buy-button" data-amazon-key="counting" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
           </article>
 
           <article class="book-card">
-            <!-- SWAP-BOOK-COVER: replace with the real cover image for
-                 "Learning Colors with Squish". -->
-            <div class="book-cover-placeholder">[Learning Colors with Squish — cover]</div>
+            <div class="book-cover-placeholder">
+              <img src="assets/covers/colors.jpg" alt="Learning Colors with Squish cover">
+            </div>
             <h3 class="book-title">Learning Colors with Squish</h3>
             <p class="book-description">Explore a rainbow of colors with Squish and Lilyan on every colorful page.</p>
             <a class="buy-button" data-amazon-key="colors" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+          </article>
+
+          <article class="book-card">
+            <div class="book-cover-placeholder">
+              <img src="assets/covers/collection.jpg" alt="The Learning with Squish Collection cover">
+            </div>
+            <h3 class="book-title">The Learning with Squish Collection</h3>
+            <p class="book-description">All three stories of habits, counting, and colors together in one keepsake collection.</p>
+            <a class="buy-button" data-amazon-key="collection" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
           </article>
 
         </div>
@@ -544,6 +637,33 @@
         <p class="privacy-note">No spam, ever. Unsubscribe anytime.</p>
       </div>
     </section>
+
+    <section class="about-author" id="about">
+      <div class="container">
+        <h2 class="section-title">About the Author</h2>
+
+        <div class="author-card">
+          <div class="author-photo">
+            <img src="assets/author.jpg" alt="Wesley Scholl, author of Learning with Squish">
+          </div>
+          <div class="author-bio">
+            <h3 class="author-name">Wesley Scholl<span class="author-role">Author, Learning with Squish</span></h3>
+            <p>
+              Wesley Scholl is the author behind Learning with Squish, a board book series he
+              created for his daughter, Lily. It started as a way to make everyday routines &mdash;
+              brushing teeth, counting toys, naming colors &mdash; feel like play instead of a
+              power struggle.
+            </p>
+            <p>
+              That idea grew into Konjo Publishing's Learning with Squish books: sweet, simple
+              stories starring a squishy purple friend named Squish, made for tiny hands and
+              short attention spans, and built to be read together, again and again, until every
+              page is memorized by heart.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer">
@@ -555,14 +675,13 @@
       "use strict";
 
       // ---------------------------------------------------------------
-      // AMAZON_LINKS — drop real Amazon product URLs in here once
-      // they're available. '#' is a placeholder that keeps the buttons
-      // inert (no navigation) until real links are set.
+      // AMAZON_LINKS — real product URLs.
       // ---------------------------------------------------------------
       var AMAZON_LINKS = {
-        habits: "#",
-        counting: "#",
-        colors: "#"
+        habits: "https://a.co/d/0h8bTi0X",
+        counting: "https://a.co/d/01cGuej8",
+        colors: "https://a.co/d/0eNTROSE",
+        collection: "https://a.co/d/0h10x3Mc"
       };
 
       // Friendly names shown in the contextual note near the email form
@@ -571,15 +690,28 @@
       var SRC_BOOK_NAMES = {
         "habits-printables": "Learning Good Habits with Squish",
         "counting-printables": "Learning to Count with Squish",
-        "colors-printables": "Learning Colors with Squish"
+        "colors-printables": "Learning Colors with Squish",
+        "collection-printables": "The Learning with Squish Collection"
       };
 
       var EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
       document.querySelectorAll("[data-amazon-key]").forEach(function (link) {
         var key = link.getAttribute("data-amazon-key");
-        if (Object.prototype.hasOwnProperty.call(AMAZON_LINKS, key)) {
-          link.setAttribute("href", AMAZON_LINKS[key]);
+        if (!Object.prototype.hasOwnProperty.call(AMAZON_LINKS, key)) {
+          return;
+        }
+        var url = AMAZON_LINKS[key];
+        if (url === "#") {
+          // No real ASIN yet — show an honest "coming soon" state
+          // instead of a dead link. Once a real Amazon URL is set in
+          // AMAZON_LINKS above, this branch stops running for that key.
+          link.classList.add("buy-button--pending");
+          link.setAttribute("aria-disabled", "true");
+          link.textContent = "Coming Soon";
+          link.removeAttribute("target");
+        } else {
+          link.setAttribute("href", url);
         }
       });
 
@@ -630,7 +762,10 @@
 
       function showSuccess() {
         form.hidden = true;
-        successEl.textContent = "You're all set! Check your inbox for your free Squish & Lilyan printables.";
+        successEl.innerHTML =
+          "You're all set! Check your inbox for your free Squish &amp; Lilyan printables." +
+          '<br><a class="printable-link" href="downloads/squish-lilyan-coloring-pages.pdf" download>' +
+          "Download them now &darr;</a>";
         successEl.hidden = false;
       }
 
@@ -649,11 +784,15 @@
         submitButton.textContent = "Sending...";
 
         // -----------------------------------------------------------
-        // TODO(ESP integration): /api/subscribe is a stub — there is no
-        // backend behind it yet. Wire this up to a real email service
-        // (Mailchimp, ConvertKit, etc.) and make sure `src` is passed
-        // through as a tagged field so signups stay attributed to the
-        // book / QR code that drove them.
+        // ESP integration: a working handler for this endpoint ships
+        // alongside this page at functions/api/subscribe.js (Cloudflare
+        // Pages Functions format — deploy docs/ to Cloudflare Pages and
+        // this route goes live automatically at /api/subscribe). It
+        // forwards to Buttondown by default; swap the fetch call inside
+        // for your ESP of choice. Requires a BUTTONDOWN_API_KEY
+        // environment variable set in the Pages project — never commit
+        // the key itself. `src` is forwarded as a subscriber tag so
+        // signups stay attributed to the book / QR code that drove them.
         // -----------------------------------------------------------
         fetch("/api/subscribe", {
           method: "POST",
