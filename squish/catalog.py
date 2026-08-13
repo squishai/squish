@@ -159,6 +159,15 @@ class _SSLError(RuntimeError):
     """Raised instead of the deep httpx/httpcore SSL traceback."""
 
 
+class _PrebuiltCheckError(RuntimeError):
+    """Raised when the HF prebuilt-weights listing call itself fails.
+
+    Distinct from "the repo was listed fine but has no squish files" — that
+    case is a normal ``False`` return, not an error. Carries the original
+    exception as ``__cause__`` so callers can report what actually broke.
+    """
+
+
 def _is_ssl_error(exc: BaseException) -> bool:
     """Return True if the exception chain contains an SSL verification failure."""
     msg = ""
@@ -1209,11 +1218,10 @@ def _hf_list_files(repo: str, token: str | None = None) -> list[str]:  # pragma:
     """
     Return all filenames in a HuggingFace repo.
 
-    Returns ``[]`` on any error (network, missing repo, SSL). SSL verification
-    is never disabled — when a corporate proxy intercepts HTTPS, the user
-    must set REQUESTS_CA_BUNDLE to a trusted CA PEM. Returning [] here just
-    means ``_has_squish_weights`` falls back to the local compression path,
-    which is non-fatal.
+    Raises ``_PrebuiltCheckError`` when the listing call itself fails
+    (network, auth, SSL, missing dependency) — that's distinct from the repo
+    genuinely having no matching files, which is a normal empty/irrelevant
+    list returned by a successful call.
     """
     _apply_ssl_env()
     try:
@@ -1231,18 +1239,28 @@ def _hf_list_files(repo: str, token: str | None = None) -> list[str]:  # pragma:
 
         try:
             return list(list_repo_files(repo, token=token))
-        except Exception as exc:  # noqa: BLE001 — HF listing; [] is a documented non-fatal fallback
+        except Exception as exc:  # noqa: BLE001 — HF listing failure surfaced as _PrebuiltCheckError
             _LOG.debug("list_repo_files(%s) failed: %s", repo, exc)
-            return []
-    except Exception as exc:  # noqa: BLE001 — optional HF dependency/import; [] is non-fatal
+            raise _PrebuiltCheckError(
+                f"Could not list files in {repo!r}: {exc}"
+            ) from exc
+    except _PrebuiltCheckError:
+        raise
+    except Exception as exc:  # noqa: BLE001 — optional HF dependency/import failure
         _LOG.debug("HF repo file listing unavailable for %s: %s", repo, exc)
-        return []
+        raise _PrebuiltCheckError(
+            f"HuggingFace repo file listing unavailable for {repo!r}: {exc}"
+        ) from exc
 
 
 def _has_squish_weights(repo: str, token: str | None = None) -> bool:
     """
     Return True when the squishai repo contains pre-compressed weights.
     Checks for either ``squish_weights.npz`` or a ``squish_npy/`` directory marker.
+
+    Raises ``_PrebuiltCheckError`` (propagated from ``_hf_list_files``) when
+    the listing call itself fails — callers must handle that separately from
+    a genuine ``False``.
     """
     files = _hf_list_files(repo, token=token)
     return any(
@@ -1358,8 +1376,18 @@ def pull(  # pragma: no cover
                 if entry.hf_sha256:
                     write_hash_sentinel(compressed_dir, entry.hf_sha256)
                 return compressed_dir
+            else:
+                print(
+                    f"  ℹ  No prebuilt weights at {_prebuilt_repo} yet — "
+                    "compressing locally."
+                )
         except _SSLError:
             raise  # re-raise with the clear user-facing message — do not swallow
+        except _PrebuiltCheckError as exc:
+            print(
+                f"  ⚠  Could not verify prebuilt weights at {_prebuilt_repo} "
+                f"({exc.__cause__}) — falling back to local compression."
+            )
         except (*_HF_DOWNLOAD_ERRORS, KeyError, AttributeError, TypeError) as exc:
             _LOG.debug("pre-compressed download failed for %r: %s", _prebuilt_repo, exc)
             if verbose:
