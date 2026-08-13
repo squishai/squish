@@ -1862,6 +1862,9 @@ def _generate_tokens(  # pragma: no cover
     seed: int | None   = None,
     use_cache: bool    = True,
     repetition_penalty: float = 1.0,
+    images: list[str] | None = None,
+    audio: list[str] | None  = None,
+    videos: list[str] | None = None,
 ):
     """
     Stream (token_text, finish_reason_or_None) tuples from the MLX model.
@@ -1869,6 +1872,7 @@ def _generate_tokens(  # pragma: no cover
     'length' (max_tokens exhausted).
 
     Dispatch priority:
+      0. mlx_vlm multimodal generation (images/audio/videos given — Wave 134)
       1. Prefix cache (exact-match, deterministic prompts only)
       2. Speculative decoding  (when draft model loaded + temp > 0)
       3. mlx_lm.stream_generate  (mlx_lm >= 0.12)
@@ -1876,6 +1880,39 @@ def _generate_tokens(  # pragma: no cover
     """
     model     = _state.model
     tokenizer = _state.tokenizer
+
+    # ── Wave 134: mlx_vlm multimodal generation ───────────────────────────────
+    # Bypasses every text-only dispatch path below — prefix-cache/speculative-
+    # decoding/manual-KV-loop all assume a plain mlx_lm KVCache and have no
+    # notion of pixel/audio embeddings. mlx_vlm owns its own generation loop
+    # and vision/audio-tower forward pass; squish wraps it rather than
+    # threading media through the text decode machinery.
+    if images or audio or videos:
+        from squish.backend import BE
+        _stop_list = [stop] if isinstance(stop, str) else (stop or [])
+        _acc = ""
+        for _text, _finish in BE.stream_generate(
+            model, tokenizer, prompt,
+            max_tokens=max_tokens, temperature=temperature, top_p=top_p,
+            image=images or None, audio=audio or None, video=videos or None,
+        ):
+            _prev_len = len(_acc)
+            _acc += _text
+            _hit_stop = next((s for s in _stop_list if s and s in _acc), None)
+            if _hit_stop is not None:
+                _stop_idx = _acc.index(_hit_stop)
+                _cut = _acc[_prev_len:_stop_idx] if _stop_idx > _prev_len else ""
+                if _cut:
+                    yield _cut, None
+                yield "", "stop"
+                return
+            if _text:
+                yield _text, None
+            if _finish is not None:
+                yield "", _finish
+                return
+        return
+
     stop_ids  = _get_stop_ids(stop)
     eos_id    = getattr(tokenizer, "eos_token_id", None) or 151645
 
@@ -3536,6 +3573,14 @@ async def chat_completions(  # pragma: no cover
 
     body: dict[str, Any] = await parse_json_body(request)
     messages    = body.get("messages", [])
+    from squish.serving.multimodal_content import (
+        UnsafeMediaSourceError,
+        extract_multimodal_content,
+    )
+    try:
+        messages, _mm_images, _mm_audio, _mm_videos = extract_multimodal_content(messages)
+    except UnsafeMediaSourceError as exc:
+        raise HTTPException(400, str(exc)) from exc
     max_tokens         = parse_max_tokens(body.get("max_tokens"), 4096)
     temperature        = parse_temperature(body.get("temperature"), 0.7)
     top_p              = parse_top_p(body.get("top_p"), 0.9)
@@ -3657,9 +3702,29 @@ async def chat_completions(  # pragma: no cover
             if _grammar_engine is not None:
                 _req_tool_schema = _tc_schema
 
-    prompt         = _apply_chat_template(
-        messages, _state.tokenizer, tools=_native_tools, enable_thinking=_enable_thinking,
-    )
+    # ── Wave 134: image/audio/video input ─────────────────────────────────────
+    # A multimodal request only makes sense against a model loaded through the
+    # mlx_vlm backend (Wave 130 tags such models with __squish_runtime__).
+    # Anything else — a text-only mlx_lm model, or the torch backend — gets a
+    # clear 400 here rather than silently dropping the media or crashing deep
+    # in generation.
+    _is_multimodal_request = bool(_mm_images or _mm_audio or _mm_videos)
+    if _is_multimodal_request:
+        if getattr(_state.model, "__squish_runtime__", "mlx_lm") != "mlx_vlm":
+            raise HTTPException(
+                400,
+                "This model does not support image/audio/video input. "
+                "Load a multimodal model (e.g. gemma4:12b) to use this feature.",
+            )
+        from squish.backend import BE
+        prompt = BE.build_multimodal_prompt(
+            _state.model, _state.tokenizer, messages,
+            num_images=len(_mm_images), num_audios=len(_mm_audio),
+        )
+    else:
+        prompt = _apply_chat_template(
+            messages, _state.tokenizer, tools=_native_tools, enable_thinking=_enable_thinking,
+        )
     prompt_tokens  = _count_tokens(prompt)
     cid            = f"chatcmpl-{uuid.uuid4().hex[:12]}"
     req_start      = time.perf_counter()
@@ -3686,7 +3751,8 @@ async def chat_completions(  # pragma: no cover
             yield f"data: {_json_dumps(role_chunk)}\n\n"
 
             gen = _generate_tokens(prompt, max_tokens, temperature, top_p, stop, seed,
-                                   repetition_penalty=repetition_penalty)
+                                   repetition_penalty=repetition_penalty,
+                                   images=_mm_images, audio=_mm_audio, videos=_mm_videos)
             loop = _aio.get_running_loop()
             # Decouple decode from the event loop: the inference thread drains
             # the synchronous generator and pushes results onto this queue; the
@@ -3803,6 +3869,7 @@ async def chat_completions(  # pragma: no cover
             _gen_iter = _generate_tokens(
                 prompt, max_tokens, temperature, top_p, stop, seed,
                 repetition_penalty=repetition_penalty,
+                images=_mm_images, audio=_mm_audio, videos=_mm_videos,
             )
             _loop = _aio.get_running_loop()
             _gen_gc_enter()
