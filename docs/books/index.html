@@ -12,9 +12,12 @@
      style guide. Adjust here to re-theme the whole page.
      --------------------------------------------------------------- */
   :root {
+    /* Brand — one purple, one warm accent, one neutral. Everything else
+       on this page is derived from these three plus ink/white. */
     --squish-purple: #8B5FBF;
     --squish-purple-light: #B590E0;
     --squish-purple-pale: #E6D9F5;
+    --squish-purple-dark: #6B4699;
     --cream: #F3EDFB;
     --peach-start: #EFE2FA;
     --peach-end: #D8B9EF;
@@ -22,19 +25,49 @@
     --ink: #4A3B33;
     --ink-soft: #7A6B61;
     --white: #FFFFFF;
+
+    /* Accent — the one warm color reserved for calls to action, so a
+       CTA is always visually distinct from purple headings/chrome. */
     --accent-yellow: #F7B733;
     --accent-yellow-dark: #E09A1A;
+    --accent-yellow-pale: #FDEBC8;
+
     --success-green: #4C9A6A;
     --error-red: #C0503A;
 
     --radius-lg: 28px;
     --radius-md: 18px;
     --radius-sm: 12px;
+    --radius-pill: 999px;
     --shadow-soft: 0 12px 30px rgba(139, 95, 191, 0.18);
+    --shadow-lift: 0 18px 34px rgba(139, 95, 191, 0.28);
     --border-thick: 4px solid var(--squish-purple);
 
     --font-display: "Baloo 2", "Fredoka", ui-rounded, "Segoe UI Rounded", "Nunito", sans-serif;
     --font-body: "Nunito", ui-rounded, "Segoe UI Rounded", -apple-system, BlinkMacSystemFont, sans-serif;
+
+    /* Spacing rhythm — every section uses one of these for vertical
+       padding so the page reads as one system, not a stack of one-offs. */
+    --space-xs: 8px;
+    --space-sm: 16px;
+    --space-md: 24px;
+    --space-lg: 40px;
+    --space-xl: 64px;
+    --space-2xl: 96px;
+    --section-py: clamp(var(--space-xl), 8vw, var(--space-2xl));
+    --container-max: 1080px;
+
+    --transition-fast: 0.15s ease;
+    --transition-base: 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    --lift-hover: -4px;
+
+    --nav-height: 76px;
+    --z-header: 100;
+    --focus-ring: 3px solid var(--squish-purple-dark);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :root { --transition-base: 0.01ms; --transition-fast: 0.01ms; }
   }
 
   /* Optional rounded display font — falls back gracefully to system
@@ -45,6 +78,16 @@
   * { box-sizing: border-box; }
 
   html { scroll-behavior: smooth; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 
   body {
     margin: 0;
@@ -58,9 +101,11 @@
 
   a { color: inherit; }
 
+  :focus-visible { outline: var(--focus-ring); outline-offset: 3px; }
+
   .container {
     width: 100%;
-    max-width: 1080px;
+    max-width: var(--container-max);
     margin: 0 auto;
     padding: 0 20px;
   }
@@ -87,13 +132,188 @@
   }
 
   /* ---------------------------------------------------------------
+     Button system — one shared set of styles, reused by every CTA
+     on the page instead of one-off classes per section.
+     --------------------------------------------------------------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+    border-radius: var(--radius-pill);
+    padding: 14px 30px;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), color var(--transition-fast);
+  }
+
+  .btn:hover, .btn:focus-visible {
+    transform: translateY(var(--lift-hover));
+  }
+
+  /* Primary — the one warm accent, reserved for the main action in a section. */
+  .btn--primary {
+    background: var(--accent-yellow);
+    color: var(--ink);
+    box-shadow: 0 10px 24px rgba(224, 154, 26, 0.35);
+  }
+  .btn--primary:hover, .btn--primary:focus-visible {
+    background: var(--accent-yellow-dark);
+    box-shadow: 0 16px 30px rgba(224, 154, 26, 0.42);
+  }
+
+  /* Purple — secondary emphasis, used on colored/dark backgrounds. */
+  .btn--purple {
+    background: var(--squish-purple);
+    color: var(--white);
+    box-shadow: var(--shadow-soft);
+  }
+  .btn--purple:hover, .btn--purple:focus-visible {
+    background: var(--squish-purple-light);
+    box-shadow: var(--shadow-lift);
+  }
+
+  /* Ghost — outline only, for a lower-emphasis second CTA. */
+  .btn--ghost {
+    background: transparent;
+    border-color: var(--squish-purple);
+    color: var(--squish-purple);
+  }
+  .btn--ghost:hover, .btn--ghost:focus-visible {
+    background: var(--squish-purple-pale);
+  }
+
+  .btn--ghost-on-dark {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.7);
+    color: var(--white);
+  }
+  .btn--ghost-on-dark:hover, .btn--ghost-on-dark:focus-visible {
+    background: rgba(255, 255, 255, 0.14);
+  }
+
+  .btn--sm { padding: 10px 20px; font-size: 0.9rem; }
+
+  .btn:disabled, .btn[aria-disabled="true"] {
+    cursor: default;
+    pointer-events: none;
+    opacity: 0.7;
+    transform: none;
+  }
+
+  /* ---------------------------------------------------------------
+     Card system — one shared surface style for every "boxed" unit
+     (book covers, lesson cards, FAQ items, stat tiles, etc).
+     --------------------------------------------------------------- */
+  .card {
+    background: var(--white);
+    border: var(--border-thick);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+  }
+  .card--hover:hover {
+    transform: translateY(var(--lift-hover));
+    box-shadow: var(--shadow-lift);
+  }
+
+  .eyebrow {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--squish-purple);
+    background: var(--squish-purple-pale);
+    border-radius: var(--radius-pill);
+    padding: 6px 16px;
+    margin-bottom: var(--space-sm);
+  }
+
+  /* ---------------------------------------------------------------
+     Sticky header
+     --------------------------------------------------------------- */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+    height: var(--nav-height);
+    display: flex;
+    align-items: center;
+    background: transparent;
+    transition: background var(--transition-base), box-shadow var(--transition-base), height var(--transition-base);
+  }
+
+  .site-header .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    width: 100%;
+  }
+
+  .site-header--scrolled {
+    height: calc(var(--nav-height) - 12px);
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 18px rgba(139, 95, 191, 0.22);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--squish-purple);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.1rem;
+  }
+
+  .brand img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .site-nav {
+    display: none;
+    align-items: center;
+    gap: var(--space-md);
+  }
+
+  .site-nav a {
+    text-decoration: none;
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 0.95rem;
+    transition: color var(--transition-fast);
+  }
+
+  .site-nav a:hover, .site-nav a:focus-visible {
+    color: var(--squish-purple);
+  }
+
+  @media (min-width: 760px) {
+    .site-nav { display: flex; }
+  }
+
+  .header-cta { flex-shrink: 0; }
+
+  #hero-sentinel { height: 1px; }
+
+  /* ---------------------------------------------------------------
      Hero
      --------------------------------------------------------------- */
   .hero {
     position: relative;
     overflow: hidden;
     background: linear-gradient(160deg, var(--peach-start) 0%, var(--peach-end) 100%);
-    padding: 56px 0 56px;
+    padding: var(--space-xl) 0 var(--section-py);
   }
 
   .hero .container {
@@ -103,7 +323,7 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 24px;
+    gap: var(--space-md);
   }
 
   .hero-title {
@@ -115,29 +335,16 @@
   .hero-tagline {
     font-size: clamp(1.05rem, 3vw, 1.35rem);
     color: var(--ink-soft);
-    max-width: 42ch;
+    max-width: 46ch;
     font-weight: 600;
   }
 
-  .hero-cta {
-    display: inline-block;
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 1.05rem;
-    color: var(--white);
-    background: var(--squish-purple);
-    border: none;
-    border-radius: 999px;
-    padding: 14px 32px;
-    text-decoration: none;
-    box-shadow: var(--shadow-soft);
-    transition: transform 0.15s ease, background 0.15s ease;
-  }
-
-  .hero-cta:hover,
-  .hero-cta:focus-visible {
-    background: var(--squish-purple-light);
-    transform: translateY(-2px);
+  .hero-cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
   }
 
   /* Hero illustration frame: the real "Learning with Squish Collection"
@@ -187,7 +394,7 @@
      Book showcase
      --------------------------------------------------------------- */
   .book-showcase {
-    padding: 56px 0;
+    padding: var(--section-py) 0;
   }
 
   .section-title {
@@ -207,7 +414,7 @@
   .book-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 24px;
+    gap: var(--space-md);
   }
 
   /* book-grid column counts are set further down, near the real
@@ -216,11 +423,7 @@
   .book-card {
     display: flex;
     flex-direction: column;
-    background: var(--white);
-    border: var(--border-thick);
-    border-radius: var(--radius-lg);
     padding: 20px;
-    box-shadow: var(--shadow-soft);
   }
 
   /* Real published cover art. */
@@ -238,13 +441,6 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-  }
-
-  .book-card {
-    transition: transform 0.18s ease;
-  }
-  .book-card:hover {
-    transform: translateY(-4px);
   }
 
   @media (min-width: 620px) {
@@ -265,33 +461,13 @@
     flex-grow: 1;
   }
 
-  .buy-button {
-    display: inline-block;
-    text-align: center;
-    text-decoration: none;
-    font-family: var(--font-display);
-    font-weight: 700;
-    color: var(--white);
-    background: var(--squish-purple);
-    border-radius: 999px;
-    padding: 12px 20px;
-    transition: background 0.15s ease, transform 0.15s ease;
-  }
-
-  .buy-button:hover,
-  .buy-button:focus-visible {
-    background: var(--squish-purple-light);
-    transform: translateY(-2px);
-  }
-
   /* Shown instead of an active buy link until a real Amazon URL is set
      in AMAZON_LINKS (see script below) — honest "not live yet" state
      rather than a dead '#' link. */
-  .buy-button--pending {
+  .btn--pending {
     background: var(--ink-soft);
-    cursor: default;
-    pointer-events: none;
-    opacity: 0.75;
+    color: var(--white);
+    box-shadow: none;
   }
 
   .printable-link {
@@ -310,7 +486,7 @@
      Email capture — the most visually prominent section on the page
      --------------------------------------------------------------- */
   .email-capture {
-    padding: 40px 16px 64px;
+    padding: var(--space-lg) 16px var(--section-py);
   }
 
   .email-capture-card {
@@ -391,31 +567,7 @@
     outline-offset: 2px;
   }
 
-  .submit-button {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 1rem;
-    color: var(--white);
-    background: var(--squish-purple);
-    border: 3px solid var(--white);
-    border-radius: var(--radius-sm);
-    padding: 12px 22px;
-    cursor: pointer;
-    transition: background 0.15s ease, transform 0.15s ease;
-    white-space: nowrap;
-  }
-
-  .submit-button:hover,
-  .submit-button:focus-visible {
-    background: var(--squish-purple-light);
-    transform: translateY(-2px);
-  }
-
-  .submit-button:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-    transform: none;
-  }
+  .submit-button { white-space: nowrap; }
 
   .form-error {
     color: #FFE3D9;
@@ -450,7 +602,7 @@
      About the Author
      --------------------------------------------------------------- */
   .about-author {
-    padding: 8px 16px 64px;
+    padding: 0 16px var(--section-py);
   }
 
   .author-card {
@@ -532,22 +684,44 @@
 </head>
 <body>
 
-  <section class="hero">
+  <a class="visually-hidden" href="#main">Skip to content</a>
+
+  <header class="site-header" id="site-header">
+    <div class="container">
+      <a class="brand" href="#top">
+        <img src="assets/squish-mascot.png" alt="" width="36" height="36">
+        Learning with Squish
+      </a>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="#books">Books</a>
+        <a href="#printables">Free Printables</a>
+        <a href="#about">About</a>
+      </nav>
+      <a class="btn btn--primary btn--sm header-cta" data-amazon-key="collection" href="#" target="_blank" rel="noopener">Shop Now</a>
+    </div>
+  </header>
+
+  <div id="hero-sentinel" aria-hidden="true"></div>
+
+  <section class="hero" id="top">
     <svg class="sparkle sparkle--1" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0l2.2 8.8L23 12l-8.8 2.2L12 23l-2.2-8.8L1 12l8.8-2.2z"/></svg>
     <svg class="sparkle sparkle--2" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0l2.2 8.8L23 12l-8.8 2.2L12 23l-2.2-8.8L1 12l8.8-2.2z"/></svg>
     <svg class="sparkle sparkle--3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0l2.2 8.8L23 12l-8.8 2.2L12 23l-2.2-8.8L1 12l8.8-2.2z"/></svg>
     <svg class="sparkle sparkle--4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0l2.2 8.8L23 12l-8.8 2.2L12 23l-2.2-8.8L1 12l8.8-2.2z"/></svg>
 
     <div class="container">
-      <h1 class="hero-title">Learning with Squish</h1>
-      <p class="hero-tagline">Playful board books for curious little learners, ages 1-4.</p>
+      <h1 class="hero-title">Big lessons. Tiny hands. One squishy purple friend.</h1>
+      <p class="hero-tagline">Playful board books that turn brushing teeth, counting, colors, and shapes into your toddler's favorite part of the day &mdash; ages 1&ndash;4.</p>
 
       <div class="hero-illustration">
         <img src="assets/hero.jpg" alt="Squish and Lilyan holding hands under a rainbow, from The Learning with Squish Collection cover">
       </div>
 
-      <a class="hero-cta" href="#books">See the Books</a>
-      <a class="series-link" href="https://www.amazon.com/dp/B0HCXGQ9VX" target="_blank" rel="noopener">Shop the full series on Amazon &rarr;</a>
+      <div class="hero-cta-row">
+        <a class="btn btn--primary" data-amazon-key="collection" href="#" target="_blank" rel="noopener">Shop the Books</a>
+        <a class="btn btn--ghost" href="#printables">Get Free Printables</a>
+      </div>
+      <a class="series-link" href="#books">See all five books &darr;</a>
     </div>
   </section>
 
@@ -559,49 +733,49 @@
 
         <div class="book-grid">
 
-          <article class="book-card">
+          <article class="book-card card card--hover">
             <div class="book-cover-placeholder">
               <img src="assets/covers/habits.jpg" alt="Learning Good Habits with Squish cover">
             </div>
             <h3 class="book-title">Learning Good Habits with Squish</h3>
             <p class="book-description">Squish and Lilyan make brushing teeth, sharing, and cleanup time fun for your little one.</p>
-            <a class="buy-button" data-amazon-key="habits" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+            <a class="btn btn--primary btn--sm" data-amazon-key="habits" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
           </article>
 
-          <article class="book-card">
+          <article class="book-card card card--hover">
             <div class="book-cover-placeholder">
               <img src="assets/covers/counting.jpg" alt="Learning to Count with Squish cover">
             </div>
             <h3 class="book-title">Learning to Count with Squish</h3>
             <p class="book-description">Count along with Squish from one to ten through silly, squishy adventures.</p>
-            <a class="buy-button" data-amazon-key="counting" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+            <a class="btn btn--primary btn--sm" data-amazon-key="counting" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
           </article>
 
-          <article class="book-card">
+          <article class="book-card card card--hover">
             <div class="book-cover-placeholder">
               <img src="assets/covers/colors.jpg" alt="Learning Colors with Squish cover">
             </div>
             <h3 class="book-title">Learning Colors with Squish</h3>
             <p class="book-description">Explore a rainbow of colors with Squish and Lilyan on every colorful page.</p>
-            <a class="buy-button" data-amazon-key="colors" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+            <a class="btn btn--primary btn--sm" data-amazon-key="colors" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
           </article>
 
-          <article class="book-card">
+          <article class="book-card card card--hover">
             <div class="book-cover-placeholder">
               <img src="assets/covers/shapes.jpg" alt="Learning Shapes with Squish cover">
             </div>
             <h3 class="book-title">Learning Shapes with Squish</h3>
             <p class="book-description">Circles, squares, triangles, and stars &mdash; Squish and Lilyan spot shapes everywhere they go.</p>
-            <a class="buy-button" data-amazon-key="shapes" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+            <a class="btn btn--primary btn--sm" data-amazon-key="shapes" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
           </article>
 
-          <article class="book-card">
+          <article class="book-card card card--hover">
             <div class="book-cover-placeholder">
               <img src="assets/covers/collection.jpg" alt="The Learning with Squish Collection cover">
             </div>
             <h3 class="book-title">The Learning with Squish Collection</h3>
             <p class="book-description">All three stories of habits, counting, and colors together in one keepsake collection.</p>
-            <a class="buy-button" data-amazon-key="collection" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+            <a class="btn btn--primary btn--sm" data-amazon-key="collection" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
           </article>
 
         </div>
@@ -637,7 +811,7 @@
                book / QR code that drove it. -->
           <input type="hidden" id="src-input" name="src" value="" />
 
-          <button type="submit" class="submit-button" id="submit-button">Send Me the Printables!</button>
+          <button type="submit" class="btn btn--primary submit-button" id="submit-button">Send Me the Printables!</button>
         </form>
 
         <p class="form-error" id="email-error" role="alert" hidden></p>
@@ -717,7 +891,7 @@
           // No real ASIN yet — show an honest "coming soon" state
           // instead of a dead link. Once a real Amazon URL is set in
           // AMAZON_LINKS above, this branch stops running for that key.
-          link.classList.add("buy-button--pending");
+          link.classList.add("btn--pending");
           link.setAttribute("aria-disabled", "true");
           link.textContent = "Coming Soon";
           link.removeAttribute("target");
@@ -727,6 +901,22 @@
       });
 
       document.getElementById("footer-year").textContent = new Date().getFullYear();
+
+      // ---------------------------------------------------------------
+      // Sticky header: compress + add a background once the hero's
+      // sentinel scrolls out of view, instead of a scroll-position
+      // listener (avoids scroll-jank, works with IntersectionObserver).
+      // ---------------------------------------------------------------
+      var header = document.getElementById("site-header");
+      var heroSentinel = document.getElementById("hero-sentinel");
+      if (header && heroSentinel && "IntersectionObserver" in window) {
+        var headerObserver = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            header.classList.toggle("site-header--scrolled", !entry.isIntersecting);
+          });
+        });
+        headerObserver.observe(heroSentinel);
+      }
 
       // ---------------------------------------------------------------
       // Attribution tracking: read ?src= from the URL, stash it in the
