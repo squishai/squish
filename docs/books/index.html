@@ -211,7 +211,7 @@
   }
 
   /* book-grid column counts are set further down, near the real
-     cover-art rules (2-up at 620px, 4-up at 1000px, for four books). */
+     cover-art rules (2-up at 620px, 3-up at 1000px, for five books). */
 
   .book-card {
     display: flex;
@@ -251,7 +251,7 @@
     .book-grid { grid-template-columns: repeat(2, 1fr); }
   }
   @media (min-width: 1000px) {
-    .book-grid { grid-template-columns: repeat(4, 1fr); }
+    .book-grid { grid-template-columns: repeat(3, 1fr); }
   }
 
   .book-title {
@@ -555,7 +555,7 @@
     <section class="book-showcase" id="books">
       <div class="container">
         <h2 class="section-title">The Book Series</h2>
-        <p class="section-subtitle">Four squishy-soft board books to grow with your toddler.</p>
+        <p class="section-subtitle">Five squishy-soft board books to grow with your toddler.</p>
 
         <div class="book-grid">
 
@@ -584,6 +584,15 @@
             <h3 class="book-title">Learning Colors with Squish</h3>
             <p class="book-description">Explore a rainbow of colors with Squish and Lilyan on every colorful page.</p>
             <a class="buy-button" data-amazon-key="colors" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+          </article>
+
+          <article class="book-card">
+            <div class="book-cover-placeholder">
+              <img src="assets/covers/shapes.jpg" alt="Learning Shapes with Squish cover">
+            </div>
+            <h3 class="book-title">Learning Shapes with Squish</h3>
+            <p class="book-description">Circles, squares, triangles, and stars &mdash; Squish and Lilyan spot shapes everywhere they go.</p>
+            <a class="buy-button" data-amazon-key="shapes" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
           </article>
 
           <article class="book-card">
@@ -681,6 +690,7 @@
         habits: "https://a.co/d/0h8bTi0X",
         counting: "https://a.co/d/01cGuej8",
         colors: "https://a.co/d/0eNTROSE",
+        shapes: "https://a.co/d/0fzbFoD7",
         collection: "https://a.co/d/0h10x3Mc"
       };
 
@@ -691,6 +701,7 @@
         "habits-printables": "Learning Good Habits with Squish",
         "counting-printables": "Learning to Count with Squish",
         "colors-printables": "Learning Colors with Squish",
+        "shapes-printables": "Learning Shapes with Squish",
         "collection-printables": "The Learning with Squish Collection"
       };
 
@@ -736,8 +747,9 @@
         }
 
         // TODO: replace this console.log with real analytics — e.g. a
-        // Plausible custom event, a GA4 event, or simply let the /api/subscribe
-        // handler forward `src` to the ESP as a tagged field on signup.
+        // Plausible custom event or a GA4 event. `src` is also sent along
+        // in the /api/subscribe request body so it shows up in the
+        // signup notification email.
         console.log("[squish.run/books] src param captured:", srcParam);
       }
 
@@ -763,7 +775,7 @@
       function showSuccess() {
         form.hidden = true;
         successEl.innerHTML =
-          "You're all set! Check your inbox for your free Squish &amp; Lilyan printables." +
+          "You're all set! Here are your free Squish &amp; Lilyan printables." +
           '<br><a class="printable-link" href="downloads/squish-lilyan-coloring-pages.pdf" download>' +
           "Download them now &darr;</a>";
         successEl.hidden = false;
@@ -784,15 +796,15 @@
         submitButton.textContent = "Sending...";
 
         // -----------------------------------------------------------
-        // ESP integration: a working handler for this endpoint ships
+        // Signup notification: a working handler for this endpoint ships
         // alongside this page at functions/api/subscribe.js (Cloudflare
         // Pages Functions format — deploy docs/ to Cloudflare Pages and
-        // this route goes live automatically at /api/subscribe). It
-        // forwards to Buttondown by default; swap the fetch call inside
-        // for your ESP of choice. Requires a BUTTONDOWN_API_KEY
-        // environment variable set in the Pages project — never commit
-        // the key itself. `src` is forwarded as a subscriber tag so
-        // signups stay attributed to the book / QR code that drove them.
+        // this route goes live automatically at /api/subscribe). It emails
+        // each signup straight to wes@squish.run via Resend. Requires a
+        // RESEND_API_KEY environment variable set in the Pages project —
+        // never commit the key itself. `src` is included in the
+        // notification so signups stay attributed to the book / QR code
+        // that drove them.
         // -----------------------------------------------------------
         fetch("/api/subscribe", {
           method: "POST",
