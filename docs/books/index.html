@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Learning with Squish — Playful Board Books for Curious Little Learners</title>
-<meta name="description" content="Learning with Squish is a board book series by Konjo Publishing for kids ages 1-4. Get free printable coloring pages of Squish and Lilyan." />
+<meta name="description" content="Learning with Squish is a 5-book series by Konjo Publishing for kids ages 1-5. Meet Squish and Lilyan, get free printable coloring pages, and shop the series." />
 
 <style>
   /* ---------------------------------------------------------------
@@ -42,6 +42,7 @@
     --shadow-soft: 0 12px 30px rgba(139, 95, 191, 0.18);
     --shadow-lift: 0 18px 34px rgba(139, 95, 191, 0.28);
     --border-thick: 4px solid var(--squish-purple);
+    --border-thin: 2px solid var(--squish-purple-pale);
 
     --font-display: "Baloo 2", "Fredoka", ui-rounded, "Segoe UI Rounded", "Nunito", sans-serif;
     --font-body: "Nunito", ui-rounded, "Segoe UI Rounded", -apple-system, BlinkMacSystemFont, sans-serif;
@@ -56,9 +57,11 @@
     --space-2xl: 96px;
     --section-py: clamp(var(--space-xl), 8vw, var(--space-2xl));
     --container-max: 1080px;
+    --container-narrow: 760px;
 
     --transition-fast: 0.15s ease;
     --transition-base: 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    --reveal-duration: 0.6s;
     --lift-hover: -4px;
 
     --nav-height: 76px;
@@ -67,7 +70,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    :root { --transition-base: 0.01ms; --transition-fast: 0.01ms; }
+    :root { --transition-base: 0.01ms; --transition-fast: 0.01ms; --reveal-duration: 0.01ms; }
   }
 
   /* Optional rounded display font — falls back gracefully to system
@@ -89,12 +92,21 @@
     }
   }
 
+  /* One continuous background wash for the whole page — sections are
+     told apart by cards, spacing, and alternating tints, never by a
+     hard color-block change, so scrolling reads as one continuous
+     surface rather than a stack of banners. */
   body {
     margin: 0;
     font-family: var(--font-body);
     color: var(--ink);
-    background: var(--cream);
     line-height: 1.5;
+    background: linear-gradient(180deg,
+      var(--peach-start) 0%,
+      var(--cream) 22%,
+      var(--cream) 78%,
+      var(--peach-start) 100%);
+    background-attachment: fixed;
   }
 
   img, svg { max-width: 100%; display: block; }
@@ -109,6 +121,8 @@
     margin: 0 auto;
     padding: 0 20px;
   }
+
+  .container--narrow { max-width: var(--container-narrow); }
 
   h1, h2, h3 {
     font-family: var(--font-display);
@@ -129,6 +143,26 @@
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
+  }
+
+  [hidden] { display: none !important; }
+
+  /* ---------------------------------------------------------------
+     Scroll reveal — progressive enhancement only. Elements are only
+     ever hidden if JS confirms IntersectionObserver support AND the
+     visitor hasn't asked for reduced motion, so there's no FOUC and
+     no motion sickness risk if either check fails.
+     --------------------------------------------------------------- */
+  .reveal {
+    transition: opacity var(--reveal-duration) ease-out, transform var(--reveal-duration) ease-out;
+  }
+  html.js-reveal-armed .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  html.js-reveal-armed .reveal.reveal--visible {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   /* ---------------------------------------------------------------
@@ -155,15 +189,28 @@
     transform: translateY(var(--lift-hover));
   }
 
-  /* Primary — the one warm accent, reserved for the main action in a section. */
+  @media (prefers-reduced-motion: reduce) {
+    .btn:hover, .btn:focus-visible, .card--hover:hover { transform: none; }
+  }
+
+  /* Primary — the one warm accent, reserved for the main action in a section.
+     A slow breathing glow (not movement) keeps it findable without
+     shouting — mirrors the "cta-breathe" pattern from Open & Async. */
   .btn--primary {
     background: var(--accent-yellow);
     color: var(--ink);
-    box-shadow: 0 10px 24px rgba(224, 154, 26, 0.35);
+    animation: cta-breathe 3.4s ease-in-out infinite;
   }
   .btn--primary:hover, .btn--primary:focus-visible {
     background: var(--accent-yellow-dark);
     box-shadow: 0 16px 30px rgba(224, 154, 26, 0.42);
+  }
+  @keyframes cta-breathe {
+    0%, 100% { box-shadow: 0 10px 24px rgba(224, 154, 26, 0.32); }
+    50% { box-shadow: 0 10px 32px rgba(224, 154, 26, 0.55); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .btn--primary { animation: none; box-shadow: 0 10px 24px rgba(224, 154, 26, 0.35); }
   }
 
   /* Purple — secondary emphasis, used on colored/dark backgrounds. */
@@ -187,15 +234,6 @@
     background: var(--squish-purple-pale);
   }
 
-  .btn--ghost-on-dark {
-    background: transparent;
-    border-color: rgba(255, 255, 255, 0.7);
-    color: var(--white);
-  }
-  .btn--ghost-on-dark:hover, .btn--ghost-on-dark:focus-visible {
-    background: rgba(255, 255, 255, 0.14);
-  }
-
   .btn--sm { padding: 10px 20px; font-size: 0.9rem; }
 
   .btn:disabled, .btn[aria-disabled="true"] {
@@ -203,6 +241,7 @@
     pointer-events: none;
     opacity: 0.7;
     transform: none;
+    animation: none;
   }
 
   /* ---------------------------------------------------------------
@@ -220,6 +259,10 @@
     transform: translateY(var(--lift-hover));
     box-shadow: var(--shadow-lift);
   }
+  .card--soft {
+    border: var(--border-thin);
+    box-shadow: none;
+  }
 
   .eyebrow {
     display: inline-block;
@@ -235,8 +278,38 @@
     margin-bottom: var(--space-sm);
   }
 
+  .eyebrow--center { display: table; margin-left: auto; margin-right: auto; }
+
+  .section-title {
+    text-align: center;
+    font-size: clamp(1.6rem, 5vw, 2.2rem);
+    color: var(--squish-purple);
+  }
+
+  .section-subtitle {
+    text-align: center;
+    color: var(--ink-soft);
+    font-weight: 600;
+    max-width: 50ch;
+    margin: 0 auto 36px;
+  }
+
+  .section-head { text-align: center; margin-bottom: var(--space-lg); }
+
+  /* Dot used on a retailer/format link — a small accent instead of a
+     full-color button fill, so color reads as a signal, not a block. */
+  .dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--accent-yellow-dark);
+    box-shadow: 0 0 0 3px rgba(224, 154, 26, 0.2);
+    flex-shrink: 0;
+  }
+
   /* ---------------------------------------------------------------
-     Sticky header
+     Sticky header + scroll progress
      --------------------------------------------------------------- */
   .site-header {
     position: sticky;
@@ -264,20 +337,51 @@
     box-shadow: 0 4px 18px rgba(139, 95, 191, 0.22);
   }
 
+  .scroll-progress {
+    position: sticky;
+    top: var(--nav-height);
+    z-index: var(--z-header);
+    height: 4px;
+    width: 100%;
+    background: transparent;
+    margin-top: calc(var(--nav-height) * -1);
+  }
+  .site-header--scrolled + #hero-sentinel + .scroll-progress,
+  .scroll-progress {
+    margin-top: 0;
+  }
+  .scroll-progress__bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent-yellow), var(--squish-purple));
+    transition: width 0.1s linear;
+  }
+
   .brand {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     text-decoration: none;
     color: var(--squish-purple);
     font-family: var(--font-display);
     font-weight: 800;
-    font-size: 1.1rem;
+    font-size: clamp(0.85rem, 3.6vw, 1.1rem);
+    white-space: nowrap;
+    flex-shrink: 1;
+    min-width: 0;
   }
 
-  .brand img {
-    width: 36px;
-    height: 36px;
+  .brand img { width: 32px; height: 32px; flex-shrink: 0; }
+
+  .brand-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+
+  @media (min-width: 480px) {
+    .brand img { width: 36px; height: 36px; }
   }
 
   .site-nav {
@@ -294,9 +398,7 @@
     transition: color var(--transition-fast);
   }
 
-  .site-nav a:hover, .site-nav a:focus-visible {
-    color: var(--squish-purple);
-  }
+  .site-nav a:hover, .site-nav a:focus-visible { color: var(--squish-purple); }
 
   @media (min-width: 760px) {
     .site-nav { display: flex; }
@@ -312,7 +414,6 @@
   .hero {
     position: relative;
     overflow: hidden;
-    background: linear-gradient(160deg, var(--peach-start) 0%, var(--peach-end) 100%);
     padding: var(--space-xl) 0 var(--section-py);
   }
 
@@ -353,7 +454,7 @@
      published art with no distortion. */
   .hero-illustration {
     width: 100%;
-    max-width: 480px;
+    max-width: 420px;
     aspect-ratio: 1 / 1;
     background: var(--white);
     border: var(--border-thick);
@@ -378,6 +479,19 @@
     font-size: 0.95rem;
   }
 
+  .scroll-cue {
+    margin-top: var(--space-sm);
+    color: var(--squish-purple);
+    animation: gentle-bounce 2.4s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-cue { animation: none; }
+  }
+  @keyframes gentle-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(6px); }
+  }
+
   /* Soft decorative sparkles — inline SVG, no external image requests */
   .sparkle {
     position: absolute;
@@ -391,34 +505,173 @@
   .sparkle--4 { bottom: 20%; right: 12%; width: 30px; }
 
   /* ---------------------------------------------------------------
-     Book showcase
+     Meet the Friends — character intro
      --------------------------------------------------------------- */
-  .book-showcase {
-    padding: var(--section-py) 0;
+  .friends { padding: var(--space-lg) 0 var(--section-py); }
+
+  .friends-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  @media (min-width: 640px) {
+    .friends-grid { grid-template-columns: repeat(2, 1fr); }
   }
 
-  .section-title {
+  .friend-card {
+    padding: var(--space-md);
     text-align: center;
-    font-size: clamp(1.6rem, 5vw, 2.2rem);
+  }
+
+  .friend-photo {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto var(--space-sm);
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--squish-purple-pale);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .friend-photo img { width: 78%; height: 78%; object-fit: contain; }
+  .friend-photo--lilyan { color: var(--squish-purple); }
+
+  .friend-name { color: var(--squish-purple); font-size: 1.2rem; margin-bottom: 6px; }
+  .friend-bio { color: var(--ink-soft); font-weight: 600; margin: 0; }
+
+  /* ---------------------------------------------------------------
+     Pull-quote marquee — continuous loop, pauses on hover/focus,
+     keyboard accessible (each quote is a real, focusable link).
+     --------------------------------------------------------------- */
+  .quote-band {
+    padding: var(--space-md) 0;
+    background: var(--squish-purple-pale);
+    overflow: hidden;
+  }
+
+  .marquee {
+    display: flex;
+    width: max-content;
+    animation: marquee-scroll 38s linear infinite;
+  }
+  .marquee:hover, .marquee:focus-within {
+    animation-play-state: paused;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .marquee {
+      animation: none;
+      flex-wrap: wrap;
+      width: 100%;
+      justify-content: center;
+    }
+  }
+  @keyframes marquee-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  .marquee-item {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--squish-purple-dark);
+    white-space: nowrap;
+    text-decoration: none;
+  }
+  .marquee-item:hover, .marquee-item:focus-visible {
+    color: var(--squish-purple);
+  }
+  .marquee-item .dot { background: var(--squish-purple); box-shadow: 0 0 0 3px rgba(139, 95, 191, 0.2); }
+
+  /* ---------------------------------------------------------------
+     Audience split
+     --------------------------------------------------------------- */
+  .audience { padding: var(--section-py) 0; }
+
+  .audience-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+  @media (min-width: 760px) {
+    .audience-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .audience-card { padding: var(--space-lg); }
+
+  .audience-card h3 {
+    color: var(--squish-purple);
+    font-size: 1.3rem;
+  }
+
+  .audience-card ul {
+    margin: 0;
+    padding-left: 1.2em;
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .audience-card li { margin-bottom: 10px; }
+  .audience-card li:last-child { margin-bottom: 0; }
+
+  /* ---------------------------------------------------------------
+     Recurring threads — "Why families keep coming back"
+     --------------------------------------------------------------- */
+  .threads { padding: 0 0 var(--section-py); }
+
+  .thread-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+  }
+  @media (min-width: 700px) {
+    .thread-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1000px) {
+    .thread-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .thread-card {
+    padding: var(--space-md);
+    text-align: center;
+  }
+
+  .thread-icon {
+    width: 44px;
+    height: 44px;
+    margin: 0 auto 10px;
     color: var(--squish-purple);
   }
 
-  .section-subtitle {
-    text-align: center;
-    color: var(--ink-soft);
-    font-weight: 600;
-    max-width: 50ch;
-    margin: 0 auto 36px;
+  .thread-card p {
+    margin: 0;
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 0.95rem;
   }
+
+  /* ---------------------------------------------------------------
+     Book showcase
+     --------------------------------------------------------------- */
+  .book-showcase { padding: var(--section-py) 0; }
 
   .book-grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--space-md);
   }
-
-  /* book-grid column counts are set further down, near the real
-     cover-art rules (2-up at 620px, 3-up at 1000px, for five books). */
+  @media (min-width: 620px) {
+    .book-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1000px) {
+    .book-grid { grid-template-columns: repeat(3, 1fr); }
+  }
 
   .book-card {
     display: flex;
@@ -426,8 +679,14 @@
     padding: 20px;
   }
 
+  .book-card--wide { grid-column: span 1; }
+  @media (min-width: 1000px) {
+    .book-card--wide { grid-column: span 1; }
+  }
+
   /* Real published cover art. */
   .book-cover-placeholder {
+    position: relative;
     aspect-ratio: 1 / 1;
     width: 100%;
     border-radius: var(--radius-md);
@@ -443,22 +702,64 @@
     object-fit: cover;
   }
 
-  @media (min-width: 620px) {
-    .book-grid { grid-template-columns: repeat(2, 1fr); }
-  }
-  @media (min-width: 1000px) {
-    .book-grid { grid-template-columns: repeat(3, 1fr); }
+  .book-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: var(--accent-yellow);
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 0.75rem;
+    padding: 4px 12px;
+    border-radius: var(--radius-pill);
+    box-shadow: 0 4px 10px rgba(224, 154, 26, 0.4);
   }
 
-  .book-title {
-    font-size: 1.15rem;
-    color: var(--ink);
-  }
+  .book-title { font-size: 1.15rem; color: var(--ink); }
 
   .book-description {
     color: var(--ink-soft);
     font-weight: 600;
     flex-grow: 1;
+  }
+
+  .book-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    margin: 0 0 var(--space-sm);
+    padding: 10px 0;
+    border-top: var(--border-thin);
+    border-bottom: var(--border-thin);
+    font-size: 0.82rem;
+  }
+
+  .book-meta dt {
+    font-weight: 800;
+    color: var(--squish-purple);
+    display: inline;
+  }
+  .book-meta dd {
+    display: inline;
+    margin: 0 0 0 4px;
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+  .book-meta div { display: flex; }
+
+  .book-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+  }
+
+  .book-price {
+    font-family: var(--font-display);
+    font-weight: 800;
+    color: var(--squish-purple-dark);
+    font-size: 1.05rem;
   }
 
   /* Shown instead of an active buy link until a real Amazon URL is set
@@ -468,6 +769,7 @@
     background: var(--ink-soft);
     color: var(--white);
     box-shadow: none;
+    animation: none;
   }
 
   .printable-link {
@@ -483,11 +785,301 @@
   }
 
   /* ---------------------------------------------------------------
-     Email capture — the most visually prominent section on the page
+     What's Inside — numbered key-ideas grid
      --------------------------------------------------------------- */
-  .email-capture {
-    padding: var(--space-lg) 16px var(--section-py);
+  .ideas { padding: var(--section-py) 0; }
+
+  .idea-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
   }
+  @media (min-width: 700px) {
+    .idea-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1000px) {
+    .idea-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .idea-card {
+    display: flex;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+  }
+
+  .idea-number {
+    flex-shrink: 0;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.6rem;
+    color: var(--squish-purple-light);
+    line-height: 1;
+  }
+
+  .idea-card h3 {
+    font-size: 1rem;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .idea-card p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-weight: 600;
+    font-size: 0.92rem;
+  }
+
+  /* ---------------------------------------------------------------
+     Reading-order timeline
+     --------------------------------------------------------------- */
+  .timeline { padding: var(--section-py) 0; }
+
+  .timeline-track {
+    position: relative;
+    max-width: var(--container-narrow);
+    margin: 0 auto;
+  }
+
+  .timeline-track::before {
+    content: "";
+    position: absolute;
+    left: 27px;
+    top: 8px;
+    bottom: 8px;
+    width: 4px;
+    background: var(--squish-purple-pale);
+    border-radius: var(--radius-pill);
+  }
+
+  .timeline-track::after {
+    content: "";
+    position: absolute;
+    left: 27px;
+    top: 8px;
+    width: 4px;
+    height: 0%;
+    background: linear-gradient(180deg, var(--accent-yellow), var(--squish-purple));
+    border-radius: var(--radius-pill);
+    transition: height 1.1s ease-out;
+  }
+  .timeline-track.is-drawn::after { height: calc(100% - 16px); }
+  @media (prefers-reduced-motion: reduce) {
+    .timeline-track::after { transition: none; }
+  }
+
+  .timeline-step {
+    position: relative;
+    display: flex;
+    gap: var(--space-md);
+    padding: var(--space-sm) 0 var(--space-lg);
+  }
+  .timeline-step:last-child { padding-bottom: 0; }
+
+  .timeline-marker {
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--white);
+    border: var(--border-thick);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: var(--squish-purple);
+  }
+
+  .timeline-content h3 {
+    font-size: 1.1rem;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .timeline-content p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+
+  /* ---------------------------------------------------------------
+     About / Origin story + stats
+     --------------------------------------------------------------- */
+  .about-author { padding: 0 0 var(--section-py); }
+
+  .author-card {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    padding: var(--space-lg);
+  }
+
+  @media (min-width: 760px) {
+    .author-card { flex-direction: row; padding: var(--space-xl); }
+  }
+
+  .author-main { flex: 1 1 55%; }
+
+  .author-photo-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+  }
+
+  .author-photo {
+    flex-shrink: 0;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid var(--squish-purple-light);
+  }
+
+  .author-photo img { width: 100%; height: 100%; object-fit: cover; }
+
+  .author-name { font-size: 1.15rem; color: var(--squish-purple); margin-bottom: 2px; }
+
+  .author-role {
+    display: block;
+    font-weight: 700;
+    color: var(--ink-soft);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .author-bio p { color: var(--ink); font-weight: 600; }
+  .author-bio p:last-child { margin-bottom: 0; }
+  .author-bio p em { color: var(--squish-purple-dark); font-style: normal; font-weight: 800; }
+
+  .stat-grid {
+    flex: 1 1 45%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-sm);
+    align-content: center;
+  }
+
+  .stat-tile {
+    text-align: center;
+    padding: var(--space-sm);
+    background: var(--cream);
+    border-radius: var(--radius-md);
+  }
+
+  .stat-number {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    color: var(--squish-purple);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--ink-soft);
+  }
+
+  /* ---------------------------------------------------------------
+     Objections FAQ
+     --------------------------------------------------------------- */
+  .faq { padding: 0 0 var(--section-py); }
+
+  .faq-list {
+    max-width: var(--container-narrow);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .faq-item { padding: var(--space-md) var(--space-lg); }
+
+  .faq-item h3 {
+    font-size: 1.05rem;
+    color: var(--squish-purple-dark);
+    margin-bottom: 6px;
+  }
+
+  .faq-item p {
+    margin: 0;
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* ---------------------------------------------------------------
+     Formats & retailers
+     --------------------------------------------------------------- */
+  .formats { padding: 0 0 var(--section-py); }
+
+  .format-list {
+    max-width: var(--container-narrow);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .format-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  .format-row-title { font-weight: 800; color: var(--ink); flex: 1 1 200px; }
+  .format-row-price { font-family: var(--font-display); font-weight: 800; color: var(--squish-purple-dark); }
+
+  .format-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .format-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: var(--radius-pill);
+    border: var(--border-thin);
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--ink-soft);
+    text-decoration: none;
+    transition: border-color var(--transition-fast), background var(--transition-fast), transform var(--transition-fast);
+  }
+  .format-chip:hover, .format-chip:focus-visible {
+    border-color: var(--squish-purple);
+    background: var(--squish-purple-pale);
+    color: var(--squish-purple-dark);
+    transform: translateY(-2px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .format-chip:hover, .format-chip:focus-visible { transform: none; }
+  }
+
+  .printables-note {
+    max-width: var(--container-narrow);
+    margin: var(--space-lg) auto 0;
+    padding: var(--space-md) var(--space-lg);
+    text-align: center;
+  }
+  .printables-note p { margin: 0; font-weight: 600; color: var(--ink); }
+  .printables-note strong { color: var(--squish-purple-dark); }
+
+  /* ---------------------------------------------------------------
+     Email capture — integrated into the continuous flow rather than
+     a hard color-block card, so it doesn't break the page's rhythm.
+     --------------------------------------------------------------- */
+  .email-capture { padding: var(--space-lg) 16px var(--section-py); }
 
   .email-capture-card {
     position: relative;
@@ -495,32 +1087,23 @@
     max-width: 640px;
     margin: 0 auto;
     text-align: center;
-    background: linear-gradient(160deg, var(--squish-purple) 0%, var(--squish-purple-light) 100%);
-    border-radius: var(--radius-lg);
-    padding: 44px 28px;
-    box-shadow: 0 20px 45px rgba(139, 95, 191, 0.35);
-    color: var(--white);
+    padding: var(--space-lg) 28px;
   }
 
-  .email-capture-headline {
-    font-size: clamp(1.8rem, 6vw, 2.4rem);
-    color: var(--white);
-    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.12);
-  }
+  .email-capture-headline { font-size: clamp(1.6rem, 5vw, 2rem); color: var(--squish-purple); }
 
   .email-capture-subhead {
     font-weight: 600;
     font-size: 1.05rem;
-    color: var(--white);
-    opacity: 0.95;
+    color: var(--ink-soft);
     max-width: 46ch;
     margin: 0 auto 28px;
   }
 
   .src-note {
     display: inline-block;
-    background: rgba(255, 255, 255, 0.18);
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: var(--squish-purple-pale);
+    color: var(--squish-purple-dark);
     border-radius: 999px;
     padding: 6px 16px;
     font-size: 0.9rem;
@@ -540,16 +1123,14 @@
     .email-form { flex-direction: row; }
   }
 
-  .email-field-group {
-    flex-grow: 1;
-    text-align: left;
-  }
+  .email-field-group { flex-grow: 1; text-align: left; }
 
   .email-form label {
     display: block;
     font-weight: 700;
     font-size: 0.85rem;
     margin-bottom: 6px;
+    color: var(--ink);
   }
 
   .email-form input[type="email"] {
@@ -558,20 +1139,20 @@
     font-size: 1rem;
     padding: 14px 16px;
     border-radius: var(--radius-sm);
-    border: none;
+    border: var(--border-thin);
     color: var(--ink);
   }
 
   .email-form input[type="email"]:focus-visible {
-    outline: 3px solid var(--white);
+    outline: var(--focus-ring);
     outline-offset: 2px;
   }
 
   .submit-button { white-space: nowrap; }
 
   .form-error {
-    color: #FFE3D9;
-    background: rgba(192, 80, 58, 0.35);
+    color: var(--error-red);
+    background: #FBE4DE;
     border-radius: var(--radius-sm);
     padding: 10px 14px;
     font-weight: 700;
@@ -582,93 +1163,15 @@
 
   .form-success {
     margin-top: 20px;
-    background: rgba(255, 255, 255, 0.95);
-    color: var(--success-green);
+    background: var(--squish-purple-pale);
+    color: var(--squish-purple-dark);
     border-radius: var(--radius-md);
     padding: 18px 20px;
     font-weight: 800;
     font-family: var(--font-display);
   }
 
-  .privacy-note {
-    margin: 16px 0 0;
-    font-size: 0.8rem;
-    opacity: 0.85;
-  }
-
-  [hidden] { display: none !important; }
-
-  /* ---------------------------------------------------------------
-     About the Author
-     --------------------------------------------------------------- */
-  .about-author {
-    padding: 0 16px var(--section-py);
-  }
-
-  .author-card {
-    max-width: 780px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 24px;
-    text-align: center;
-    background: var(--white);
-    border: var(--border-thick);
-    border-radius: var(--radius-lg);
-    padding: 36px 28px;
-    box-shadow: var(--shadow-soft);
-  }
-
-  @media (min-width: 640px) {
-    .author-card {
-      flex-direction: row;
-      align-items: flex-start;
-      text-align: left;
-      padding: 40px;
-    }
-  }
-
-  .author-photo {
-    flex-shrink: 0;
-    width: 140px;
-    height: 140px;
-    border-radius: 50%;
-    overflow: hidden;
-    border: 4px solid var(--squish-purple-light);
-    box-shadow: var(--shadow-soft);
-  }
-
-  .author-photo img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .author-name {
-    font-size: 1.3rem;
-    color: var(--squish-purple);
-    margin-bottom: 4px;
-  }
-
-  .author-role {
-    display: block;
-    font-weight: 700;
-    color: var(--ink-soft);
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 14px;
-  }
-
-  .author-bio p {
-    color: var(--ink);
-    font-weight: 600;
-  }
-
-  .author-bio p:last-child {
-    margin-bottom: 0;
-  }
+  .privacy-note { margin: 16px 0 0; font-size: 0.8rem; color: var(--ink-soft); }
 
   /* ---------------------------------------------------------------
      Footer
@@ -680,6 +1183,15 @@
     font-weight: 600;
     font-size: 0.85rem;
   }
+
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    margin-bottom: 10px;
+  }
+  .footer-links a { text-decoration: underline; text-underline-offset: 2px; color: var(--squish-purple); font-weight: 700; }
 </style>
 </head>
 <body>
@@ -690,16 +1202,18 @@
     <div class="container">
       <a class="brand" href="#top">
         <img src="assets/squish-mascot.png" alt="" width="36" height="36">
-        Learning with Squish
+        <span class="brand-text">Learning with Squish</span>
       </a>
       <nav class="site-nav" aria-label="Primary">
         <a href="#books">Books</a>
+        <a href="#reading-order">Reading Order</a>
         <a href="#printables">Free Printables</a>
         <a href="#about">About</a>
       </nav>
       <a class="btn btn--primary btn--sm header-cta" data-amazon-key="collection" href="#" target="_blank" rel="noopener">Shop Now</a>
     </div>
   </header>
+  <div class="scroll-progress" aria-hidden="true"><div class="scroll-progress__bar" id="scroll-progress-bar"></div></div>
 
   <div id="hero-sentinel" aria-hidden="true"></div>
 
@@ -711,7 +1225,7 @@
 
     <div class="container">
       <h1 class="hero-title">Big lessons. Tiny hands. One squishy purple friend.</h1>
-      <p class="hero-tagline">Playful board books that turn brushing teeth, counting, colors, and shapes into your toddler's favorite part of the day &mdash; ages 1&ndash;4.</p>
+      <p class="hero-tagline">Five playful books that turn routines, counting, colors, and shapes into your toddler's favorite part of the day &mdash; ages 1&ndash;5.</p>
 
       <div class="hero-illustration">
         <img src="assets/hero.jpg" alt="Squish and Lilyan holding hands under a rainbow, from The Learning with Squish Collection cover">
@@ -722,74 +1236,393 @@
         <a class="btn btn--ghost" href="#printables">Get Free Printables</a>
       </div>
       <a class="series-link" href="#books">See all five books &darr;</a>
+
+      <svg class="scroll-cue" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
     </div>
   </section>
 
-  <main>
-    <section class="book-showcase" id="books">
+  <main id="main">
+
+    <section class="friends reveal">
       <div class="container">
-        <h2 class="section-title">The Book Series</h2>
-        <p class="section-subtitle">Five squishy-soft board books to grow with your toddler.</p>
+        <div class="section-head">
+          <span class="eyebrow eyebrow--center">Meet the Friends</span>
+          <h2 class="section-title">Squish &amp; Lilyan</h2>
+        </div>
+        <div class="friends-grid">
+          <article class="friend-card card card--hover">
+            <div class="friend-photo">
+              <img src="assets/squish-mascot.png" alt="Squish, a happy purple cube character">
+            </div>
+            <h3 class="friend-name">Squish</h3>
+            <p class="friend-bio">A happy purple cube, always ready for an adventure. Curious, a little silly, and always up for whatever Lilyan has planned next.</p>
+          </article>
+          <article class="friend-card card card--hover">
+            <div class="friend-photo friend-photo--lilyan" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="48" height="48"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </div>
+            <h3 class="friend-name">Lilyan</h3>
+            <p class="friend-bio">Curious, brave, and always asking why. She notices everything &mdash; and she's not afraid to ask Squish about it.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <div class="quote-band reveal">
+      <div class="marquee" id="quote-marquee" role="list" aria-label="Favorite lines from the Learning with Squish books">
+        <!-- Populated twice (for a seamless loop) by script below from QUOTES. -->
+      </div>
+    </div>
+
+    <section class="book-showcase reveal" id="books">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow eyebrow--center">The Series</span>
+          <h2 class="section-title">Five Books, One Squishy Friend</h2>
+          <p class="section-subtitle">Every book stands on its own — together, they're the whole Learning with Squish world.</p>
+        </div>
 
         <div class="book-grid">
 
-          <article class="book-card card card--hover">
+          <article class="book-card card card--hover reveal">
             <div class="book-cover-placeholder">
+              <span class="book-badge">Book 1</span>
               <img src="assets/covers/habits.jpg" alt="Learning Good Habits with Squish cover">
             </div>
             <h3 class="book-title">Learning Good Habits with Squish</h3>
-            <p class="book-description">Squish and Lilyan make brushing teeth, sharing, and cleanup time fun for your little one.</p>
-            <a class="btn btn--primary btn--sm" data-amazon-key="habits" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+            <p class="book-description">A full day of toddler routines with a repeating "Why do we...?" pattern &mdash; waking up, getting dressed, brushing teeth, and bedtime.</p>
+            <dl class="book-meta">
+              <div><dt>Teaches</dt><dd>Daily routines</dd></div>
+              <div><dt>Length</dt><dd>10 rhyming spreads</dd></div>
+            </dl>
+            <div class="book-card-footer">
+              <span class="book-price">$3.99</span>
+              <a class="btn btn--primary btn--sm" data-amazon-key="habits" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+            </div>
           </article>
 
-          <article class="book-card card card--hover">
+          <article class="book-card card card--hover reveal">
             <div class="book-cover-placeholder">
+              <span class="book-badge">Book 2</span>
               <img src="assets/covers/counting.jpg" alt="Learning to Count with Squish cover">
             </div>
             <h3 class="book-title">Learning to Count with Squish</h3>
-            <p class="book-description">Count along with Squish from one to ten through silly, squishy adventures.</p>
-            <a class="btn btn--primary btn--sm" data-amazon-key="counting" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+            <p class="book-description">A rhyming counting adventure from 1 to 20, one juicy fruit at a time &mdash; with a "Let's Count Again!" recap every five numbers.</p>
+            <dl class="book-meta">
+              <div><dt>Teaches</dt><dd>Numbers 1&ndash;20</dd></div>
+              <div><dt>Length</dt><dd>20 rhyming pages</dd></div>
+            </dl>
+            <div class="book-card-footer">
+              <span class="book-price">$3.99</span>
+              <a class="btn btn--primary btn--sm" data-amazon-key="counting" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+            </div>
           </article>
 
-          <article class="book-card card card--hover">
+          <article class="book-card card card--hover reveal">
             <div class="book-cover-placeholder">
+              <span class="book-badge">Book 3</span>
               <img src="assets/covers/colors.jpg" alt="Learning Colors with Squish cover">
             </div>
             <h3 class="book-title">Learning Colors with Squish</h3>
-            <p class="book-description">Explore a rainbow of colors with Squish and Lilyan on every colorful page.</p>
-            <a class="btn btn--primary btn--sm" data-amazon-key="colors" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+            <p class="book-description">24 vibrant colors come to life through playful rhymes and lovable animals &mdash; from a red ladybug to a swirling teal ocean wave.</p>
+            <dl class="book-meta">
+              <div><dt>Teaches</dt><dd>24 colors</dd></div>
+              <div><dt>Length</dt><dd>12 color pages</dd></div>
+            </dl>
+            <div class="book-card-footer">
+              <span class="book-price">$3.99</span>
+              <a class="btn btn--primary btn--sm" data-amazon-key="colors" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+            </div>
           </article>
 
-          <article class="book-card card card--hover">
+          <article class="book-card card card--hover reveal">
             <div class="book-cover-placeholder">
+              <span class="book-badge">Book 5 &middot; Newest</span>
               <img src="assets/covers/shapes.jpg" alt="Learning Shapes with Squish cover">
             </div>
             <h3 class="book-title">Learning Shapes with Squish</h3>
-            <p class="book-description">Circles, squares, triangles, and stars &mdash; Squish and Lilyan spot shapes everywhere they go.</p>
-            <a class="btn btn--primary btn--sm" data-amazon-key="shapes" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+            <p class="book-description">Circle. Triangle. Rectangle. Star. Squish can become any shape you can imagine &mdash; popping through 12 shapes, one big POP! at a time.</p>
+            <dl class="book-meta">
+              <div><dt>Teaches</dt><dd>12 shapes</dd></div>
+              <div><dt>Length</dt><dd>12 shapes + 3 recaps</dd></div>
+            </dl>
+            <div class="book-card-footer">
+              <span class="book-price">$4.99</span>
+              <a class="btn btn--primary btn--sm" data-amazon-key="shapes" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+            </div>
           </article>
 
-          <article class="book-card card card--hover">
+          <article class="book-card card card--hover reveal">
             <div class="book-cover-placeholder">
+              <span class="book-badge">Book 4 &middot; The Set</span>
               <img src="assets/covers/collection.jpg" alt="The Learning with Squish Collection cover">
             </div>
             <h3 class="book-title">The Learning with Squish Collection</h3>
-            <p class="book-description">All three stories of habits, counting, and colors together in one keepsake collection.</p>
-            <a class="btn btn--primary btn--sm" data-amazon-key="collection" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+            <p class="book-description">Three beloved stories &mdash; Habits, Counting, and Colors &mdash; together in one keepsake collection. Available in ebook, paperback, or hardback.</p>
+            <dl class="book-meta">
+              <div><dt>Teaches</dt><dd>All three</dd></div>
+              <div><dt>Length</dt><dd>3 books in one</dd></div>
+            </dl>
+            <div class="book-card-footer">
+              <span class="book-price">$12.99</span>
+              <a class="btn btn--primary btn--sm" data-amazon-key="collection" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+            </div>
           </article>
 
         </div>
       </div>
     </section>
 
-    <section class="email-capture" id="printables" aria-labelledby="email-capture-headline">
-      <div class="email-capture-card">
+    <section class="audience reveal">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow eyebrow--center">Who It's For</span>
+          <h2 class="section-title">Built for Two Very Different Readers</h2>
+        </div>
+        <div class="audience-grid">
+          <div class="audience-card card card--soft">
+            <h3>For Grown-Ups</h3>
+            <ul>
+              <li>Every single book ends with a real <strong>Note for Grown-Ups</strong> — simple tips for reading it together.</li>
+              <li>Short, rhythmic, read-aloud text that survives the twentieth re-read without losing your mind.</li>
+              <li>Real routines and skills underneath the story: habits, counting, colors, and shapes — not just cute pictures.</li>
+              <li>Characters who come back in every book, so the world feels familiar from page one.</li>
+            </ul>
+          </div>
+          <div class="audience-card card card--soft">
+            <h3>For Little Ones</h3>
+            <ul>
+              <li>A repeating "Why do we...?" chant that begs to be said out loud, every time.</li>
+              <li>Recap pages every few spreads, so the numbers, colors, and shapes actually stick.</li>
+              <li>A squishy purple best friend who pops into 12 different shapes, one big POP! at a time.</li>
+              <li>Simple language sized for short attention spans — and short enough for one more read before bed.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="threads reveal">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow eyebrow--center">The Thread</span>
+          <h2 class="section-title">Why Families Keep Coming Back</h2>
+        </div>
+        <div class="thread-grid">
+          <div class="thread-card card card--soft">
+            <svg class="thread-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <p>Characters who come back in every book</p>
+          </div>
+          <div class="thread-card card card--soft">
+            <svg class="thread-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <p>Simple language for short attention spans</p>
+          </div>
+          <div class="thread-card card card--soft">
+            <svg class="thread-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <p>A Note for Grown-Ups at the end of every story</p>
+          </div>
+          <div class="thread-card card card--soft">
+            <svg class="thread-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v4"/><path d="m6.41 6.41 2.83 2.83"/><path d="M2 12h4"/><path d="m6.41 17.59 2.83-2.83"/><path d="M12 18v4"/><path d="m14.76 14.76 2.83 2.83"/><path d="M18 12h4"/><path d="m14.76 9.24 2.83-2.83"/></svg>
+            <p>New titles added to the series regularly</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ideas reveal">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow eyebrow--center">What's Inside</span>
+          <h2 class="section-title">Ten Things Your Toddler Will Learn</h2>
+        </div>
+        <div class="idea-grid">
+          <div class="idea-card card card--soft"><span class="idea-number">01</span><div><h3>A full day of routines</h3><p>Waking up, getting dressed, brushing teeth, and bedtime — the moments every toddler's day is made of.</p></div></div>
+          <div class="idea-card card card--soft"><span class="idea-number">02</span><div><h3>The "Why do we...?" chant</h3><p>A repeating question-and-answer pattern that sparks curiosity and builds vocabulary.</p></div></div>
+          <div class="idea-card card card--soft"><span class="idea-number">03</span><div><h3>Counting from 1 to 20</h3><p>A full rhyming journey through twenty different fruits, one at a time.</p></div></div>
+          <div class="idea-card card card--soft"><span class="idea-number">04</span><div><h3>"Let's Count Again!"</h3><p>Four recap spreads built in every five numbers, so counting actually sticks.</p></div></div>
+          <div class="idea-card card card--soft"><span class="idea-number">05</span><div><h3>24 vibrant colors</h3><p>From a red ladybug to a swirling teal ocean wave, paired with a rhyme for every one.</p></div></div>
+          <div class="idea-card card card--soft"><span class="idea-number">06</span><div><h3>Lovable animals</h3><p>Every color is introduced by a character your toddler will want to meet again.</p></div></div>
+          <div class="idea-card card card--soft"><span class="idea-number">07</span><div><h3>12 shapes, one POP! at a time</h3><p>Squish shapeshifts from a circle to a triangle, a heart, an octagon, and more.</p></div></div>
+          <div class="idea-card card card--soft"><span class="idea-number">08</span><div><h3>"What shape will Squish be next?"</h3><p>A guessing-game page that keeps toddlers cheering him on.</p></div></div>
+          <div class="idea-card card card--soft"><span class="idea-number">09</span><div><h3>A Note for Grown-Ups</h3><p>Every single book ends with real tips for reading it together — in every book in the series.</p></div></div>
+          <div class="idea-card card card--soft"><span class="idea-number">10</span><div><h3>A free coloring-page surprise</h3><p>A QR code tucked inside links to free printable Squish &amp; Lilyan coloring pages.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="timeline reveal" id="reading-order">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow eyebrow--center">Reading Order</span>
+          <h2 class="section-title">Where to Start (and Where to Go Next)</h2>
+          <p class="section-subtitle">Every book stands alone, but here's the order Squish and Lilyan's story unfolds.</p>
+        </div>
+        <div class="timeline-track" id="timeline-track">
+          <div class="timeline-step">
+            <div class="timeline-marker">1</div>
+            <div class="timeline-content">
+              <h3>Learning Good Habits with Squish</h3>
+              <p>Start here — a full day of toddler routines and the "Why do we...?" chant.</p>
+            </div>
+          </div>
+          <div class="timeline-step">
+            <div class="timeline-marker">2</div>
+            <div class="timeline-content">
+              <h3>Learning to Count with Squish</h3>
+              <p>Numbers 1 to 20, one juicy fruit at a time.</p>
+            </div>
+          </div>
+          <div class="timeline-step">
+            <div class="timeline-marker">3</div>
+            <div class="timeline-content">
+              <h3>Learning Colors with Squish</h3>
+              <p>24 colors, playful rhymes, and lovable animal friends.</p>
+            </div>
+          </div>
+          <div class="timeline-step">
+            <div class="timeline-marker">4</div>
+            <div class="timeline-content">
+              <h3>The Learning with Squish Collection</h3>
+              <p>Habits, Counting, and Colors together in one keepsake bind-up.</p>
+            </div>
+          </div>
+          <div class="timeline-step">
+            <div class="timeline-marker">5</div>
+            <div class="timeline-content">
+              <h3>Learning Shapes with Squish</h3>
+              <p>The newest adventure — Squish shapeshifts through 12 shapes.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="about-author reveal" id="about">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow eyebrow--center">About Konjo Publishing</span>
+          <h2 class="section-title">Where Squish Came From</h2>
+        </div>
+        <div class="author-card card card--hover">
+          <div class="author-main">
+            <div class="author-photo-row">
+              <div class="author-photo">
+                <img src="assets/author.jpg" alt="Wesley Scholl, author of Learning with Squish">
+              </div>
+              <div>
+                <h3 class="author-name">Wesley Scholl</h3>
+                <span class="author-role">Author, Learning with Squish</span>
+              </div>
+            </div>
+            <div class="author-bio">
+              <p>Squish wasn't supposed to be a children's book character. He started as a mascot for a completely different project &mdash; until my daughter saw an early version of him on my screen and loved him immediately.</p>
+              <p>So I kept refining the character, and started making up stories about him and her, playing together. She asked for them again and again &mdash; <em>"I want Squish book"</em> &mdash; until one Father's Day, I turned one into a real book for her shelf. She still pulls it down and hands it to me herself.</p>
+              <p>That's still what these books are: a character who comes back, and a story worth asking for twice.</p>
+            </div>
+          </div>
+          <div class="stat-grid" data-count-up>
+            <div class="stat-tile"><span class="stat-number" data-target="5">0</span><span class="stat-label">Books in the Series</span></div>
+            <div class="stat-tile"><span class="stat-number" data-target="20">0</span><span class="stat-label">Numbers Squish Counts To</span></div>
+            <div class="stat-tile"><span class="stat-number" data-target="24">0</span><span class="stat-label">Colors to Discover</span></div>
+            <div class="stat-tile"><span class="stat-number" data-target="12">0</span><span class="stat-label">Shapes Squish Becomes</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq reveal">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow eyebrow--center">But What About...</span>
+          <h2 class="section-title">Questions Parents Actually Ask</h2>
+        </div>
+        <div class="faq-list">
+          <div class="faq-item card card--soft">
+            <h3>What age is this for?</h3>
+            <p>Ages 1&ndash;5 across the series. Learning Shapes with Squish leans a little older, but every book is built for read-aloud time starting in toddlerhood.</p>
+          </div>
+          <div class="faq-item card card--soft">
+            <h3>How long is each book?</h3>
+            <p>Short on purpose — from 10 rhyming spreads (Habits) to 20 rhyming pages (Counting). Built for a wiggly toddler's attention span, not a chapter-book sitting.</p>
+          </div>
+          <div class="faq-item card card--soft">
+            <h3>Do I need to read them in order?</h3>
+            <p>Nope — every book stands alone. If you want the official order, it's Habits &rarr; Counting &rarr; Colors &rarr; the Collection bind-up &rarr; Shapes, but Squish and Lilyan will happily meet your kid wherever you start.</p>
+          </div>
+          <div class="faq-item card card--soft">
+            <h3>Is there anything in it for the grown-up reading it?</h3>
+            <p>Yes — every book ends with a real "Note for Grown-Ups," with simple tips for reading it together, not just a cute story for your kid.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="formats reveal">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow eyebrow--center">Get the Books</span>
+          <h2 class="section-title">Available in Ebook &amp; Paperback</h2>
+          <p class="section-subtitle">The Collection is also available in hardback for a keepsake shelf copy.</p>
+        </div>
+        <div class="format-list">
+          <div class="format-row card card--soft">
+            <span class="format-row-title">Learning Good Habits with Squish</span>
+            <div class="format-chips">
+              <a class="format-chip" data-amazon-key="habits" href="#" target="_blank" rel="noopener"><span class="dot"></span>Ebook</a>
+              <a class="format-chip" data-amazon-key="habits" href="#" target="_blank" rel="noopener"><span class="dot"></span>Paperback</a>
+            </div>
+            <span class="format-row-price">$3.99</span>
+          </div>
+          <div class="format-row card card--soft">
+            <span class="format-row-title">Learning to Count with Squish</span>
+            <div class="format-chips">
+              <a class="format-chip" data-amazon-key="counting" href="#" target="_blank" rel="noopener"><span class="dot"></span>Ebook</a>
+              <a class="format-chip" data-amazon-key="counting" href="#" target="_blank" rel="noopener"><span class="dot"></span>Paperback</a>
+            </div>
+            <span class="format-row-price">$3.99</span>
+          </div>
+          <div class="format-row card card--soft">
+            <span class="format-row-title">Learning Colors with Squish</span>
+            <div class="format-chips">
+              <a class="format-chip" data-amazon-key="colors" href="#" target="_blank" rel="noopener"><span class="dot"></span>Ebook</a>
+              <a class="format-chip" data-amazon-key="colors" href="#" target="_blank" rel="noopener"><span class="dot"></span>Paperback</a>
+            </div>
+            <span class="format-row-price">$3.99</span>
+          </div>
+          <div class="format-row card card--soft">
+            <span class="format-row-title">Learning Shapes with Squish</span>
+            <div class="format-chips">
+              <a class="format-chip" data-amazon-key="shapes" href="#" target="_blank" rel="noopener"><span class="dot"></span>Ebook</a>
+              <a class="format-chip" data-amazon-key="shapes" href="#" target="_blank" rel="noopener"><span class="dot"></span>Paperback</a>
+            </div>
+            <span class="format-row-price">$4.99</span>
+          </div>
+          <div class="format-row card card--soft">
+            <span class="format-row-title">The Learning with Squish Collection</span>
+            <div class="format-chips">
+              <a class="format-chip" data-amazon-key="collection" href="#" target="_blank" rel="noopener"><span class="dot"></span>Ebook</a>
+              <a class="format-chip" data-amazon-key="collection" href="#" target="_blank" rel="noopener"><span class="dot"></span>Paperback</a>
+              <a class="format-chip" data-amazon-key="collection" href="#" target="_blank" rel="noopener"><span class="dot"></span>Hardback</a>
+            </div>
+            <span class="format-row-price">$12.99</span>
+          </div>
+        </div>
+
+        <div class="printables-note card card--soft">
+          <p>Reading together at bedtime? Every book ends with a <strong>Note for Grown-Ups</strong>, and Learning Shapes with Squish has a QR code inside linking to free printable coloring pages &mdash; the same ones you can grab below.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="email-capture reveal" id="printables" aria-labelledby="email-capture-headline">
+      <div class="email-capture-card card">
         <p class="src-note" id="src-note" hidden></p>
 
+        <span class="eyebrow eyebrow--center">More Squish</span>
         <h2 class="email-capture-headline" id="email-capture-headline">Get Free Printables!</h2>
         <p class="email-capture-subhead">
-          Sign up and we'll send you free printable coloring pages of Squish and Lilyan —
-          perfect for a rainy afternoon.
+          Sign up and grab free printable coloring pages of Squish and Lilyan —
+          perfect for a rainy afternoon, straight to your inbox.
         </p>
 
         <form class="email-form" id="subscribe-form" novalidate>
@@ -820,36 +1653,15 @@
         <p class="privacy-note">No spam, ever. Unsubscribe anytime.</p>
       </div>
     </section>
-
-    <section class="about-author" id="about">
-      <div class="container">
-        <h2 class="section-title">About the Author</h2>
-
-        <div class="author-card">
-          <div class="author-photo">
-            <img src="assets/author.jpg" alt="Wesley Scholl, author of Learning with Squish">
-          </div>
-          <div class="author-bio">
-            <h3 class="author-name">Wesley Scholl<span class="author-role">Author, Learning with Squish</span></h3>
-            <p>
-              Wesley Scholl is the author behind Learning with Squish, a board book series he
-              created for his daughter, Lily. It started as a way to make everyday routines &mdash;
-              brushing teeth, counting toys, naming colors &mdash; feel like play instead of a
-              power struggle.
-            </p>
-            <p>
-              That idea grew into Konjo Publishing's Learning with Squish books: sweet, simple
-              stories starring a squishy purple friend named Squish, made for tiny hands and
-              short attention spans, and built to be read together, again and again, until every
-              page is memorized by heart.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
   </main>
 
   <footer class="site-footer">
+    <div class="footer-links">
+      <a href="#books">Books</a>
+      <a href="#reading-order">Reading Order</a>
+      <a href="#printables">Free Printables</a>
+      <a href="#about">About</a>
+    </div>
     <p>&copy; <span id="footer-year"></span> Konjo Publishing. Learning with Squish.</p>
   </footer>
 
@@ -879,6 +1691,22 @@
         "collection-printables": "The Learning with Squish Collection"
       };
 
+      // Real one-liners pulled from the books' own Amazon listings — not
+      // invented copy. Duplicated once in the DOM (see below) for a
+      // seamless marquee loop.
+      var QUOTES = [
+        "“Why do we brush our teeth?”",
+        "One juicy fruit at a time!",
+        "“Let’s Count Again!”",
+        "From a red ladybug to a swirling teal ocean wave",
+        "Circle. Triangle. Rectangle. Star.",
+        "Squish can become any shape you can imagine!",
+        "A character who comes back, and a story worth asking for twice.",
+        "“I want Squish book!”",
+        "She still pulls it down and hands it to me herself.",
+        "A Note for Grown-Ups in every story."
+      ];
+
       var EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
       document.querySelectorAll("[data-amazon-key]").forEach(function (link) {
@@ -893,7 +1721,6 @@
           // AMAZON_LINKS above, this branch stops running for that key.
           link.classList.add("btn--pending");
           link.setAttribute("aria-disabled", "true");
-          link.textContent = "Coming Soon";
           link.removeAttribute("target");
         } else {
           link.setAttribute("href", url);
@@ -903,9 +1730,29 @@
       document.getElementById("footer-year").textContent = new Date().getFullYear();
 
       // ---------------------------------------------------------------
-      // Sticky header: compress + add a background once the hero's
-      // sentinel scrolls out of view, instead of a scroll-position
-      // listener (avoids scroll-jank, works with IntersectionObserver).
+      // Pull-quote marquee: build the scrolling list twice so the
+      // CSS animation (translateX 0 -> -50%) loops with no visible seam.
+      // ---------------------------------------------------------------
+      var marquee = document.getElementById("quote-marquee");
+      if (marquee) {
+        for (var rep = 0; rep < 2; rep++) {
+          QUOTES.forEach(function (quote) {
+            var item = document.createElement("span");
+            item.className = "marquee-item";
+            item.setAttribute("role", "listitem");
+            item.innerHTML = '<span class="dot" aria-hidden="true"></span>' + quote;
+            marquee.appendChild(item);
+          });
+        }
+      }
+
+      var prefersReducedMotion = window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      // ---------------------------------------------------------------
+      // Sticky header + scroll progress bar: both driven off scroll,
+      // but the header toggle uses IntersectionObserver (no jank) and
+      // the progress bar is a cheap width update on a passive listener.
       // ---------------------------------------------------------------
       var header = document.getElementById("site-header");
       var heroSentinel = document.getElementById("hero-sentinel");
@@ -916,6 +1763,92 @@
           });
         });
         headerObserver.observe(heroSentinel);
+      }
+
+      var progressBar = document.getElementById("scroll-progress-bar");
+      if (progressBar) {
+        var updateProgress = function () {
+          var scrollTop = window.scrollY || document.documentElement.scrollTop;
+          var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          var pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+          progressBar.style.width = pct + "%";
+        };
+        window.addEventListener("scroll", updateProgress, { passive: true });
+        updateProgress();
+      }
+
+      // ---------------------------------------------------------------
+      // Scroll reveal: only arms (hides) .reveal elements once we know
+      // IntersectionObserver exists and motion isn't reduced, so there's
+      // never a flash of hidden content for browsers/users who don't
+      // get the animation.
+      // ---------------------------------------------------------------
+      if ("IntersectionObserver" in window && !prefersReducedMotion) {
+        document.documentElement.classList.add("js-reveal-armed");
+        var revealObserver = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("reveal--visible");
+              revealObserver.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.15, rootMargin: "0px 0px -60px 0px" });
+        document.querySelectorAll(".reveal").forEach(function (el) {
+          revealObserver.observe(el);
+        });
+
+        // Reading-order timeline: draw the connecting line once the
+        // whole track scrolls into view.
+        var timelineTrack = document.getElementById("timeline-track");
+        if (timelineTrack) {
+          var timelineObserver = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                timelineTrack.classList.add("is-drawn");
+                timelineObserver.unobserve(entry.target);
+              }
+            });
+          }, { threshold: 0.2 });
+          timelineObserver.observe(timelineTrack);
+        }
+
+        // Count-up stats: animate each stat number from 0 to its real
+        // data-target value once the stat grid enters view.
+        var statGrid = document.querySelector("[data-count-up]");
+        if (statGrid) {
+          var countUpObserver = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+              if (!entry.isIntersecting) { return; }
+              countUpObserver.unobserve(entry.target);
+              entry.target.querySelectorAll("[data-target]").forEach(function (el) {
+                var target = parseInt(el.getAttribute("data-target"), 10) || 0;
+                var start = null;
+                var duration = 1100;
+                function step(timestamp) {
+                  if (start === null) { start = timestamp; }
+                  var progress = Math.min((timestamp - start) / duration, 1);
+                  el.textContent = Math.floor(progress * target);
+                  if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                  } else {
+                    el.textContent = target;
+                  }
+                }
+                window.requestAnimationFrame(step);
+              });
+            });
+          }, { threshold: 0.4 });
+          countUpObserver.observe(statGrid);
+        }
+      } else {
+        // No observer support or reduced motion: show final states
+        // immediately rather than leaving stats at 0 or the timeline
+        // line undrawn.
+        var timelineTrackFallback = document.getElementById("timeline-track");
+        if (timelineTrackFallback) { timelineTrackFallback.classList.add("is-drawn"); }
+        document.querySelectorAll("[data-target]").forEach(function (el) {
+          el.textContent = el.getAttribute("data-target");
+        });
       }
 
       // ---------------------------------------------------------------
