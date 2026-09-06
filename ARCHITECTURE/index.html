@@ -2059,11 +2059,11 @@ introduce sub-0.02% cosine distance from the original, within training noise.</p
 </code></pre></div>
 <p><strong>Converting INT8 → INT4</strong> (run once, ~30s):
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">compressed_loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">save_int4_npy_dir</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">result</span> <span class="o">=</span> <span class="n">save_int4_npy_dir</span><span class="p">(</span><span class="s1">&#39;/path/to/compressed_dir&#39;</span><span class="p">)</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">result</span> <span class="o">=</span> <span class="n">save_int4_npy_dir</span><span class="p">(</span><span class="s1">'/path/to/compressed_dir'</span><span class="p">)</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1"># Saves {sk}__q4.npy + {sk}__s4.npy alongside existing INT8 files</span>
 <a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># Writes .squish_int4_ready sentinel when complete</span>
 <a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c1"># All subsequent loads auto-select INT4 via _dequantize_npy_dir() priority order</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Savings: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;savings_pct&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Savings: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">'savings_pct'</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">%"</span><span class="p">)</span>
 </code></pre></div></p>
 <p><strong>Why .npy over .npz</strong>:
 - <code>.npz</code> files apply zlib compression: takes 9 minutes to write and 9 seconds to

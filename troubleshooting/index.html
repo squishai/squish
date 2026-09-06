@@ -2313,7 +2313,7 @@ If your issue is not listed here, open a <a href="https://github.com/konjoai/squ
 <h2 id="quick-diagnostics">Quick diagnostics<a class="headerlink" href="#quick-diagnostics" title="Permanent link">&para;</a></h2>
 <p>Run these two commands first. The answers are required context for any bug report or Discord question.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>squish<span class="w"> </span>--version
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import mlx; print(mlx.__version__)&quot;</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">"import mlx; print(mlx.__version__)"</span>
 </code></pre></div>
 <p>Expected output (versions will differ):</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>squish 9.34.1
@@ -2459,18 +2459,18 @@ stub that is missing methods:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>--force-reinstall<span class="w"> </span>tokenizers
 </code></pre></div>
 <p>If the error persists, install Rust and rebuild:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>curl<span class="w"> </span>--proto<span class="w"> </span><span class="s1">&#39;=https&#39;</span><span class="w"> </span>--tlsv1.2<span class="w"> </span>-sSf<span class="w"> </span>https://sh.rustup.rs<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh
-<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="nb">source</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/.cargo/env&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>curl<span class="w"> </span>--proto<span class="w"> </span><span class="s1">'=https'</span><span class="w"> </span>--tlsv1.2<span class="w"> </span>-sSf<span class="w"> </span>https://sh.rustup.rs<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="nb">source</span><span class="w"> </span><span class="s2">"</span><span class="nv">$HOME</span><span class="s2">/.cargo/env"</span>
 <a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>--force-reinstall<span class="w"> </span>tokenizers
 </code></pre></div>
 <h3 id="checking-which-tokenizer-a-model-needs">Checking which tokenizer a model needs<a class="headerlink" href="#checking-which-tokenizer-a-model-needs" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">"</span>
 <a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="s2">import json, pathlib</span>
-<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="s2">cfg = pathlib.Path(&#39;~/.squish/models/&#39;).expanduser()</span>
-<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="s2">for p in cfg.rglob(&#39;tokenizer_config.json&#39;):</span>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="s2">cfg = pathlib.Path('~/.squish/models/').expanduser()</span>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="s2">for p in cfg.rglob('tokenizer_config.json'):</span>
 <a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="s2">    data = json.loads(p.read_text())</span>
-<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="s2">    print(p.parent.name, &#39;-&gt;&#39;, data.get(&#39;tokenizer_class&#39;, &#39;unknown&#39;))</span>
-<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="s2">&quot;</span>
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="s2">    print(p.parent.name, '-&gt;', data.get('tokenizer_class', 'unknown'))</span>
+<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="s2">"</span>
 </code></pre></div>
 <hr />
 <h2 id="mlx-version-mismatches">MLX version mismatches<a class="headerlink" href="#mlx-version-mismatches" title="Permanent link">&para;</a></h2>
@@ -2493,7 +2493,7 @@ If the installed MLX is older or newer than what Squish expects, the above error
 </code></pre></div>
 <h3 id="pin-to-a-specific-version">Pin to a specific version<a class="headerlink" href="#pin-to-a-specific-version" title="Permanent link">&para;</a></h3>
 <p>If the latest MLX introduces a regression, pin to the last known-good version:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;mlx==0.22.0&quot;</span><span class="w"> </span><span class="s2">&quot;mlx-lm==0.22.0&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"mlx==0.22.0"</span><span class="w"> </span><span class="s2">"mlx-lm==0.22.0"</span>
 </code></pre></div>
 <p>Replace <code>0.22.0</code> with whichever version the Squish release notes specify.</p>
 <div class="admonition tip">
@@ -2502,20 +2502,20 @@ If the installed MLX is older or newer than what Squish expects, the above error
 without touching your system Python:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
 <a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="nb">source</span><span class="w"> </span>.venv/bin/activate
-<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;squish&quot;</span><span class="w"> </span><span class="s2">&quot;mlx==0.22.0&quot;</span><span class="w"> </span><span class="s2">&quot;mlx-lm==0.22.0&quot;</span>
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"squish"</span><span class="w"> </span><span class="s2">"mlx==0.22.0"</span><span class="w"> </span><span class="s2">"mlx-lm==0.22.0"</span>
 </code></pre></div>
 </div>
 <h3 id="force-reinstall-if-the-environment-is-in-a-broken-state">Force-reinstall if the environment is in a broken state<a class="headerlink" href="#force-reinstall-if-the-environment-is-in-a-broken-state" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>--force-reinstall<span class="w"> </span>mlx<span class="w"> </span>mlx-lm<span class="w"> </span>squish
 </code></pre></div>
 <h3 id="verify-mlx-works-after-reinstall">Verify MLX works after reinstall<a class="headerlink" href="#verify-mlx-works-after-reinstall" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">"</span>
 <a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="s2">import mlx.core as mx</span>
-<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="s2">print(&#39;MLX version:&#39;, mx.__version__)</span>
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="s2">print('MLX version:', mx.__version__)</span>
 <a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="s2">arr = mx.array([1.0, 2.0, 3.0])</span>
-<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="s2">print(&#39;Basic computation:&#39;, arr * 2)</span>
-<a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a><span class="s2">print(&#39;Metal device available:&#39;, mx.default_device())</span>
-<a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a><span class="s2">&quot;</span>
+<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="s2">print('Basic computation:', arr * 2)</span>
+<a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a><span class="s2">print('Metal device available:', mx.default_device())</span>
+<a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a><span class="s2">"</span>
 </code></pre></div>
 <p>Expected output includes <code>Device(gpu, 0)</code> confirming Metal is active.</p>
 <h3 id="known-version-compatibility-table">Known version compatibility table<a class="headerlink" href="#known-version-compatibility-table" title="Permanent link">&para;</a></h3>
@@ -2577,7 +2577,7 @@ These are different ports, but conflicts can still occur if:</p>
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>pkill<span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;squish serve&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>pkill<span class="w"> </span>-f<span class="w"> </span><span class="s2">"squish serve"</span>
 <a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="c1"># or kill by PID from lsof output</span>
 <a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a><span class="nb">kill</span><span class="w"> </span>&lt;PID&gt;
 </code></pre></div>

@@ -8258,7 +8258,7 @@ stays coherent).</p>
 <a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    if _params_b &gt;= 30.0:
 <a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>        args.int2 = True
 <a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    else:
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>        print(&quot;⚠  INT2 unsafe below 30B — running INT4&quot;)
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>        print("⚠  INT2 unsafe below 30B — running INT4")
 </code></pre></div>
 <hr />
 <h2 id="6900-wave-96-2026-03-25">[69.0.0] — Wave 96 — 2026-03-25<a class="headerlink" href="#6900-wave-96-2026-03-25" title="Permanent link">&para;</a></h2>
@@ -9569,7 +9569,7 @@ Metal GPU bandwidth and reducing power draw by 65–80% versus the GPU path.</p>
 <h4 id="squizd-header-bit-6-ane_coreml-appendix-block"><code>.squizd</code> header bit 6 — ANE_COREML appendix block<a class="headerlink" href="#squizd-header-bit-6-ane_coreml-appendix-block" title="Permanent link">&para;</a></h4>
 <p>A new optional appendix block is defined for <code>.squizd</code> files:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>+------------------+
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>| b&quot;ANML&quot;  4 bytes |  tag constant (SQUIZD_APPENDIX_TAG)
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>| b"ANML"  4 bytes |  tag constant (SQUIZD_APPENDIX_TAG)
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>| payload_len 8 B  |  uint64 little-endian — byte length of JSON manifest
 <a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>| JSON manifest    |  UTF-8 encoded; keys: header_bit, chunk_count, chunks[]
 <a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>+------------------+

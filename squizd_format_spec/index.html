@@ -2196,7 +2196,7 @@ at load time; no user-level flags are required at serve time.</p>
 <p>All multi-byte integers are <strong>little-endian</strong>.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Offset  Size  Type     Field
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>──────  ────  ───────  ─────────────────────────────────────────────────────
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>  0      4    bytes    magic           &quot;SQZD&quot; (0x53 0x51 0x5A 0x44)
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>  0      4    bytes    magic           "SQZD" (0x53 0x51 0x5A 0x44)
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>  4      2    uint16   version         Format version (currently 1)
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>  6      4    uint32   flags           Feature flags bitfield (see §1)
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a> 10      2    uint16   layer_count     Number of transformer layers
@@ -2214,7 +2214,7 @@ at load time; no user-level flags are required at serve time.</p>
 <code>reserved</code> / <code>reserved2</code> bytes; <code>strict</code> mode validation will reject
 non-zero reserved bytes.</p>
 <h3 id="31-magic-bytes">3.1 Magic bytes<a class="headerlink" href="#31-magic-bytes" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>b&quot;SQZD&quot;  →  0x53 0x51 0x5A 0x44
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>b"SQZD"  →  0x53 0x51 0x5A 0x44
 </code></pre></div>
 <p>A file whose first four bytes do not match is not a SQUIZD file.</p>
 <h3 id="32-version">3.2 Version<a class="headerlink" href="#32-version" title="Permanent link">&para;</a></h3>
@@ -2255,7 +2255,7 @@ ascending <code>layer_idx</code> order.</p>
 weight encoding is used per file (flags priority from §3.3).</p>
 <h3 id="51-astc-weight-block-astc-flag">5.1 ASTC Weight Block (<code>ASTC</code> flag)<a class="headerlink" href="#51-astc-weight-block-astc-flag" title="Permanent link">&para;</a></h3>
 <p>Each weight tensor is stored as an ASTC-compressed 2-D texture image:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>[4B magic &quot;ASTW&quot;][4B width][4B height][4B block_footprint]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>[4B magic "ASTW"][4B width][4B height][4B block_footprint]
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>[NB ASTC bitstream]
 </code></pre></div>
 <ul>
@@ -2263,24 +2263,24 @@ weight encoding is used per file (flags priority from §3.3).</p>
 <li>The bitstream is standard ASTC as defined in ISO 19495</li>
 </ul>
 <h3 id="52-tca-tbe-weight-block-tca_tbe-flag">5.2 TCA-TBE Weight Block (<code>TCA_TBE</code> flag)<a class="headerlink" href="#52-tca-tbe-weight-block-tca_tbe-flag" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>[4B magic &quot;TCAW&quot;][4B n_rows][4B word_width_bits][bitmap …]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>[4B magic "TCAW"][4B n_rows][4B word_width_bits][bitmap …]
 </code></pre></div>
 <p>Rows are 64-bit aligned.  The bitmap encodes non-zero positions; values
 follow the bitmap in compressed form (see Wave 65 kernel documentation).</p>
 <h3 id="53-int4-weight-block-int4-flag">5.3 INT4 Weight Block (<code>INT4</code> flag)<a class="headerlink" href="#53-int4-weight-block-int4-flag" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>[4B magic &quot;INT4&quot;][4B n_rows][4B n_cols]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>[4B magic "INT4"][4B n_rows][4B n_cols]
 <a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>[ceil(n_rows*n_cols/2) bytes]  ← packed nibbles, row-major
 </code></pre></div>
 <p>Each byte packs two INT4 values: <code>bits[3:0]</code> = element at even index,
 <code>bits[7:4]</code> = element at odd index.  Signed two's complement.</p>
 <h3 id="54-int2-hybrid-block-int2-flag">5.4 INT2 Hybrid Block (<code>INT2</code> flag)<a class="headerlink" href="#54-int2-hybrid-block-int2-flag" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>[4B magic &quot;INT2&quot;][4B n_rows][4B n_cols][4B sub_block_len]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>[4B magic "INT2"][4B n_rows][4B n_cols][4B sub_block_len]
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>[ceil(n_rows*n_cols/4) bytes]  ← packed crumbs
 </code></pre></div>
 <p>Two bits per weight, row-major.  Sub-blocks share a shared scale factor
 stored in the scale/zero-point table.</p>
 <h3 id="55-numpy-fallback-block-no-compression-flags">5.5 NumPy fallback block (no compression flags)<a class="headerlink" href="#55-numpy-fallback-block-no-compression-flags" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>[4B magic &quot;NPCL&quot;][4B dtype_code][4B ndim]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>[4B magic "NPCL"][4B dtype_code][4B ndim]
 <a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>[ndim×4B shape][weight_data bytes]
 </code></pre></div>
 <p><code>dtype_code</code>: 0 = float32, 1 = float16, 2 = bfloat16.
@@ -2312,14 +2312,14 @@ table <code>scale_offset</code>.</p>
 <a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a> 24      8    bytes   reserved        Must be zero
 </code></pre></div>
 <h3 id="72-draft-head-payload-format">7.2 Draft head payload format<a class="headerlink" href="#72-draft-head-payload-format" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>[4B magic &quot;EGDH&quot;]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>[4B magic "EGDH"]
 <a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>[4B n_draft_layers]
 <a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>[per-layer draft weight blocks — same INT4/NumPy encoding as main model]
 </code></pre></div>
 <hr />
 <h2 id="8-scale-zero-point-tables">8. Scale / Zero-Point Tables<a class="headerlink" href="#8-scale-zero-point-tables" title="Permanent link">&para;</a></h2>
 <p>Immediately follows all weight blocks.  One entry per quantised weight matrix:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>[4B magic &quot;SCZT&quot;]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>[4B magic "SCZT"]
 <a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>[4B n_tensors]
 <a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>[n_tensors × 16B entries]:
 <a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>  [8B tensor_id: uint64 — hash of (layer_idx, tensor_name)]
@@ -2332,7 +2332,7 @@ same layout with <code>tensor_id</code> high bit set to distinguish them.</p>
 <h2 id="9-coreml-appendix-ane_coreml-flag">9. CoreML Appendix (<code>ANE_COREML</code> flag)<a class="headerlink" href="#9-coreml-appendix-ane_coreml-flag" title="Permanent link">&para;</a></h2>
 <p>When <code>ANE_COREML</code> (bit 6) is set the file ends with a CoreML appendix
 produced by the Wave 69 <code>convert_coreml</code> pipeline:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>[4B magic &quot;ANLX&quot;]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>[4B magic "ANLX"]
 <a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>[8B section_length]
 <a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>[CoreML mlpackage archive bytes — zip-encoded]
 </code></pre></div>
@@ -2344,12 +2344,12 @@ unavailable.</p>
 <p>A minimal valid SQUIZD file (2 layers, INT4, no sparsity, no EAGLE):</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>Offset  Bytes (hex)
 <a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>------  -----------
-<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>0       53 51 5A 44          &quot;SQZD&quot;
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>0       53 51 5A 44          "SQZD"
 <a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>4       01 00                version = 1
 <a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>6       04 00 00 00          flags = INT4 (bit 2)
 <a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>10      02 00                layer_count = 2
 <a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>12      00 00                arch_id = 0
-<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>14      5A 2B 00 00          sparsity_crc32 (computed over zero block = CRC32(&quot;\x00&quot;*32))
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>14      5A 2B 00 00          sparsity_crc32 (computed over zero block = CRC32("\x00"*32))
 <a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>18      00 00 00 00 00 00 00 00   eagle_hash = 0
 <a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>26      [102 zero bytes]     reserved
 <a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>128     [32 zero bytes]      sparsity_meta (all zero; SPARSE unset)
