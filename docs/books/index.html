@@ -32,6 +32,12 @@
     --accent-yellow-dark: #E09A1A;
     --accent-yellow-pale: #FDEBC8;
 
+    /* Decorative-only secondary accent — glowing background blobs and
+       sparkles, matching the rainbow already on the Colors book cover.
+       Never used on a button or link; the CTA accent stays yellow alone. */
+    --squish-pink: #FF7DAE;
+    --squish-cyan: #5FD4E0;
+
     --success-green: #4C9A6A;
     --error-red: #C0503A;
 
@@ -249,15 +255,32 @@
      (book covers, lesson cards, FAQ items, stat tiles, etc).
      --------------------------------------------------------------- */
   .card {
+    position: relative;
     background: var(--white);
     border: var(--border-thick);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-soft);
+    overflow: hidden;
     transition: transform var(--transition-base), box-shadow var(--transition-base);
   }
   .card--hover:hover {
     transform: translateY(var(--lift-hover));
     box-shadow: var(--shadow-lift);
+  }
+
+  /* Shine sweep — a soft diagonal highlight that glides across a card
+     on hover, the way a glossy sticker catches the light. */
+  .card--hover::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, 0.55) 50%, transparent 60%);
+    transform: translateX(-120%);
+    pointer-events: none;
+  }
+  .card--hover:hover::before {
+    transform: translateX(120%);
+    transition: transform 0.85s ease;
   }
   .card--soft {
     border: var(--border-thin);
@@ -448,13 +471,18 @@
     gap: var(--space-sm);
   }
 
+  .hero-illustration-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+  }
+
   /* Hero illustration frame: the real "Learning with Squish Collection"
      cover art (Squish + Lilyan holding hands under a rainbow). Square
      crop straight from the official cover, so it stays true to the
      published art with no distortion. */
   .hero-illustration {
     width: 100%;
-    max-width: 420px;
     aspect-ratio: 1 / 1;
     background: var(--white);
     border: var(--border-thick);
@@ -462,6 +490,20 @@
     box-shadow: var(--shadow-soft);
     padding: 8px;
     overflow: hidden;
+  }
+
+  /* A second, smaller Squish bobbing beside his own cover art — the
+     same floating-mascot flourish as the squish.run homepage hero. */
+  .hero-floating-squish {
+    position: absolute;
+    width: 84px;
+    height: 84px;
+    right: -22px;
+    bottom: -18px;
+    z-index: 2;
+  }
+  @media (min-width: 480px) {
+    .hero-floating-squish { width: 108px; height: 108px; right: -34px; bottom: -24px; }
   }
 
   .hero-illustration img {
@@ -492,17 +534,73 @@
     50% { transform: translateY(6px); }
   }
 
-  /* Soft decorative sparkles — inline SVG, no external image requests */
+  /* Soft decorative sparkles — inline SVG, no external image requests.
+     Each twinkles on its own cycle via a scale+opacity pulse. */
   .sparkle {
     position: absolute;
     opacity: 0.55;
     color: var(--squish-purple-light);
     pointer-events: none;
+    animation: spark-pulse 3s ease-in-out infinite;
   }
-  .sparkle--1 { top: 8%;  left: 6%;  width: 34px; }
-  .sparkle--2 { top: 18%; right: 8%; width: 22px; }
-  .sparkle--3 { bottom: 10%; left: 14%; width: 18px; }
-  .sparkle--4 { bottom: 20%; right: 12%; width: 30px; }
+  .sparkle--1 { top: 8%;  left: 6%;  width: 34px; animation-delay: 0s; }
+  .sparkle--2 { top: 18%; right: 8%; width: 22px; animation-delay: 0.8s; color: var(--squish-pink); }
+  .sparkle--3 { bottom: 10%; left: 14%; width: 18px; animation-delay: 1.6s; }
+  .sparkle--4 { bottom: 20%; right: 12%; width: 30px; animation-delay: 2.3s; color: var(--accent-yellow); }
+
+  @keyframes spark-pulse {
+    0%, 100% { opacity: 0.3; transform: scale(0.85); }
+    50% { opacity: 0.85; transform: scale(1.1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sparkle { animation: none; opacity: 0.55; }
+  }
+
+  /* ---------------------------------------------------------------
+     Ambient background glow — soft blurred color blobs that drift
+     slowly behind hero-weight sections, the same technique used on
+     squish.run's own homepage (see overrides/home.html), retuned to
+     this page's pastel palette. Purely decorative: aria-hidden,
+     pointer-events:none, never affects layout or z-index of content.
+     --------------------------------------------------------------- */
+  .blob-layer {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: -1;
+  }
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    animation: blob-drift 14s ease-in-out infinite;
+  }
+  @keyframes blob-drift {
+    0%, 100% { opacity: 0.25; transform: scale(1) translate(0, 0); }
+    33% { opacity: 0.4; transform: scale(1.12) translate(3%, 2%); }
+    66% { opacity: 0.3; transform: scale(0.94) translate(-2%, -3%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .blob { animation: none; opacity: 0.3; }
+  }
+
+  /* Floating mascot accent — the same bob-and-tilt used for Squish on
+     the main squish.run homepage, reused here at a smaller scale as a
+     decorative accent rather than the page's primary illustration. */
+  .mascot-float {
+    animation: mascot-float 6s ease-in-out infinite;
+    filter: drop-shadow(0 16px 28px rgba(139, 95, 191, 0.35));
+    pointer-events: none;
+  }
+  @keyframes mascot-float {
+    0%, 100% { transform: translateY(0) rotate(-3deg); }
+    25% { transform: translateY(-14px) rotate(2deg); }
+    75% { transform: translateY(-8px) rotate(-1deg); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mascot-float { animation: none; }
+  }
 
   /* ---------------------------------------------------------------
      Meet the Friends — character intro
@@ -1089,6 +1187,12 @@
     padding: var(--space-lg) 28px;
   }
 
+  .email-capture-mascot {
+    width: 84px;
+    height: 84px;
+    margin: 0 auto 4px;
+  }
+
   .email-capture-headline { font-size: clamp(1.6rem, 5vw, 2rem); color: var(--squish-purple); }
 
   .email-capture-subhead {
@@ -1217,6 +1321,11 @@
   <div id="hero-sentinel" aria-hidden="true"></div>
 
   <section class="hero" id="top">
+    <div class="blob-layer" aria-hidden="true">
+      <div class="blob" style="width:420px;height:420px;background:var(--squish-purple-light);top:-160px;left:-120px;animation-delay:0s;"></div>
+      <div class="blob" style="width:300px;height:300px;background:var(--squish-pink);top:20px;right:-100px;animation-delay:4s;"></div>
+      <div class="blob" style="width:260px;height:260px;background:var(--accent-yellow);bottom:-90px;left:38%;animation-delay:8s;"></div>
+    </div>
     <svg class="sparkle sparkle--1" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0l2.2 8.8L23 12l-8.8 2.2L12 23l-2.2-8.8L1 12l8.8-2.2z"/></svg>
     <svg class="sparkle sparkle--2" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0l2.2 8.8L23 12l-8.8 2.2L12 23l-2.2-8.8L1 12l8.8-2.2z"/></svg>
     <svg class="sparkle sparkle--3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0l2.2 8.8L23 12l-8.8 2.2L12 23l-2.2-8.8L1 12l8.8-2.2z"/></svg>
@@ -1226,8 +1335,11 @@
       <h1 class="hero-title">Big lessons. Tiny hands. One squishy purple friend.</h1>
       <p class="hero-tagline">Five playful books that turn routines, counting, colors, and shapes into your toddler's favorite part of the day &mdash; ages 1&ndash;5.</p>
 
-      <div class="hero-illustration">
-        <img src="assets/hero.jpg" alt="Squish and Lilyan holding hands under a rainbow, from The Learning with Squish Collection cover">
+      <div class="hero-illustration-wrap">
+        <div class="hero-illustration">
+          <img src="assets/hero.jpg" alt="Squish and Lilyan holding hands under a rainbow, from The Learning with Squish Collection cover">
+        </div>
+        <img class="hero-floating-squish mascot-float" src="assets/squish-mascot.png" alt="" aria-hidden="true">
       </div>
 
       <div class="hero-cta-row">
@@ -1615,6 +1727,10 @@
 
     <section class="email-capture reveal" id="printables" aria-labelledby="email-capture-headline">
       <div class="email-capture-card card">
+        <div class="blob-layer" aria-hidden="true">
+          <div class="blob" style="width:320px;height:320px;background:var(--squish-purple-light);top:-140px;left:50%;transform:translateX(-50%);animation-delay:1s;"></div>
+        </div>
+        <img class="email-capture-mascot mascot-float" src="assets/squish-mascot.png" alt="" aria-hidden="true">
         <p class="src-note" id="src-note" hidden></p>
 
         <span class="eyebrow eyebrow--center">More Squish</span>
