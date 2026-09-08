@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Learning with Squish — Playful Board Books for Curious Little Learners</title>
+<title>Learning with Squish: Playful Board Books for Curious Little Learners</title>
 <meta name="description" content="Learning with Squish is a 5-book series by Konjo Publishing for kids ages 1-5. Meet Squish and Lilyan, get free printable coloring pages, and shop the series." />
+<link rel="icon" type="image/png" href="assets/favicon.png" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,7 +16,7 @@
      Base + resets
      --------------------------------------------------------------- */
   body { margin: 0; background: #FFF6EC; }
-  /* The page wrapper (not body) is the overflow-clip box — a sticky-positioned
+  /* The page wrapper (not body) is the overflow-clip box: a sticky-positioned
      descendant (the nav) clips against its nearest ancestor with overflow set,
      and setting overflow-x on body itself gets propagated to the viewport
      instead of acting as a local clip, which lets sticky content bleed past
@@ -40,7 +41,7 @@
   @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(7px); } }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; } }
 
-  /* Skip link — keyboard/screen-reader affordance only, invisible until
+  /* Skip link: keyboard/screen-reader affordance only, invisible until
      focused, does not affect the visual match at any breakpoint. */
   .skip-link {
     position: absolute; left: -9999px; top: 0; z-index: 100;
@@ -51,7 +52,7 @@
 
   /* [data-reveal] elements start fully visible in CSS. The reveal script
      (below) sets their initial hidden state inline, and only when motion
-     isn't reduced — so content stays visible with no JS, and stays visible
+     isn't reduced, so content stays visible with no JS, and stays visible
      under prefers-reduced-motion. */
 
   /* ============ sticky nav + progress ============ */
@@ -137,12 +138,12 @@
     border-radius: 28px; overflow: hidden; background: #fff; padding: 10px;
     box-shadow: 0 26px 50px rgba(75,45,111,.3); transform: rotate(1.4deg);
   }
-  .hero-cover-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 20px; }
+  .hero-cover-img { width: 100%; height: auto; aspect-ratio: 1/1; object-fit: cover; border-radius: 20px; }
   .hero-mascot-squish {
-    position: absolute; width: 124px; right: -30px; bottom: -26px;
+    position: absolute; width: 124px; height: auto; right: -30px; bottom: -26px;
     animation: floaty 6s ease-in-out infinite; filter: drop-shadow(0 16px 24px rgba(75,45,111,.35));
   }
-  .hero-mascot-lilyan { position: absolute; width: 82px; left: -34px; top: -28px; animation: floaty2 7.5s ease-in-out infinite; }
+  .hero-mascot-lilyan { position: absolute; width: 82px; height: auto; left: -34px; top: -28px; animation: floaty2 7.5s ease-in-out infinite; }
   .scroll-cue { position: relative; display: flex; justify-content: center; margin-top: 44px; color: #7B3FBF; animation: bounce 2.4s ease-in-out infinite; }
   .marquee-outer {
     position: relative; margin-top: 36px; overflow: hidden; background: rgba(255,255,255,.55);
@@ -199,7 +200,7 @@
     border-radius: 26px; padding: 18px; box-shadow: 0 14px 30px rgba(123,63,191,.12);
   }
   .book-cover-wrap { position: relative; border-radius: 18px; overflow: hidden; margin-bottom: 16px; }
-  .book-cover-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
+  .book-cover-img { width: 100%; height: auto; aspect-ratio: 1/1; object-fit: cover; }
   .book-badge {
     position: absolute; top: 10px; left: 10px; font-family: 'Baloo 2', sans-serif; font-weight: 800;
     font-size: 12px; color: #3B1F5C; background: #FFD34D; padding: 5px 13px; border-radius: 999px;
@@ -334,7 +335,7 @@
     background: #fff; opacity: .5; filter: blur(80px); animation: drift 16s ease-in-out infinite;
   }
   .printables-inner { position: relative; max-width: 680px; margin: 0 auto; padding: 0 28px; text-align: center; }
-  .printables-mascot { width: 92px; margin: 0 auto 10px; animation: floaty 6s ease-in-out infinite; }
+  .printables-mascot { width: 92px; height: auto; margin: 0 auto 10px; animation: floaty 6s ease-in-out infinite; }
   .printables-heading { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: clamp(32px,4vw,48px); line-height: 1.02; color: #39205C; margin: 0 0 12px; }
   .printables-lead { margin: 0 auto 26px; max-width: 44ch; font-size: 18px; font-weight: 600; color: #5B4470; }
   .email-form { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
@@ -358,7 +359,7 @@
 
   /* ============ final CTA + footer ============ */
   .site-footer { background: #39205C; color: #D8C7EE; padding: 56px 28px 40px; text-align: center; }
-  .footer-mascot { width: 64px; margin: 0 auto 18px; animation: floaty2 7s ease-in-out infinite; }
+  .footer-mascot { width: 64px; height: auto; margin: 0 auto 18px; animation: floaty2 7s ease-in-out infinite; }
   .footer-heading { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: clamp(26px,3vw,36px); color: #fff; margin: 0 0 18px; }
   .footer-cta {
     display: inline-block; font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 18px;
@@ -368,7 +369,7 @@
   .footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 22px; margin: 34px 0 14px; font-weight: 700; font-size: 14px; }
   .footer-links a { color: #C9B2E8; text-decoration: none; }
   /* #9C86BE (the prototype's exact value) contrasts at 4.27:1 on this
-     background — just under WCAG AA's 4.5:1 for normal-weight text.
+     background, just under WCAG AA's 4.5:1 for normal-weight text.
      Lightened a hair to #A08CC1 (4.57:1); visually indistinguishable. */
   .footer-copy { margin: 0; font-size: 13px; color: #A08CC1; }
 </style>
@@ -408,7 +409,7 @@
       <div>
         <span class="hero-badge">Ages 1–5 · Five books</span>
         <h1 class="hero-title">Five little books.<br>One squishy<br>purple friend.</h1>
-        <p class="hero-subhead">Habits, counting, colors and shapes — turned into the part of the day your toddler actually asks for.</p>
+        <p class="hero-subhead">Habits, counting, colors and shapes, turned into the part of the day your toddler actually asks for.</p>
         <div class="hero-actions">
           <a href="https://a.co/d/0h10x3Mc" target="_blank" rel="noopener" class="btn-primary-lg">Shop the books</a>
           <a href="#printables" class="btn-secondary-lg">Free printables</a>
@@ -420,7 +421,7 @@
 
       <div class="hero-visual">
         <div class="hero-cover-frame">
-          <img src="assets/collection-cover.jpg" alt="The Learning with Squish Collection — Lilyan and Squish holding hands under a rainbow" class="hero-cover-img" width="900" height="900" fetchpriority="high">
+          <img src="assets/collection-cover.jpg" alt="The Learning with Squish Collection: Lilyan and Squish holding hands under a rainbow" class="hero-cover-img" width="900" height="900" fetchpriority="high">
         </div>
         <img src="assets/squish-mascot.png" alt="" class="hero-mascot-squish" width="313" height="294">
         <img src="assets/lilyan-mascot.png" alt="" class="hero-mascot-lilyan" width="115" height="260">
@@ -455,12 +456,12 @@
         <div class="friend-card friend-card--squish">
           <img src="assets/squish-mascot.png" alt="Squish, a happy purple cube character" class="friend-avatar friend-avatar--squish" width="313" height="294" loading="lazy" decoding="async">
           <h3 class="friend-name friend-name--squish">Squish</h3>
-          <p class="friend-desc">A happy purple cube, always ready for an adventure — curious, a little silly, and up for whatever Lilyan has planned.</p>
+          <p class="friend-desc">A happy purple cube, always ready for an adventure. Curious, a little silly, and up for whatever Lilyan has planned.</p>
         </div>
         <div class="friend-card friend-card--lilyan">
           <img src="assets/lilyan-mascot.png" alt="Lilyan, a curious little girl in a heart sweater" class="friend-avatar friend-avatar--lilyan" width="115" height="260" loading="lazy" decoding="async">
           <h3 class="friend-name friend-name--lilyan">Lilyan</h3>
-          <p class="friend-desc">Curious, brave, and always asking why. She notices everything — and she's not afraid to ask Squish about it.</p>
+          <p class="friend-desc">Curious, brave, and always asking why. She notices everything, and she's not afraid to ask Squish about it.</p>
         </div>
       </div>
     </div>
@@ -484,7 +485,7 @@
             <span class="book-badge">Book 1</span>
           </div>
           <h3 class="book-title">Learning Good Habits with Squish</h3>
-          <p class="book-desc">A full day of toddler routines with a repeating “Why do we…?” pattern — waking up, getting dressed, brushing teeth, and bedtime.</p>
+          <p class="book-desc">A full day of toddler routines with a repeating “Why do we…?” pattern: waking up, getting dressed, brushing teeth, and bedtime.</p>
           <div class="book-meta">
             <span class="book-meta-label">Teaches</span><span>Daily routines</span>
             <span class="book-meta-sep">·</span>
@@ -502,7 +503,7 @@
             <span class="book-badge">Book 2</span>
           </div>
           <h3 class="book-title">Learning to Count with Squish</h3>
-          <p class="book-desc">A rhyming counting adventure from 1 to 20, one juicy fruit at a time — with a “Let’s Count Again!” recap every five numbers.</p>
+          <p class="book-desc">A rhyming counting adventure from 1 to 20, one juicy fruit at a time, with a “Let’s Count Again!” recap every five numbers.</p>
           <div class="book-meta">
             <span class="book-meta-label">Teaches</span><span>Numbers 1–20</span>
             <span class="book-meta-sep">·</span>
@@ -520,7 +521,7 @@
             <span class="book-badge">Book 3</span>
           </div>
           <h3 class="book-title">Learning Colors with Squish</h3>
-          <p class="book-desc">24 vibrant colors come to life through playful rhymes and lovable animals — from a red ladybug to a swirling teal ocean wave.</p>
+          <p class="book-desc">24 vibrant colors come to life through playful rhymes and lovable animals, from a red ladybug to a swirling teal ocean wave.</p>
           <div class="book-meta">
             <span class="book-meta-label">Teaches</span><span>24 colors</span>
             <span class="book-meta-sep">·</span>
@@ -538,7 +539,7 @@
             <span class="book-badge">Book 4 · The Set</span>
           </div>
           <h3 class="book-title">The Learning with Squish Collection</h3>
-          <p class="book-desc">Three beloved stories — Habits, Counting and Colors — together in one keepsake collection. Ebook, paperback or hardback.</p>
+          <p class="book-desc">Three beloved stories (Habits, Counting and Colors) together in one keepsake collection. Ebook, paperback or hardback.</p>
           <div class="book-meta">
             <span class="book-meta-label">Teaches</span><span>All three</span>
             <span class="book-meta-sep">·</span>
@@ -556,7 +557,7 @@
             <span class="book-badge">Book 5 · Newest</span>
           </div>
           <h3 class="book-title">Learning Shapes with Squish</h3>
-          <p class="book-desc">Circle. Triangle. Rectangle. Star. Squish can become any shape you can imagine — popping through 12 shapes, one big POP! at a time.</p>
+          <p class="book-desc">Circle. Triangle. Rectangle. Star. Squish can become any shape you can imagine, popping through 12 shapes, one big POP! at a time.</p>
           <div class="book-meta">
             <span class="book-meta-label">Teaches</span><span>12 shapes</span>
             <span class="book-meta-sep">·</span>
@@ -608,7 +609,7 @@
           <span class="idea-number">01</span>
           <div>
             <h3 class="idea-heading">A full day of routines</h3>
-            <p class="idea-text">Waking up, getting dressed, brushing teeth and bedtime — the moments every toddler’s day is made of.</p>
+            <p class="idea-text">Waking up, getting dressed, brushing teeth and bedtime: the moments every toddler’s day is made of.</p>
           </div>
         </div>
         <div data-reveal class="idea-card">
@@ -694,7 +695,7 @@
           <div class="order-badge">1</div>
           <div class="order-body">
             <h3 class="order-title">Learning Good Habits with Squish</h3>
-            <p class="order-text">Start here — a full day of toddler routines and the “Why do we…?” chant.</p>
+            <p class="order-text">Start here: a full day of toddler routines and the “Why do we…?” chant.</p>
           </div>
         </div>
         <div data-reveal class="order-item">
@@ -722,7 +723,7 @@
           <div class="order-badge">5</div>
           <div class="order-body">
             <h3 class="order-title">Learning Shapes with Squish</h3>
-            <p class="order-text">The newest adventure — Squish shapeshifts through 12 shapes.</p>
+            <p class="order-text">The newest adventure, where Squish shapeshifts through 12 shapes.</p>
           </div>
         </div>
       </div>
@@ -737,7 +738,7 @@
         <div data-reveal class="audience-card">
           <h3 class="audience-card-title">For grown-ups</h3>
           <ul class="audience-list">
-            <li>Every book ends with a real <strong>Note for Grown-Ups</strong> — simple tips for reading it together.</li>
+            <li>Every book ends with a real <strong>Note for Grown-Ups</strong>, with simple tips for reading it together.</li>
             <li>Short, rhythmic, read-aloud text that survives the twentieth re-read.</li>
             <li>Real skills underneath the story: habits, counting, colors and shapes.</li>
             <li>Characters who come back in every book, so the world feels familiar.</li>
@@ -769,8 +770,8 @@
             </div>
           </div>
           <div class="about-copy">
-            <p>Squish wasn't supposed to be a children's book character. He started as a mascot for a completely different project — until my daughter saw an early version of him on my screen and loved him immediately.</p>
-            <p>So I kept refining the character, and started making up stories about him and her, playing together. She asked for them again and again — <em>“I want Squish book”</em> — until one Father's Day, I turned one into a real book for her shelf. She still pulls it down and hands it to me herself.</p>
+            <p>Squish wasn't supposed to be a children's book character. He started as a mascot for a completely different project, until my daughter saw an early version of him on my screen and loved him immediately.</p>
+            <p>So I kept refining the character, and started making up stories about him and her, playing together. She asked for them again and again (<em>“I want Squish book”</em>) until one Father's Day, I turned one into a real book for her shelf. She still pulls it down and hands it to me herself.</p>
             <p>That's still what these books are: a character who comes back, and a story worth asking for twice.</p>
           </div>
         </div>
@@ -807,15 +808,15 @@
         </div>
         <div data-reveal class="faq-item">
           <h3 class="faq-question">How long is each book?</h3>
-          <p class="faq-answer">Short on purpose — from 10 rhyming spreads (Habits) to 20 rhyming pages (Counting). Built for a wiggly toddler’s attention span, not a chapter-book sitting.</p>
+          <p class="faq-answer">Short on purpose: from 10 rhyming spreads (Habits) to 20 rhyming pages (Counting). Built for a wiggly toddler’s attention span, not a chapter-book sitting.</p>
         </div>
         <div data-reveal class="faq-item">
           <h3 class="faq-question">Do I need to read them in order?</h3>
-          <p class="faq-answer">Nope — every book stands alone. If you want the official order it’s Habits → Counting → Colors → the Collection bind-up → Shapes, but Squish and Lilyan will happily meet your kid wherever you start.</p>
+          <p class="faq-answer">Nope. Every book stands alone. If you want the official order it’s Habits → Counting → Colors → the Collection bind-up → Shapes, but Squish and Lilyan will happily meet your kid wherever you start.</p>
         </div>
         <div data-reveal class="faq-item">
           <h3 class="faq-question">Is there anything in it for the grown-up reading it?</h3>
-          <p class="faq-answer">Yes — every book ends with a real “Note for Grown-Ups,” with simple tips for reading it together, not just a cute story for your kid.</p>
+          <p class="faq-answer">Yes. Every book ends with a real “Note for Grown-Ups,” with simple tips for reading it together, not just a cute story for your kid.</p>
         </div>
       </div>
     </div>
@@ -872,7 +873,7 @@
         </div>
       </div>
       <div data-reveal class="formats-note">
-        Reading together at bedtime? Every book ends with a <strong>Note for Grown-Ups</strong>, and Learning Shapes with Squish has a QR code inside linking to free printable coloring pages — the same ones you can grab below.
+        Reading together at bedtime? Every book ends with a <strong>Note for Grown-Ups</strong>, and Learning Shapes with Squish has a QR code inside linking to free printable coloring pages, the same ones you can grab below.
       </div>
     </div>
   </section>
@@ -883,7 +884,7 @@
     <div class="printables-inner">
       <img src="assets/squish-mascot.png" alt="" class="printables-mascot" width="313" height="294" loading="lazy" decoding="async">
       <h2 class="printables-heading">Get free printables</h2>
-      <p class="printables-lead">Printable coloring pages of Squish and Lilyan — perfect for a rainy afternoon, straight to your inbox.</p>
+      <p class="printables-lead">Printable coloring pages of Squish and Lilyan, perfect for a rainy afternoon, straight to your inbox.</p>
 
       <form class="email-form" id="subscribe-form" novalidate>
         <label class="email-form-label" for="email-input">Email address</label>
@@ -1039,7 +1040,7 @@
     }
 
     // ---------------------------------------------------------------
-    // Printables signup — posts to the Cloudflare Pages Function at
+    // Printables signup: posts to the Cloudflare Pages Function at
     // functions/api/subscribe.js. A failed request surfaces a real
     // error instead of a fake success (Konjo: no silent failures).
     // ---------------------------------------------------------------
@@ -1096,7 +1097,7 @@
         })
         .catch(function (err) {
           console.error("[squish.run/books] /api/subscribe request failed:", err);
-          showError("Something went wrong — please try again in a moment.");
+          showError("Something went wrong. Please try again in a moment.");
         })
         .finally(function () {
           submitButton.disabled = false;
