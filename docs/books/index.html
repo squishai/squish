@@ -1209,8 +1209,7 @@
     // ---------------------------------------------------------------
     // Attribution: read ?src= from the URL and stash it in the hidden
     // form field so a signup stays traceable to the book / QR code
-    // that drove it (matches the { email, src } contract expected by
-    // functions/api/subscribe.js).
+    // that drove it.
     // ---------------------------------------------------------------
     var srcParam = new URLSearchParams(window.location.search).get("src");
     var srcInput = document.getElementById("src-input");
@@ -1343,9 +1342,10 @@
     }
 
     // ---------------------------------------------------------------
-    // Printables signup: posts to the Cloudflare Pages Function at
-    // functions/api/subscribe.js. A failed request surfaces a real
-    // error instead of a fake success (Konjo: no silent failures).
+    // Printables signup: posts straight to FormSubmit.co (this site is
+    // static GitHub Pages hosting, no serverless backend), which emails
+    // the submission to wes@squish.run. A failed request surfaces a
+    // real error instead of a fake success (Konjo: no silent failures).
     // ---------------------------------------------------------------
     var EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     var form = document.getElementById("subscribe-form");
@@ -1387,19 +1387,30 @@
       submitButton.disabled = true;
       submitButton.textContent = "Sending...";
 
-      fetch("/api/subscribe", {
+      fetch("https://formsubmit.co/ajax/wes@squish.run", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email, src: srcInput.value || null })
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          src: srcInput.value || "(none)",
+          _subject: "New Learning with Squish signup",
+          _captcha: "false"
+        })
       })
         .then(function (response) {
           if (!response.ok) {
             throw new Error("Subscribe request failed with status " + response.status);
           }
+          return response.json();
+        })
+        .then(function (data) {
+          if (!data || data.success !== "true") {
+            throw new Error("formsubmit.co reported failure: " + (data && data.message));
+          }
           showSuccess();
         })
         .catch(function (err) {
-          console.error("[squish.run/books] /api/subscribe request failed:", err);
+          console.error("[squish.run/books] formsubmit.co request failed:", err);
           showError("Something went wrong. Please try again in a moment.");
         })
         .finally(function () {
