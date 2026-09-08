@@ -73,6 +73,37 @@
   .side-mascot--right { right: 2%; }
   @media (max-width: 1150px) { .side-mascot { display: none; } }
 
+  /* ============ hover interactions: cards, pills, buttons ============ */
+  .book-card, .loyalty-card, .idea-card, .friend-card, .about-card,
+  .stat-card, .faq-item, .format-row, .audience-card, .order-thumb-link {
+    transition: transform .22s ease, box-shadow .22s ease;
+  }
+  .book-card:hover, .loyalty-card:hover, .idea-card:hover, .friend-card:hover,
+  .about-card:hover, .stat-card:hover, .faq-item:hover, .format-row:hover,
+  .audience-card:hover, .order-thumb-link:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 34px rgba(0,0,0,.16);
+  }
+  .eyebrow, .hero-badge, .book-badge, .format-chip {
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .eyebrow:hover, .hero-badge:hover, .book-badge:hover, .format-chip:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 18px rgba(0,0,0,.14);
+  }
+  .btn-primary-lg, .btn-secondary-lg, .book-buy-btn, .submit-btn, .footer-cta, .nav-cta {
+    transition: transform .18s ease, background-color .18s ease, color .18s ease;
+  }
+  .btn-primary-lg:hover, .book-buy-btn:hover, .submit-btn:hover, .footer-cta:hover, .nav-cta:hover {
+    transform: translateY(-3px);
+    background-color: #FFC940;
+  }
+  .btn-secondary-lg:hover {
+    transform: translateY(-3px);
+    background-color: #fff;
+    color: #39205C;
+  }
+
   /* ============ sticky nav + progress ============ */
   .site-header {
     position: sticky; top: 0; z-index: 60;
@@ -305,11 +336,9 @@
   .order-body { padding-top: 6px; flex: 1 1 auto; }
   .order-title { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 19px; color: #6E1F45; margin: 0 0 4px; }
   .order-text { margin: 0; font-size: 16px; font-weight: 600; color: #8A5372; }
-  .order-thumb {
-    flex-shrink: 0; width: 64px; height: 64px; border-radius: 14px; object-fit: cover;
-    box-shadow: 0 6px 14px rgba(110,31,69,.2);
-  }
-  @media (max-width: 560px) { .order-thumb { display: none; } }
+  .order-thumb-link { display: block; flex-shrink: 0; border-radius: 14px; box-shadow: 0 6px 14px rgba(110,31,69,.2); }
+  .order-thumb { display: block; width: 64px; height: 64px; border-radius: 14px; object-fit: cover; }
+  @media (max-width: 560px) { .order-thumb-link { display: none; } }
 
   /* ============ who it's for ============ */
   .audience { background: #EAF1FF; padding: 100px 0; }
@@ -961,7 +990,9 @@
             <h3 class="order-title">Learning Good Habits with Squish</h3>
             <p class="order-text">Start here: a full day of toddler routines and the “Why do we…?” chant.</p>
           </div>
-          <img src="assets/covers/habits.jpg" alt="" class="order-thumb" width="900" height="900" loading="lazy" decoding="async">
+          <a href="https://a.co/d/0h8bTi0X" target="_blank" rel="noopener" class="order-thumb-link" aria-label="Buy Learning Good Habits with Squish on Amazon">
+            <img src="assets/covers/habits.jpg" alt="" class="order-thumb" width="900" height="900" loading="lazy" decoding="async">
+          </a>
         </div>
         <div data-reveal class="order-item">
           <div class="order-badge">2</div>
@@ -969,7 +1000,9 @@
             <h3 class="order-title">Learning to Count with Squish</h3>
             <p class="order-text">Numbers 1 to 20, one juicy fruit at a time.</p>
           </div>
-          <img src="assets/covers/counting.jpg" alt="" class="order-thumb" width="900" height="900" loading="lazy" decoding="async">
+          <a href="https://a.co/d/01cGuej8" target="_blank" rel="noopener" class="order-thumb-link" aria-label="Buy Learning to Count with Squish on Amazon">
+            <img src="assets/covers/counting.jpg" alt="" class="order-thumb" width="900" height="900" loading="lazy" decoding="async">
+          </a>
         </div>
         <div data-reveal class="order-item">
           <div class="order-badge">3</div>
@@ -977,7 +1010,9 @@
             <h3 class="order-title">Learning Colors with Squish</h3>
             <p class="order-text">24 colors, playful rhymes, and lovable animal friends.</p>
           </div>
-          <img src="assets/covers/colors.jpg" alt="" class="order-thumb" width="900" height="900" loading="lazy" decoding="async">
+          <a href="https://a.co/d/0eNTROSE" target="_blank" rel="noopener" class="order-thumb-link" aria-label="Buy Learning Colors with Squish on Amazon">
+            <img src="assets/covers/colors.jpg" alt="" class="order-thumb" width="900" height="900" loading="lazy" decoding="async">
+          </a>
         </div>
         <div data-reveal class="order-item">
           <div class="order-badge">4</div>
@@ -985,7 +1020,9 @@
             <h3 class="order-title">The Learning with Squish Collection</h3>
             <p class="order-text">Habits, Counting and Colors together in one keepsake bind-up.</p>
           </div>
-          <img src="assets/covers/collection.jpg" alt="" class="order-thumb" width="900" height="900" loading="lazy" decoding="async">
+          <a href="https://a.co/d/0h10x3Mc" target="_blank" rel="noopener" class="order-thumb-link" aria-label="Buy The Learning with Squish Collection on Amazon">
+            <img src="assets/covers/collection.jpg" alt="" class="order-thumb" width="900" height="900" loading="lazy" decoding="async">
+          </a>
         </div>
         <div data-reveal class="order-item">
           <div class="order-badge">5</div>
@@ -993,7 +1030,9 @@
             <h3 class="order-title">Learning Shapes with Squish</h3>
             <p class="order-text">The newest adventure, where Squish shapeshifts through 12 shapes.</p>
           </div>
-          <img src="assets/covers/shapes.jpg" alt="" class="order-thumb" width="900" height="900" loading="lazy" decoding="async">
+          <a href="https://a.co/d/0fzbFoD7" target="_blank" rel="noopener" class="order-thumb-link" aria-label="Buy Learning Shapes with Squish on Amazon">
+            <img src="assets/covers/shapes.jpg" alt="" class="order-thumb" width="900" height="900" loading="lazy" decoding="async">
+          </a>
         </div>
       </div>
     </div>
