@@ -55,6 +55,24 @@
      isn't reduced, so content stays visible with no JS, and stays visible
      under prefers-reduced-motion. */
 
+  /* ============ icon sprite usage ============ */
+  .icon { width: 22px; height: 22px; display: block; flex-shrink: 0; }
+  .icon-chip {
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0; border-radius: 999px;
+  }
+  .icon-inline { width: 17px; height: 17px; flex-shrink: 0; }
+
+  /* Decorative Squish/Lilyan flanking art: desktop-only so it never
+     competes with content on narrow screens. */
+  .side-mascot {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 128px; height: auto; opacity: .9; pointer-events: none;
+  }
+  .side-mascot--left { left: 2%; }
+  .side-mascot--right { right: 2%; }
+  @media (max-width: 1150px) { .side-mascot { display: none; } }
+
   /* ============ sticky nav + progress ============ */
   .site-header {
     position: sticky; top: 0; z-index: 60;
@@ -202,7 +220,7 @@
   .book-cover-wrap { position: relative; border-radius: 18px; overflow: hidden; margin-bottom: 16px; }
   .book-cover-img { width: 100%; height: auto; aspect-ratio: 1/1; object-fit: cover; }
   .book-badge {
-    position: absolute; top: 10px; left: 10px; font-family: 'Baloo 2', sans-serif; font-weight: 800;
+    position: absolute; bottom: 10px; left: 10px; font-family: 'Baloo 2', sans-serif; font-weight: 800;
     font-size: 12px; color: #3B1F5C; background: #FFD34D; padding: 5px 13px; border-radius: 999px;
     box-shadow: 0 4px 10px rgba(224,171,0,.42);
   }
@@ -227,6 +245,7 @@
   .loyalty-heading { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: clamp(28px,3.2vw,40px); line-height: 1.05; color: #1E5B48; margin: 0 0 30px; text-align: center; }
   .loyalty-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(230px,1fr)); gap: 16px; }
   .loyalty-card { background: #fff; border-radius: 22px; padding: 26px 22px; box-shadow: 0 10px 24px rgba(30,91,72,.1); }
+  .loyalty-icon-chip { width: 46px; height: 46px; background: #E1F5EC; color: #12A67C; margin-bottom: 14px; }
   .loyalty-number { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 15px; color: #12A67C; margin-bottom: 8px; }
   .loyalty-text { margin: 0; font-weight: 700; font-size: 16px; color: #25493F; }
 
@@ -237,12 +256,14 @@
   .ideas-heading { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: clamp(32px,3.8vw,50px); line-height: 1.02; color: #4A3208; margin: 16px 0 0; max-width: 20ch; }
   .ideas-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap: 14px; }
   .idea-card { display: flex; gap: 16px; background: #fff; border-radius: 20px; padding: 22px; box-shadow: 0 8px 20px rgba(138,90,0,.09); }
+  .idea-icon-col { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; }
+  .idea-icon-chip { width: 36px; height: 36px; background: #FFEEB8; color: #8A5A00; }
   .idea-number { flex-shrink: 0; font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 26px; line-height: 1; color: #F0B93B; }
   .idea-heading { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 16px; color: #4A3208; margin: 0 0 4px; }
   .idea-text { margin: 0; font-size: 14.5px; font-weight: 600; color: #7A6440; }
 
   /* ============ reading order ============ */
-  .order-section { background: #FDEBF3; padding: 84px 0; }
+  .order-section { position: relative; background: #FDEBF3; padding: 84px 0; }
   .order-container { max-width: 900px; margin: 0 auto; padding: 0 28px; }
   .order-head { text-align: center; margin-bottom: 40px; }
   .order-heading { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: clamp(30px,3.6vw,46px); line-height: 1.04; color: #6E1F45; margin: 16px 0 10px; }
@@ -270,17 +291,24 @@
   .audience-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(320px,1fr)); gap: 22px; }
   .audience-card { background: #fff; border-radius: 26px; padding: 32px; box-shadow: 0 14px 30px rgba(31,58,115,.1); }
   .audience-card-title { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 22px; color: #2C56A8; margin: 0 0 16px; }
-  .audience-list { margin: 0; padding-left: 1.1em; font-weight: 600; font-size: 16px; color: #3B4E75; display: flex; flex-direction: column; gap: 11px; }
+  .audience-list { margin: 0; padding-left: 0; list-style: none; font-weight: 600; font-size: 16px; color: #3B4E75; display: flex; flex-direction: column; gap: 13px; }
+  .audience-list li { display: flex; align-items: flex-start; gap: 12px; }
   .audience-list strong { color: #1F3A73; }
+  .audience-icon { color: #2C56A8; margin-top: 1px; }
 
   /* ============ about + stats ============ */
   .about-section { background: #F4EAFF; padding: 84px 0; }
   .about-container { max-width: 1060px; margin: 0 auto; padding: 0 28px; }
   .about-card {
-    background: #fff; border-radius: 32px; padding: clamp(28px,4vw,52px);
+    position: relative; background: #fff; border-radius: 32px; padding: clamp(28px,4vw,52px);
     box-shadow: 0 20px 44px rgba(123,63,191,.14); display: grid;
     grid-template-columns: repeat(auto-fit,minmax(300px,1fr)); gap: 44px; align-items: center;
   }
+  .about-mascot {
+    position: absolute; top: -26px; right: 28px; width: 74px; height: auto;
+    animation: floaty 6.5s ease-in-out infinite;
+  }
+  @media (max-width: 640px) { .about-mascot { display: none; } }
   .about-author-row { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
   .about-avatar { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 4px solid #D9BFF5; }
   .about-author-name { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 20px; color: #7B3FBF; margin: 0; }
@@ -294,7 +322,7 @@
   .stat-label { font-size: 13px; font-weight: 700; color: #6B5580; }
 
   /* ============ FAQ ============ */
-  .faq-section { background: #FFF6EC; padding: 80px 0; }
+  .faq-section { position: relative; background: #FFF6EC; padding: 80px 0; }
   .faq-container { max-width: 860px; margin: 0 auto; padding: 0 28px; }
   .faq-heading { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: clamp(30px,3.6vw,46px); line-height: 1.04; color: #5A3A16; margin: 0 0 30px; text-align: center; }
   .faq-list { display: flex; flex-direction: column; gap: 12px; }
@@ -303,7 +331,7 @@
   .faq-answer { margin: 0; font-size: 16px; font-weight: 600; color: #5C4A3C; }
 
   /* ============ formats ============ */
-  .formats-section { background: #E6F7F0; padding: 80px 0; }
+  .formats-section { position: relative; background: #E6F7F0; padding: 80px 0; }
   .formats-container { max-width: 900px; margin: 0 auto; padding: 0 28px; }
   .formats-head { text-align: center; margin-bottom: 32px; }
   .formats-heading { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: clamp(30px,3.6vw,46px); line-height: 1.04; color: #1E5B48; margin: 0 0 10px; }
@@ -319,7 +347,6 @@
     display: inline-flex; align-items: center; gap: 7px; padding: 7px 15px; border-radius: 999px;
     border: 2px solid #CDEBE0; font-size: 13.5px; font-weight: 700; color: #3F6F60; text-decoration: none;
   }
-  .chip-dot { width: 8px; height: 8px; border-radius: 50%; background: #12A67C; display: inline-block; }
   .format-row-price { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 18px; color: #1E5B48; }
   .formats-note { margin-top: 26px; background: rgba(255,255,255,.72); border-radius: 20px; padding: 22px 26px; text-align: center; font-size: 16px; font-weight: 600; color: #3F6F60; }
   .formats-note strong { color: #1E5B48; }
@@ -359,7 +386,7 @@
 
   /* ============ final CTA + footer ============ */
   .site-footer { background: #39205C; color: #D8C7EE; padding: 56px 28px 40px; text-align: center; }
-  .footer-mascot { width: 64px; height: auto; margin: 0 auto 18px; animation: floaty2 7s ease-in-out infinite; }
+  .footer-mascot { width: 96px; height: auto; margin: 0 auto 18px; }
   .footer-heading { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: clamp(26px,3vw,36px); color: #fff; margin: 0 0 18px; }
   .footer-cta {
     display: inline-block; font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 18px;
@@ -376,6 +403,151 @@
 </head>
 <body>
 <a class="skip-link" href="#top-content">Skip to content</a>
+
+<!-- Hand-authored icon sprite, kept inline so the page stays a single
+     file with no external icon library or build step. Every icon shares
+     the same stroke-based construction (2px round-cap currentColor
+     strokes) so they read as one consistent set. -->
+<svg aria-hidden="true" style="position:absolute; width:0; height:0; overflow:hidden;">
+  <defs>
+    <symbol id="icon-users" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="9" cy="8" r="3.2"></circle>
+        <circle cx="16" cy="9.5" r="2.6"></circle>
+        <path d="M3.5 20a5.5 5.5 0 0 1 11 0"></path>
+        <path d="M14.5 20a4.5 4.5 0 0 1 8 0"></path>
+      </g>
+    </symbol>
+    <symbol id="icon-message" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 5h16v11H9l-5 4V5z"></path>
+        <line x1="7.5" y1="9" x2="16.5" y2="9"></line>
+        <line x1="7.5" y1="12.5" x2="13" y2="12.5"></line>
+      </g>
+    </symbol>
+    <symbol id="icon-chat" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 5h16v11H9l-5 4V5z"></path>
+        <circle cx="8.3" cy="10.3" r=".4" fill="currentColor" stroke="none"></circle>
+        <circle cx="12" cy="10.3" r=".4" fill="currentColor" stroke="none"></circle>
+        <circle cx="15.7" cy="10.3" r=".4" fill="currentColor" stroke="none"></circle>
+      </g>
+    </symbol>
+    <symbol id="icon-note" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"></path>
+        <path d="M15 3v4h4"></path>
+        <line x1="8" y1="12" x2="16" y2="12"></line>
+        <line x1="8" y1="15.5" x2="14" y2="15.5"></line>
+      </g>
+    </symbol>
+    <symbol id="icon-sparkle" viewBox="0 0 24 24">
+      <polygon points="12,2 14,10 22,12 14,14 12,22 10,14 2,12 10,10" fill="currentColor" stroke="none"></polygon>
+    </symbol>
+    <symbol id="icon-sun" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="4.2"></circle>
+        <line x1="12" y1="2" x2="12" y2="4.6"></line>
+        <line x1="12" y1="19.4" x2="12" y2="22"></line>
+        <line x1="2" y1="12" x2="4.6" y2="12"></line>
+        <line x1="19.4" y1="12" x2="22" y2="12"></line>
+        <line x1="5.1" y1="5.1" x2="6.9" y2="6.9"></line>
+        <line x1="17.1" y1="17.1" x2="18.9" y2="18.9"></line>
+        <line x1="18.9" y1="5.1" x2="17.1" y2="6.9"></line>
+        <line x1="6.9" y1="17.1" x2="5.1" y2="18.9"></line>
+      </g>
+    </symbol>
+    <symbol id="icon-fruit" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="14" r="6.5"></circle>
+        <path d="M12 7.5V4.5"></path>
+        <path d="M12 5c1.6-1.6 3.2-1.6 4-1"></path>
+      </g>
+    </symbol>
+    <symbol id="icon-refresh" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="8" stroke-dasharray="37.7 12.6" transform="rotate(-58 12 12)"></circle>
+        <circle cx="19.6" cy="6.3" r="1.6" fill="currentColor" stroke="none"></circle>
+      </g>
+    </symbol>
+    <symbol id="icon-palette" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9"></circle>
+      </g>
+      <g stroke="none">
+        <circle cx="9" cy="8.6" r="1.5" fill="currentColor"></circle>
+        <circle cx="15.4" cy="9.4" r="1.5" fill="currentColor"></circle>
+        <circle cx="16.4" cy="15" r="1.5" fill="currentColor"></circle>
+        <circle cx="9.8" cy="16" r="1.5" fill="currentColor"></circle>
+      </g>
+    </symbol>
+    <symbol id="icon-paw" viewBox="0 0 24 24">
+      <g fill="currentColor" stroke="none">
+        <ellipse cx="12" cy="16" rx="5" ry="4"></ellipse>
+        <circle cx="5.5" cy="10.5" r="2"></circle>
+        <circle cx="10" cy="6.5" r="2"></circle>
+        <circle cx="14.5" cy="6.5" r="2"></circle>
+        <circle cx="18.5" cy="10.5" r="2"></circle>
+      </g>
+    </symbol>
+    <symbol id="icon-shapes" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="7,3 12,11 2,11"></polygon>
+        <circle cx="17.5" cy="6.5" r="4"></circle>
+        <rect x="4" y="14" width="8" height="8" rx="1.5"></rect>
+      </g>
+    </symbol>
+    <symbol id="icon-question" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"></circle>
+      <text x="12" y="16.3" text-anchor="middle" font-size="11.5" font-weight="800" fill="currentColor" font-family="'Baloo 2', sans-serif" stroke="none">?</text>
+    </symbol>
+    <symbol id="icon-gift" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3.5" y="9" width="17" height="12" rx="1.2"></rect>
+        <line x1="3.5" y1="13.5" x2="20.5" y2="13.5"></line>
+        <line x1="12" y1="9" x2="12" y2="21"></line>
+        <path d="M12 9C9.5 9 8 7.6 8 6.2 8 5 9 4.3 10 4.7c1.2.5 1.8 2 2 4.3z"></path>
+        <path d="M12 9c2.5 0 4-1.4 4-2.8 0-1.2-1-1.9-2-1.5-1.2.5-1.8 2-2 4.3z"></path>
+      </g>
+    </symbol>
+    <symbol id="icon-book-open" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 6.5c-1.6-1.3-4-1.8-9-1.8v13.6c5 0 7.4.5 9 1.8"></path>
+        <path d="M12 6.5c1.6-1.3 4-1.8 9-1.8v13.6c-5 0-7.4.5-9 1.8"></path>
+        <line x1="12" y1="6.5" x2="12" y2="20.1"></line>
+      </g>
+    </symbol>
+    <symbol id="icon-blocks" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="12.5" width="7" height="7" rx="1.3"></rect>
+        <rect x="10.8" y="12.5" width="7" height="7" rx="1.3"></rect>
+        <rect x="7" y="4.5" width="7" height="7" rx="1.3"></rect>
+      </g>
+    </symbol>
+    <symbol id="icon-moon" viewBox="0 0 24 24">
+      <path d="M20 12.8A8 8 0 1 1 11.2 4a6 6 0 0 0 8.8 8.8z" fill="currentColor" stroke="none"></path>
+    </symbol>
+    <symbol id="icon-tablet" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="5" y="2.5" width="14" height="19" rx="2.2"></rect>
+        <circle cx="12" cy="18.2" r=".6" fill="currentColor" stroke="none"></circle>
+      </g>
+    </symbol>
+    <symbol id="icon-book" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 3.5h11a2.5 2.5 0 0 1 2.5 2.5v14.5H7.5A2.5 2.5 0 0 1 5 18V3.5z"></path>
+        <line x1="8.5" y1="3.5" x2="8.5" y2="20.5"></line>
+      </g>
+    </symbol>
+    <symbol id="icon-book-stack" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="16" height="4.2" rx="1"></rect>
+        <rect x="3" y="9.9" width="18" height="4.2" rx="1"></rect>
+        <rect x="3" y="15.8" width="14" height="4.2" rx="1"></rect>
+      </g>
+    </symbol>
+  </defs>
+</svg>
 
 <div class="page">
 
@@ -578,18 +750,22 @@
       <h2 data-reveal class="loyalty-heading">Why families keep coming back</h2>
       <div class="loyalty-grid">
         <div data-reveal class="loyalty-card">
+          <div class="icon-chip loyalty-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-users"></use></svg></div>
           <div class="loyalty-number">01</div>
           <p class="loyalty-text">Characters who come back in every book</p>
         </div>
         <div data-reveal class="loyalty-card">
+          <div class="icon-chip loyalty-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-message"></use></svg></div>
           <div class="loyalty-number">02</div>
           <p class="loyalty-text">Simple language for short attention spans</p>
         </div>
         <div data-reveal class="loyalty-card">
+          <div class="icon-chip loyalty-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-note"></use></svg></div>
           <div class="loyalty-number">03</div>
           <p class="loyalty-text">A Note for Grown-Ups at the end of every story</p>
         </div>
         <div data-reveal class="loyalty-card">
+          <div class="icon-chip loyalty-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-sparkle"></use></svg></div>
           <div class="loyalty-number">04</div>
           <p class="loyalty-text">New titles added to the series regularly</p>
         </div>
@@ -606,70 +782,100 @@
       </div>
       <div class="ideas-grid">
         <div data-reveal class="idea-card">
-          <span class="idea-number">01</span>
+          <div class="idea-icon-col">
+            <div class="icon-chip idea-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-sun"></use></svg></div>
+            <span class="idea-number">01</span>
+          </div>
           <div>
             <h3 class="idea-heading">A full day of routines</h3>
             <p class="idea-text">Waking up, getting dressed, brushing teeth and bedtime: the moments every toddler’s day is made of.</p>
           </div>
         </div>
         <div data-reveal class="idea-card">
-          <span class="idea-number">02</span>
+          <div class="idea-icon-col">
+            <div class="icon-chip idea-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-chat"></use></svg></div>
+            <span class="idea-number">02</span>
+          </div>
           <div>
             <h3 class="idea-heading">The “Why do we…?” chant</h3>
             <p class="idea-text">A repeating question-and-answer pattern that sparks curiosity and builds vocabulary.</p>
           </div>
         </div>
         <div data-reveal class="idea-card">
-          <span class="idea-number">03</span>
+          <div class="idea-icon-col">
+            <div class="icon-chip idea-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-fruit"></use></svg></div>
+            <span class="idea-number">03</span>
+          </div>
           <div>
             <h3 class="idea-heading">Counting from 1 to 20</h3>
             <p class="idea-text">A full rhyming journey through twenty different fruits, one at a time.</p>
           </div>
         </div>
         <div data-reveal class="idea-card">
-          <span class="idea-number">04</span>
+          <div class="idea-icon-col">
+            <div class="icon-chip idea-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-refresh"></use></svg></div>
+            <span class="idea-number">04</span>
+          </div>
           <div>
             <h3 class="idea-heading">“Let’s Count Again!”</h3>
             <p class="idea-text">Four recap spreads built in every five numbers, so counting actually sticks.</p>
           </div>
         </div>
         <div data-reveal class="idea-card">
-          <span class="idea-number">05</span>
+          <div class="idea-icon-col">
+            <div class="icon-chip idea-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-palette"></use></svg></div>
+            <span class="idea-number">05</span>
+          </div>
           <div>
             <h3 class="idea-heading">24 vibrant colors</h3>
             <p class="idea-text">From a red ladybug to a swirling teal ocean wave, paired with a rhyme for every one.</p>
           </div>
         </div>
         <div data-reveal class="idea-card">
-          <span class="idea-number">06</span>
+          <div class="idea-icon-col">
+            <div class="icon-chip idea-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-paw"></use></svg></div>
+            <span class="idea-number">06</span>
+          </div>
           <div>
             <h3 class="idea-heading">Lovable animals</h3>
             <p class="idea-text">Every color is introduced by a character your toddler will want to meet again.</p>
           </div>
         </div>
         <div data-reveal class="idea-card">
-          <span class="idea-number">07</span>
+          <div class="idea-icon-col">
+            <div class="icon-chip idea-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-shapes"></use></svg></div>
+            <span class="idea-number">07</span>
+          </div>
           <div>
             <h3 class="idea-heading">12 shapes, one POP! at a time</h3>
             <p class="idea-text">Squish shapeshifts from a circle to a triangle, a heart, an octagon and more.</p>
           </div>
         </div>
         <div data-reveal class="idea-card">
-          <span class="idea-number">08</span>
+          <div class="idea-icon-col">
+            <div class="icon-chip idea-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-question"></use></svg></div>
+            <span class="idea-number">08</span>
+          </div>
           <div>
             <h3 class="idea-heading">“What shape will Squish be next?”</h3>
             <p class="idea-text">A guessing-game page that keeps toddlers cheering him on.</p>
           </div>
         </div>
         <div data-reveal class="idea-card">
-          <span class="idea-number">09</span>
+          <div class="idea-icon-col">
+            <div class="icon-chip idea-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-note"></use></svg></div>
+            <span class="idea-number">09</span>
+          </div>
           <div>
             <h3 class="idea-heading">A Note for Grown-Ups</h3>
             <p class="idea-text">Every single book ends with real tips for reading it together.</p>
           </div>
         </div>
         <div data-reveal class="idea-card">
-          <span class="idea-number">10</span>
+          <div class="idea-icon-col">
+            <div class="icon-chip idea-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-gift"></use></svg></div>
+            <span class="idea-number">10</span>
+          </div>
           <div>
             <h3 class="idea-heading">A free coloring-page surprise</h3>
             <p class="idea-text">A QR code tucked inside links to free printable Squish &amp; Lilyan coloring pages.</p>
@@ -681,6 +887,8 @@
 
   <!-- ============ reading order ============ -->
   <section id="reading-order" class="order-section">
+    <img src="assets/lilyan-mascot.png" alt="" class="side-mascot side-mascot--left" width="115" height="260">
+    <img src="assets/squish-mascot.png" alt="" class="side-mascot side-mascot--right" width="313" height="294">
     <div class="order-container">
       <div data-reveal class="order-head">
         <span class="eyebrow eyebrow--pink">Reading order</span>
@@ -736,21 +944,21 @@
       <h2 data-reveal class="audience-heading">Built for two very different readers</h2>
       <div class="audience-grid">
         <div data-reveal class="audience-card">
-          <h3 class="audience-card-title">For grown-ups</h3>
+          <h3 class="audience-card-title">For little ones</h3>
           <ul class="audience-list">
-            <li>Every book ends with a real <strong>Note for Grown-Ups</strong>, with simple tips for reading it together.</li>
-            <li>Short, rhythmic, read-aloud text that survives the twentieth re-read.</li>
-            <li>Real skills underneath the story: habits, counting, colors and shapes.</li>
-            <li>Characters who come back in every book, so the world feels familiar.</li>
+            <li><svg class="icon icon-inline audience-icon" aria-hidden="true"><use href="#icon-chat"></use></svg><span>A repeating “Why do we…?” chant that begs to be said out loud.</span></li>
+            <li><svg class="icon icon-inline audience-icon" aria-hidden="true"><use href="#icon-refresh"></use></svg><span>Recap pages every few spreads, so numbers, colors and shapes stick.</span></li>
+            <li><svg class="icon icon-inline audience-icon" aria-hidden="true"><use href="#icon-shapes"></use></svg><span>A squishy purple best friend who pops into 12 shapes, one POP! at a time.</span></li>
+            <li><svg class="icon icon-inline audience-icon" aria-hidden="true"><use href="#icon-moon"></use></svg><span>Short enough for one more read before bed.</span></li>
           </ul>
         </div>
         <div data-reveal class="audience-card">
-          <h3 class="audience-card-title">For little ones</h3>
+          <h3 class="audience-card-title">For grown-ups</h3>
           <ul class="audience-list">
-            <li>A repeating “Why do we…?” chant that begs to be said out loud.</li>
-            <li>Recap pages every few spreads, so numbers, colors and shapes stick.</li>
-            <li>A squishy purple best friend who pops into 12 shapes, one POP! at a time.</li>
-            <li>Short enough for one more read before bed.</li>
+            <li><svg class="icon icon-inline audience-icon" aria-hidden="true"><use href="#icon-note"></use></svg><span>Every book ends with a real <strong>Note for Grown-Ups</strong>, with simple tips for reading it together.</span></li>
+            <li><svg class="icon icon-inline audience-icon" aria-hidden="true"><use href="#icon-book-open"></use></svg><span>Short, rhythmic, read-aloud text that survives the twentieth re-read.</span></li>
+            <li><svg class="icon icon-inline audience-icon" aria-hidden="true"><use href="#icon-blocks"></use></svg><span>Real skills underneath the story: habits, counting, colors and shapes.</span></li>
+            <li><svg class="icon icon-inline audience-icon" aria-hidden="true"><use href="#icon-users"></use></svg><span>Characters who come back in every book, so the world feels familiar.</span></li>
           </ul>
         </div>
       </div>
@@ -761,6 +969,7 @@
   <section id="about" class="about-section">
     <div class="about-container">
       <div data-reveal class="about-card">
+        <img src="assets/squish-mascot.png" alt="" class="about-mascot" width="313" height="294">
         <div>
           <div class="about-author-row">
             <img src="assets/author.jpg" alt="Wesley Scholl, author of Learning with Squish" class="about-avatar" width="300" height="300" loading="lazy" decoding="async">
@@ -799,6 +1008,8 @@
 
   <!-- ============ FAQ ============ -->
   <section class="faq-section">
+    <img src="assets/squish-mascot.png" alt="" class="side-mascot side-mascot--left" width="313" height="294">
+    <img src="assets/lilyan-mascot.png" alt="" class="side-mascot side-mascot--right" width="115" height="260">
     <div class="faq-container">
       <h2 data-reveal class="faq-heading">Questions parents actually ask</h2>
       <div class="faq-list">
@@ -824,6 +1035,8 @@
 
   <!-- ============ formats ============ -->
   <section class="formats-section">
+    <img src="assets/lilyan-mascot.png" alt="" class="side-mascot side-mascot--left" width="115" height="260">
+    <img src="assets/squish-mascot.png" alt="" class="side-mascot side-mascot--right" width="313" height="294">
     <div class="formats-container">
       <div data-reveal class="formats-head">
         <h2 class="formats-heading">Available in ebook &amp; paperback</h2>
@@ -833,41 +1046,41 @@
         <div data-reveal class="format-row">
           <span class="format-row-title">Learning Good Habits with Squish</span>
           <div class="format-chips">
-            <a href="https://a.co/d/0h8bTi0X" target="_blank" rel="noopener" class="format-chip"><span class="chip-dot" aria-hidden="true"></span>Ebook</a>
-            <a href="https://a.co/d/0h8bTi0X" target="_blank" rel="noopener" class="format-chip"><span class="chip-dot" aria-hidden="true"></span>Paperback</a>
+            <a href="https://a.co/d/0h8bTi0X" target="_blank" rel="noopener" class="format-chip"><svg class="icon icon-inline" aria-hidden="true"><use href="#icon-tablet"></use></svg>Ebook</a>
+            <a href="https://a.co/d/0h8bTi0X" target="_blank" rel="noopener" class="format-chip"><svg class="icon icon-inline" aria-hidden="true"><use href="#icon-book"></use></svg>Paperback</a>
           </div>
           <span class="format-row-price">$3.99</span>
         </div>
         <div data-reveal class="format-row">
           <span class="format-row-title">Learning to Count with Squish</span>
           <div class="format-chips">
-            <a href="https://a.co/d/01cGuej8" target="_blank" rel="noopener" class="format-chip"><span class="chip-dot" aria-hidden="true"></span>Ebook</a>
-            <a href="https://a.co/d/01cGuej8" target="_blank" rel="noopener" class="format-chip"><span class="chip-dot" aria-hidden="true"></span>Paperback</a>
+            <a href="https://a.co/d/01cGuej8" target="_blank" rel="noopener" class="format-chip"><svg class="icon icon-inline" aria-hidden="true"><use href="#icon-tablet"></use></svg>Ebook</a>
+            <a href="https://a.co/d/01cGuej8" target="_blank" rel="noopener" class="format-chip"><svg class="icon icon-inline" aria-hidden="true"><use href="#icon-book"></use></svg>Paperback</a>
           </div>
           <span class="format-row-price">$3.99</span>
         </div>
         <div data-reveal class="format-row">
           <span class="format-row-title">Learning Colors with Squish</span>
           <div class="format-chips">
-            <a href="https://a.co/d/0eNTROSE" target="_blank" rel="noopener" class="format-chip"><span class="chip-dot" aria-hidden="true"></span>Ebook</a>
-            <a href="https://a.co/d/0eNTROSE" target="_blank" rel="noopener" class="format-chip"><span class="chip-dot" aria-hidden="true"></span>Paperback</a>
+            <a href="https://a.co/d/0eNTROSE" target="_blank" rel="noopener" class="format-chip"><svg class="icon icon-inline" aria-hidden="true"><use href="#icon-tablet"></use></svg>Ebook</a>
+            <a href="https://a.co/d/0eNTROSE" target="_blank" rel="noopener" class="format-chip"><svg class="icon icon-inline" aria-hidden="true"><use href="#icon-book"></use></svg>Paperback</a>
           </div>
           <span class="format-row-price">$3.99</span>
         </div>
         <div data-reveal class="format-row">
           <span class="format-row-title">Learning Shapes with Squish</span>
           <div class="format-chips">
-            <a href="https://a.co/d/0fzbFoD7" target="_blank" rel="noopener" class="format-chip"><span class="chip-dot" aria-hidden="true"></span>Ebook</a>
-            <a href="https://a.co/d/0fzbFoD7" target="_blank" rel="noopener" class="format-chip"><span class="chip-dot" aria-hidden="true"></span>Paperback</a>
+            <a href="https://a.co/d/0fzbFoD7" target="_blank" rel="noopener" class="format-chip"><svg class="icon icon-inline" aria-hidden="true"><use href="#icon-tablet"></use></svg>Ebook</a>
+            <a href="https://a.co/d/0fzbFoD7" target="_blank" rel="noopener" class="format-chip"><svg class="icon icon-inline" aria-hidden="true"><use href="#icon-book"></use></svg>Paperback</a>
           </div>
           <span class="format-row-price">$4.99</span>
         </div>
         <div data-reveal class="format-row">
           <span class="format-row-title">The Learning with Squish Collection</span>
           <div class="format-chips">
-            <a href="https://a.co/d/0h10x3Mc" target="_blank" rel="noopener" class="format-chip"><span class="chip-dot" aria-hidden="true"></span>Ebook</a>
-            <a href="https://a.co/d/0h10x3Mc" target="_blank" rel="noopener" class="format-chip"><span class="chip-dot" aria-hidden="true"></span>Paperback</a>
-            <a href="https://a.co/d/0h10x3Mc" target="_blank" rel="noopener" class="format-chip"><span class="chip-dot" aria-hidden="true"></span>Hardback</a>
+            <a href="https://a.co/d/0h10x3Mc" target="_blank" rel="noopener" class="format-chip"><svg class="icon icon-inline" aria-hidden="true"><use href="#icon-tablet"></use></svg>Ebook</a>
+            <a href="https://a.co/d/0h10x3Mc" target="_blank" rel="noopener" class="format-chip"><svg class="icon icon-inline" aria-hidden="true"><use href="#icon-book"></use></svg>Paperback</a>
+            <a href="https://a.co/d/0h10x3Mc" target="_blank" rel="noopener" class="format-chip"><svg class="icon icon-inline" aria-hidden="true"><use href="#icon-book-stack"></use></svg>Hardback</a>
           </div>
           <span class="format-row-price">$12.99</span>
         </div>
@@ -904,7 +1117,7 @@
 
 <!-- ============ final CTA + footer ============ -->
 <footer class="site-footer">
-  <img src="assets/squish-mascot.png" alt="" class="footer-mascot" width="313" height="294" loading="lazy" decoding="async">
+  <img src="assets/squish-mascot-wave.png" alt="" class="footer-mascot" width="618" height="581" loading="lazy" decoding="async">
   <h2 class="footer-heading">Start the series tonight.</h2>
   <a href="https://a.co/d/0h10x3Mc" target="_blank" rel="noopener" class="footer-cta">Shop the books</a>
   <div class="footer-links">
