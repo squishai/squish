@@ -45,9 +45,13 @@
     --radius-md: 18px;
     --radius-sm: 12px;
     --radius-pill: 999px;
-    --shadow-soft: 0 12px 30px rgba(139, 95, 191, 0.18);
-    --shadow-lift: 0 18px 34px rgba(139, 95, 191, 0.28);
-    --border-thick: 4px solid var(--squish-purple);
+
+    /* Layered shadows instead of a bold colored border — elevation
+       does the work a 4px purple frame used to do, so cards read as
+       clean floating surfaces rather than boxed-in illustrations. */
+    --shadow-soft: 0 2px 6px rgba(74, 59, 51, 0.05), 0 14px 32px rgba(139, 95, 191, 0.14);
+    --shadow-lift: 0 6px 14px rgba(74, 59, 51, 0.07), 0 26px 48px rgba(139, 95, 191, 0.22);
+    --border-hairline: 1px solid rgba(139, 95, 191, 0.14);
     --border-thin: 2px solid var(--squish-purple-pale);
 
     --font-display: "Baloo 2", "Fredoka", ui-rounded, "Segoe UI Rounded", "Nunito", sans-serif;
@@ -65,10 +69,13 @@
     --container-max: 1080px;
     --container-narrow: 760px;
 
-    --transition-fast: 0.15s ease;
-    --transition-base: 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-    --reveal-duration: 0.6s;
-    --lift-hover: -4px;
+    /* Fluid easing — the same gentle overshoot-free ease-out curve
+       squish.run's own homepage uses for its fades, so motion across
+       the two sites feels like one hand designed it. */
+    --transition-fast: 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-base: 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    --reveal-duration: 0.7s;
+    --lift-hover: -6px;
 
     --nav-height: 76px;
     --z-header: 100;
@@ -196,19 +203,20 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .btn:hover, .btn:focus-visible, .card--hover:hover { transform: none; }
+    .btn:hover, .btn:focus-visible, .card--hover:hover, .hero-illustration:hover { transform: none; }
+    .book-card:hover .book-cover-placeholder img { transform: none; }
   }
 
   /* Primary — the one warm accent, reserved for the main action in a section.
      A slow breathing glow (not movement) keeps it findable without
      shouting — mirrors the "cta-breathe" pattern from Open & Async. */
   .btn--primary {
-    background: var(--accent-yellow);
+    background: linear-gradient(135deg, #FFC961 0%, var(--accent-yellow) 55%, var(--accent-yellow-dark) 100%);
     color: var(--ink);
     animation: cta-breathe 3.4s ease-in-out infinite;
   }
   .btn--primary:hover, .btn--primary:focus-visible {
-    background: var(--accent-yellow-dark);
+    background: linear-gradient(135deg, #FFC961 0%, var(--accent-yellow-dark) 70%, #C87F0E 100%);
     box-shadow: 0 16px 30px rgba(224, 154, 26, 0.42);
   }
   @keyframes cta-breathe {
@@ -257,7 +265,7 @@
   .card {
     position: relative;
     background: var(--white);
-    border: var(--border-thick);
+    border: var(--border-hairline);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-soft);
     overflow: hidden;
@@ -280,11 +288,14 @@
   }
   .card--hover:hover::before {
     transform: translateX(120%);
-    transition: transform 0.85s ease;
+    transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .card--soft {
-    border: var(--border-thin);
-    box-shadow: none;
+    border: none;
+    background: rgba(255, 255, 255, 0.7);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 1px 2px rgba(74, 59, 51, 0.04);
   }
 
   .eyebrow {
@@ -452,7 +463,7 @@
 
   .hero-title {
     font-size: clamp(2.2rem, 7vw, 3.6rem);
-    color: var(--squish-purple);
+    color: var(--squish-purple-dark);
     text-shadow: 2px 2px 0 var(--white);
   }
 
@@ -484,12 +495,14 @@
   .hero-illustration {
     width: 100%;
     aspect-ratio: 1 / 1;
-    background: var(--white);
-    border: var(--border-thick);
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-soft);
-    padding: 8px;
+    box-shadow: var(--shadow-lift);
     overflow: hidden;
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+  }
+  .hero-illustration:hover {
+    transform: translateY(var(--lift-hover)) rotate(-0.6deg);
+    box-shadow: 0 10px 20px rgba(74, 59, 51, 0.1), 0 40px 64px rgba(139, 95, 191, 0.3);
   }
 
   /* A second, smaller Squish bobbing beside his own cover art — the
@@ -510,7 +523,6 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: calc(var(--radius-lg) - 8px);
   }
 
   .series-link {
@@ -773,7 +785,7 @@
   .book-card {
     display: flex;
     flex-direction: column;
-    padding: 20px;
+    padding: 0;
   }
 
   .book-card--wide { grid-column: span 1; }
@@ -781,15 +793,14 @@
     .book-card--wide { grid-column: span 1; }
   }
 
-  /* Real published cover art. */
+  /* Real published cover art — bleeds flush to the card's own top
+     corners, like a book propped on a shelf, instead of sitting in a
+     separately-framed box. */
   .book-cover-placeholder {
     position: relative;
     aspect-ratio: 1 / 1;
     width: 100%;
-    border-radius: var(--radius-md);
     overflow: hidden;
-    margin-bottom: 16px;
-    box-shadow: inset 0 0 0 2px rgba(139, 95, 191, 0.25);
   }
 
   .book-cover-placeholder img {
@@ -797,10 +808,23 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .book-card:hover .book-cover-placeholder img {
+    transform: scale(1.045);
+  }
+
+  .book-card-body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 20px;
   }
 
   .book-badge {
     position: absolute;
+    z-index: 1;
     top: 10px;
     left: 10px;
     background: var(--accent-yellow);
@@ -980,7 +1004,7 @@
     height: 56px;
     border-radius: 50%;
     background: var(--white);
-    border: var(--border-thick);
+    box-shadow: var(--shadow-soft), inset 0 0 0 2px var(--squish-purple-pale);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1400,15 +1424,17 @@
               <span class="book-badge">Book 1</span>
               <img src="assets/covers/habits.jpg" alt="Learning Good Habits with Squish cover">
             </div>
-            <h3 class="book-title">Learning Good Habits with Squish</h3>
-            <p class="book-description">A full day of toddler routines with a repeating "Why do we...?" pattern &mdash; waking up, getting dressed, brushing teeth, and bedtime.</p>
-            <dl class="book-meta">
-              <div><dt>Teaches</dt><dd>Daily routines</dd></div>
-              <div><dt>Length</dt><dd>10 rhyming spreads</dd></div>
-            </dl>
-            <div class="book-card-footer">
-              <span class="book-price">$3.99</span>
-              <a class="btn btn--primary btn--sm" data-amazon-key="habits" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+            <div class="book-card-body">
+              <h3 class="book-title">Learning Good Habits with Squish</h3>
+              <p class="book-description">A full day of toddler routines with a repeating "Why do we...?" pattern &mdash; waking up, getting dressed, brushing teeth, and bedtime.</p>
+              <dl class="book-meta">
+                <div><dt>Teaches</dt><dd>Daily routines</dd></div>
+                <div><dt>Length</dt><dd>10 rhyming spreads</dd></div>
+              </dl>
+              <div class="book-card-footer">
+                <span class="book-price">$3.99</span>
+                <a class="btn btn--primary btn--sm" data-amazon-key="habits" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+              </div>
             </div>
           </article>
 
@@ -1417,15 +1443,17 @@
               <span class="book-badge">Book 2</span>
               <img src="assets/covers/counting.jpg" alt="Learning to Count with Squish cover">
             </div>
-            <h3 class="book-title">Learning to Count with Squish</h3>
-            <p class="book-description">A rhyming counting adventure from 1 to 20, one juicy fruit at a time &mdash; with a "Let's Count Again!" recap every five numbers.</p>
-            <dl class="book-meta">
-              <div><dt>Teaches</dt><dd>Numbers 1&ndash;20</dd></div>
-              <div><dt>Length</dt><dd>20 rhyming pages</dd></div>
-            </dl>
-            <div class="book-card-footer">
-              <span class="book-price">$3.99</span>
-              <a class="btn btn--primary btn--sm" data-amazon-key="counting" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+            <div class="book-card-body">
+              <h3 class="book-title">Learning to Count with Squish</h3>
+              <p class="book-description">A rhyming counting adventure from 1 to 20, one juicy fruit at a time &mdash; with a "Let's Count Again!" recap every five numbers.</p>
+              <dl class="book-meta">
+                <div><dt>Teaches</dt><dd>Numbers 1&ndash;20</dd></div>
+                <div><dt>Length</dt><dd>20 rhyming pages</dd></div>
+              </dl>
+              <div class="book-card-footer">
+                <span class="book-price">$3.99</span>
+                <a class="btn btn--primary btn--sm" data-amazon-key="counting" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+              </div>
             </div>
           </article>
 
@@ -1434,15 +1462,17 @@
               <span class="book-badge">Book 3</span>
               <img src="assets/covers/colors.jpg" alt="Learning Colors with Squish cover">
             </div>
-            <h3 class="book-title">Learning Colors with Squish</h3>
-            <p class="book-description">24 vibrant colors come to life through playful rhymes and lovable animals &mdash; from a red ladybug to a swirling teal ocean wave.</p>
-            <dl class="book-meta">
-              <div><dt>Teaches</dt><dd>24 colors</dd></div>
-              <div><dt>Length</dt><dd>12 color pages</dd></div>
-            </dl>
-            <div class="book-card-footer">
-              <span class="book-price">$3.99</span>
-              <a class="btn btn--primary btn--sm" data-amazon-key="colors" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+            <div class="book-card-body">
+              <h3 class="book-title">Learning Colors with Squish</h3>
+              <p class="book-description">24 vibrant colors come to life through playful rhymes and lovable animals &mdash; from a red ladybug to a swirling teal ocean wave.</p>
+              <dl class="book-meta">
+                <div><dt>Teaches</dt><dd>24 colors</dd></div>
+                <div><dt>Length</dt><dd>12 color pages</dd></div>
+              </dl>
+              <div class="book-card-footer">
+                <span class="book-price">$3.99</span>
+                <a class="btn btn--primary btn--sm" data-amazon-key="colors" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+              </div>
             </div>
           </article>
 
@@ -1451,15 +1481,17 @@
               <span class="book-badge">Book 5 &middot; Newest</span>
               <img src="assets/covers/shapes.jpg" alt="Learning Shapes with Squish cover">
             </div>
-            <h3 class="book-title">Learning Shapes with Squish</h3>
-            <p class="book-description">Circle. Triangle. Rectangle. Star. Squish can become any shape you can imagine &mdash; popping through 12 shapes, one big POP! at a time.</p>
-            <dl class="book-meta">
-              <div><dt>Teaches</dt><dd>12 shapes</dd></div>
-              <div><dt>Length</dt><dd>12 shapes + 3 recaps</dd></div>
-            </dl>
-            <div class="book-card-footer">
-              <span class="book-price">$4.99</span>
-              <a class="btn btn--primary btn--sm" data-amazon-key="shapes" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+            <div class="book-card-body">
+              <h3 class="book-title">Learning Shapes with Squish</h3>
+              <p class="book-description">Circle. Triangle. Rectangle. Star. Squish can become any shape you can imagine &mdash; popping through 12 shapes, one big POP! at a time.</p>
+              <dl class="book-meta">
+                <div><dt>Teaches</dt><dd>12 shapes</dd></div>
+                <div><dt>Length</dt><dd>12 shapes + 3 recaps</dd></div>
+              </dl>
+              <div class="book-card-footer">
+                <span class="book-price">$4.99</span>
+                <a class="btn btn--primary btn--sm" data-amazon-key="shapes" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+              </div>
             </div>
           </article>
 
@@ -1468,15 +1500,17 @@
               <span class="book-badge">Book 4 &middot; The Set</span>
               <img src="assets/covers/collection.jpg" alt="The Learning with Squish Collection cover">
             </div>
-            <h3 class="book-title">The Learning with Squish Collection</h3>
-            <p class="book-description">Three beloved stories &mdash; Habits, Counting, and Colors &mdash; together in one keepsake collection. Available in ebook, paperback, or hardback.</p>
-            <dl class="book-meta">
-              <div><dt>Teaches</dt><dd>All three</dd></div>
-              <div><dt>Length</dt><dd>3 books in one</dd></div>
-            </dl>
-            <div class="book-card-footer">
-              <span class="book-price">$12.99</span>
-              <a class="btn btn--primary btn--sm" data-amazon-key="collection" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+            <div class="book-card-body">
+              <h3 class="book-title">The Learning with Squish Collection</h3>
+              <p class="book-description">Three beloved stories &mdash; Habits, Counting, and Colors &mdash; together in one keepsake collection. Available in ebook, paperback, or hardback.</p>
+              <dl class="book-meta">
+                <div><dt>Teaches</dt><dd>All three</dd></div>
+                <div><dt>Length</dt><dd>3 books in one</dd></div>
+              </dl>
+              <div class="book-card-footer">
+                <span class="book-price">$12.99</span>
+                <a class="btn btn--primary btn--sm" data-amazon-key="collection" href="#" target="_blank" rel="noopener">Buy on Amazon</a>
+              </div>
             </div>
           </article>
 
