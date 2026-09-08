@@ -388,13 +388,21 @@
     position: absolute; top: -140px; left: 44%; width: 400px; height: 400px; border-radius: 50%;
     background: #fff; opacity: .5; filter: blur(80px); animation: drift 16s ease-in-out infinite;
   }
-  .printables-inner { position: relative; max-width: 680px; margin: 0 auto; padding: 0 28px; text-align: center; }
-  .printables-sample {
-    position: absolute; top: 50%; right: 9%; transform: translateY(-50%) rotate(-6deg);
-    width: 210px; max-width: 20vw; border: 8px solid #fff; border-radius: 14px;
-    box-shadow: 0 20px 40px rgba(75,45,111,.3);
+  .printables-inner {
+    position: relative; max-width: 980px; margin: 0 auto; padding: 0 28px;
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 20px 48px;
   }
-  @media (max-width: 1150px) { .printables-sample { display: none; } }
+  .printables-content { flex: 1 1 380px; max-width: 460px; text-align: center; }
+  .printables-sample-figure { position: relative; flex: 0 0 auto; margin: 18px 0 0; }
+  .printables-sample {
+    display: block; width: 220px; height: auto; border: 8px solid #fff; border-radius: 12px;
+    box-shadow: 0 18px 34px rgba(75,45,111,.28); transform: rotate(-4deg);
+  }
+  .printables-tape {
+    position: absolute; top: -13px; left: 50%; width: 76px; height: 28px;
+    transform: translateX(-50%) rotate(-3deg); background: rgba(255,211,77,.88);
+    box-shadow: 0 3px 6px rgba(0,0,0,.15);
+  }
   .printables-mascot { width: 92px; height: auto; margin: 0 auto 10px; animation: floaty 6s ease-in-out infinite; }
   .printables-heading { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: clamp(32px,4vw,48px); line-height: 1.02; color: #39205C; margin: 0 0 12px; }
   .printables-lead { margin: 0 auto 26px; max-width: 44ch; font-size: 18px; font-weight: 600; color: #5B4470; }
@@ -1147,23 +1155,28 @@
   <!-- ============ printables / email ============ -->
   <section id="printables" class="printables">
     <div class="printables-blob" aria-hidden="true"></div>
-    <img src="assets/coloring-page-sample.jpg" alt="A sample Squish and Lilyan coloring page" class="printables-sample" width="640" height="560" loading="lazy" decoding="async">
     <div class="printables-inner">
-      <img src="assets/squish-mascot.png" alt="" class="printables-mascot" width="313" height="294" loading="lazy" decoding="async">
-      <h2 class="printables-heading">Get free printables</h2>
-      <p class="printables-lead">Printable coloring pages of Squish and Lilyan, perfect for a rainy afternoon, straight to your inbox.</p>
+      <div class="printables-content">
+        <img src="assets/squish-mascot.png" alt="" class="printables-mascot" width="313" height="294" loading="lazy" decoding="async">
+        <h2 class="printables-heading">Get free printables</h2>
+        <p class="printables-lead">Printable coloring pages of Squish and Lilyan, perfect for a rainy afternoon, straight to your inbox.</p>
 
-      <form class="email-form" id="subscribe-form" novalidate>
-        <label class="email-form-label" for="email-input">Email address</label>
-        <input type="email" id="email-input" name="email" required placeholder="you@example.com" autocomplete="email" aria-describedby="email-error" class="email-input">
-        <input type="hidden" id="src-input" name="src" value="">
-        <button type="submit" class="submit-btn" id="submit-button">Send me the printables</button>
-      </form>
+        <form class="email-form" id="subscribe-form" novalidate>
+          <label class="email-form-label" for="email-input">Email address</label>
+          <input type="email" id="email-input" name="email" required placeholder="you@example.com" autocomplete="email" aria-describedby="email-error" class="email-input">
+          <input type="hidden" id="src-input" name="src" value="">
+          <button type="submit" class="submit-btn" id="submit-button">Send me the printables</button>
+        </form>
 
-      <p class="form-error" id="email-error" role="alert" hidden></p>
-      <p class="form-success" id="form-success" role="status" hidden></p>
+        <p class="form-error" id="email-error" role="alert" hidden></p>
+        <p class="form-success" id="form-success" role="status" hidden></p>
 
-      <p class="privacy-note">No spam, ever. Unsubscribe anytime.</p>
+        <p class="privacy-note">No spam, ever. Unsubscribe anytime.</p>
+      </div>
+      <figure class="printables-sample-figure">
+        <span class="printables-tape" aria-hidden="true"></span>
+        <img src="assets/coloring-page-sample.jpg" alt="A sample Squish and Lilyan coloring page" class="printables-sample" width="640" height="560" loading="lazy" decoding="async">
+      </figure>
     </div>
   </section>
 
