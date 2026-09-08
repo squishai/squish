@@ -245,8 +245,9 @@
   .loyalty-heading { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: clamp(28px,3.2vw,40px); line-height: 1.05; color: #1E5B48; margin: 0 0 30px; text-align: center; }
   .loyalty-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(230px,1fr)); gap: 16px; }
   .loyalty-card { background: #fff; border-radius: 22px; padding: 26px 22px; box-shadow: 0 10px 24px rgba(30,91,72,.1); }
-  .loyalty-icon-chip { width: 46px; height: 46px; background: #E1F5EC; color: #12A67C; margin-bottom: 14px; }
-  .loyalty-number { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 15px; color: #12A67C; margin-bottom: 8px; }
+  .loyalty-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .loyalty-icon-chip { width: 46px; height: 46px; background: #E1F5EC; color: #12A67C; }
+  .loyalty-number { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 34px; line-height: 1; color: #12A67C; }
   .loyalty-text { margin: 0; font-weight: 700; font-size: 16px; color: #25493F; }
 
   /* ============ what's inside ============ */
@@ -254,11 +255,12 @@
   .ideas-container { max-width: 1160px; margin: 0 auto; padding: 0 28px; }
   .ideas-head { margin-bottom: 34px; }
   .ideas-heading { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: clamp(32px,3.8vw,50px); line-height: 1.02; color: #4A3208; margin: 16px 0 0; max-width: 20ch; }
-  .ideas-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap: 14px; }
-  .idea-card { display: flex; gap: 16px; background: #fff; border-radius: 20px; padding: 22px; box-shadow: 0 8px 20px rgba(138,90,0,.09); }
-  .idea-icon-col { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; }
-  .idea-icon-chip { width: 36px; height: 36px; background: #FFEEB8; color: #8A5A00; }
-  .idea-number { flex-shrink: 0; font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 26px; line-height: 1; color: #F0B93B; }
+  .ideas-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
+  .idea-card { display: flex; align-items: stretch; flex: 1 1 280px; max-width: 360px; background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 8px 20px rgba(138,90,0,.09); }
+  .idea-icon-col { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; flex-shrink: 0; width: 84px; padding: 20px 8px; background: #FFEEB8; }
+  .idea-icon-chip { width: 38px; height: 38px; background: #fff; color: #8A5A00; }
+  .idea-number { flex-shrink: 0; font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 22px; line-height: 1; color: #8A5A00; }
+  .idea-content { padding: 20px 22px 20px 18px; }
   .idea-heading { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 16px; color: #4A3208; margin: 0 0 4px; }
   .idea-text { margin: 0; font-size: 14.5px; font-weight: 600; color: #7A6440; }
 
@@ -596,7 +598,7 @@
           <img src="assets/collection-cover.jpg" alt="The Learning with Squish Collection: Lilyan and Squish holding hands under a rainbow" class="hero-cover-img" width="900" height="900" fetchpriority="high">
         </div>
         <img src="assets/squish-mascot.png" alt="" class="hero-mascot-squish" width="313" height="294">
-        <img src="assets/lilyan-mascot.png" alt="" class="hero-mascot-lilyan" width="115" height="260">
+        <img src="assets/lilyan-mascot.png" alt="" class="hero-mascot-lilyan" width="345" height="780">
       </div>
     </div>
 
@@ -631,7 +633,7 @@
           <p class="friend-desc">A happy purple cube, always ready for an adventure. Curious, a little silly, and up for whatever Lilyan has planned.</p>
         </div>
         <div class="friend-card friend-card--lilyan">
-          <img src="assets/lilyan-mascot.png" alt="Lilyan, a curious little girl in a heart sweater" class="friend-avatar friend-avatar--lilyan" width="115" height="260" loading="lazy" decoding="async">
+          <img src="assets/lilyan-mascot.png" alt="Lilyan, a curious little girl in a heart sweater" class="friend-avatar friend-avatar--lilyan" width="345" height="780" loading="lazy" decoding="async">
           <h3 class="friend-name friend-name--lilyan">Lilyan</h3>
           <p class="friend-desc">Curious, brave, and always asking why. She notices everything, and she's not afraid to ask Squish about it.</p>
         </div>
@@ -750,23 +752,31 @@
       <h2 data-reveal class="loyalty-heading">Why families keep coming back</h2>
       <div class="loyalty-grid">
         <div data-reveal class="loyalty-card">
-          <div class="icon-chip loyalty-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-users"></use></svg></div>
-          <div class="loyalty-number">01</div>
+          <div class="loyalty-top">
+            <div class="loyalty-number">1</div>
+            <div class="icon-chip loyalty-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-users"></use></svg></div>
+          </div>
           <p class="loyalty-text">Characters who come back in every book</p>
         </div>
         <div data-reveal class="loyalty-card">
-          <div class="icon-chip loyalty-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-message"></use></svg></div>
-          <div class="loyalty-number">02</div>
+          <div class="loyalty-top">
+            <div class="loyalty-number">2</div>
+            <div class="icon-chip loyalty-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-message"></use></svg></div>
+          </div>
           <p class="loyalty-text">Simple language for short attention spans</p>
         </div>
         <div data-reveal class="loyalty-card">
-          <div class="icon-chip loyalty-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-note"></use></svg></div>
-          <div class="loyalty-number">03</div>
+          <div class="loyalty-top">
+            <div class="loyalty-number">3</div>
+            <div class="icon-chip loyalty-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-note"></use></svg></div>
+          </div>
           <p class="loyalty-text">A Note for Grown-Ups at the end of every story</p>
         </div>
         <div data-reveal class="loyalty-card">
-          <div class="icon-chip loyalty-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-sparkle"></use></svg></div>
-          <div class="loyalty-number">04</div>
+          <div class="loyalty-top">
+            <div class="loyalty-number">4</div>
+            <div class="icon-chip loyalty-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-sparkle"></use></svg></div>
+          </div>
           <p class="loyalty-text">New titles added to the series regularly</p>
         </div>
       </div>
@@ -784,9 +794,9 @@
         <div data-reveal class="idea-card">
           <div class="idea-icon-col">
             <div class="icon-chip idea-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-sun"></use></svg></div>
-            <span class="idea-number">01</span>
+            <span class="idea-number">1</span>
           </div>
-          <div>
+          <div class="idea-content">
             <h3 class="idea-heading">A full day of routines</h3>
             <p class="idea-text">Waking up, getting dressed, brushing teeth and bedtime: the moments every toddler’s day is made of.</p>
           </div>
@@ -794,9 +804,9 @@
         <div data-reveal class="idea-card">
           <div class="idea-icon-col">
             <div class="icon-chip idea-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-chat"></use></svg></div>
-            <span class="idea-number">02</span>
+            <span class="idea-number">2</span>
           </div>
-          <div>
+          <div class="idea-content">
             <h3 class="idea-heading">The “Why do we…?” chant</h3>
             <p class="idea-text">A repeating question-and-answer pattern that sparks curiosity and builds vocabulary.</p>
           </div>
@@ -804,9 +814,9 @@
         <div data-reveal class="idea-card">
           <div class="idea-icon-col">
             <div class="icon-chip idea-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-fruit"></use></svg></div>
-            <span class="idea-number">03</span>
+            <span class="idea-number">3</span>
           </div>
-          <div>
+          <div class="idea-content">
             <h3 class="idea-heading">Counting from 1 to 20</h3>
             <p class="idea-text">A full rhyming journey through twenty different fruits, one at a time.</p>
           </div>
@@ -814,9 +824,9 @@
         <div data-reveal class="idea-card">
           <div class="idea-icon-col">
             <div class="icon-chip idea-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-refresh"></use></svg></div>
-            <span class="idea-number">04</span>
+            <span class="idea-number">4</span>
           </div>
-          <div>
+          <div class="idea-content">
             <h3 class="idea-heading">“Let’s Count Again!”</h3>
             <p class="idea-text">Four recap spreads built in every five numbers, so counting actually sticks.</p>
           </div>
@@ -824,9 +834,9 @@
         <div data-reveal class="idea-card">
           <div class="idea-icon-col">
             <div class="icon-chip idea-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-palette"></use></svg></div>
-            <span class="idea-number">05</span>
+            <span class="idea-number">5</span>
           </div>
-          <div>
+          <div class="idea-content">
             <h3 class="idea-heading">24 vibrant colors</h3>
             <p class="idea-text">From a red ladybug to a swirling teal ocean wave, paired with a rhyme for every one.</p>
           </div>
@@ -834,9 +844,9 @@
         <div data-reveal class="idea-card">
           <div class="idea-icon-col">
             <div class="icon-chip idea-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-paw"></use></svg></div>
-            <span class="idea-number">06</span>
+            <span class="idea-number">6</span>
           </div>
-          <div>
+          <div class="idea-content">
             <h3 class="idea-heading">Lovable animals</h3>
             <p class="idea-text">Every color is introduced by a character your toddler will want to meet again.</p>
           </div>
@@ -844,9 +854,9 @@
         <div data-reveal class="idea-card">
           <div class="idea-icon-col">
             <div class="icon-chip idea-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-shapes"></use></svg></div>
-            <span class="idea-number">07</span>
+            <span class="idea-number">7</span>
           </div>
-          <div>
+          <div class="idea-content">
             <h3 class="idea-heading">12 shapes, one POP! at a time</h3>
             <p class="idea-text">Squish shapeshifts from a circle to a triangle, a heart, an octagon and more.</p>
           </div>
@@ -854,9 +864,9 @@
         <div data-reveal class="idea-card">
           <div class="idea-icon-col">
             <div class="icon-chip idea-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-question"></use></svg></div>
-            <span class="idea-number">08</span>
+            <span class="idea-number">8</span>
           </div>
-          <div>
+          <div class="idea-content">
             <h3 class="idea-heading">“What shape will Squish be next?”</h3>
             <p class="idea-text">A guessing-game page that keeps toddlers cheering him on.</p>
           </div>
@@ -864,9 +874,9 @@
         <div data-reveal class="idea-card">
           <div class="idea-icon-col">
             <div class="icon-chip idea-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-note"></use></svg></div>
-            <span class="idea-number">09</span>
+            <span class="idea-number">9</span>
           </div>
-          <div>
+          <div class="idea-content">
             <h3 class="idea-heading">A Note for Grown-Ups</h3>
             <p class="idea-text">Every single book ends with real tips for reading it together.</p>
           </div>
@@ -876,7 +886,7 @@
             <div class="icon-chip idea-icon-chip"><svg class="icon" aria-hidden="true"><use href="#icon-gift"></use></svg></div>
             <span class="idea-number">10</span>
           </div>
-          <div>
+          <div class="idea-content">
             <h3 class="idea-heading">A free coloring-page surprise</h3>
             <p class="idea-text">A QR code tucked inside links to free printable Squish &amp; Lilyan coloring pages.</p>
           </div>
@@ -887,7 +897,7 @@
 
   <!-- ============ reading order ============ -->
   <section id="reading-order" class="order-section">
-    <img src="assets/lilyan-mascot.png" alt="" class="side-mascot side-mascot--left" width="115" height="260">
+    <img src="assets/lilyan-mascot.png" alt="" class="side-mascot side-mascot--left" width="345" height="780">
     <img src="assets/squish-mascot.png" alt="" class="side-mascot side-mascot--right" width="313" height="294">
     <div class="order-container">
       <div data-reveal class="order-head">
@@ -1009,7 +1019,7 @@
   <!-- ============ FAQ ============ -->
   <section class="faq-section">
     <img src="assets/squish-mascot.png" alt="" class="side-mascot side-mascot--left" width="313" height="294">
-    <img src="assets/lilyan-mascot.png" alt="" class="side-mascot side-mascot--right" width="115" height="260">
+    <img src="assets/lilyan-mascot.png" alt="" class="side-mascot side-mascot--right" width="345" height="780">
     <div class="faq-container">
       <h2 data-reveal class="faq-heading">Questions parents actually ask</h2>
       <div class="faq-list">
@@ -1035,7 +1045,7 @@
 
   <!-- ============ formats ============ -->
   <section class="formats-section">
-    <img src="assets/lilyan-mascot.png" alt="" class="side-mascot side-mascot--left" width="115" height="260">
+    <img src="assets/lilyan-mascot.png" alt="" class="side-mascot side-mascot--left" width="345" height="780">
     <img src="assets/squish-mascot.png" alt="" class="side-mascot side-mascot--right" width="313" height="294">
     <div class="formats-container">
       <div data-reveal class="formats-head">
